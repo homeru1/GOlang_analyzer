@@ -12,7 +12,6 @@
 %left '*' '/'
 %nonassoc "then"
 %nonassoc ELSE
-%define parse.error verbose
 %start program_unit
 %%
 program_unit				: HEADER program_unit                               
