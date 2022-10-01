@@ -47,15 +47,15 @@ extern int yydebug;
       know about them.  */
    enum yytokentype {
      VTYPE = 258,
-     FUNC = 259,
-     CONST = 260,
-     CASE = 261,
-     CHAN = 262,
-     DEFER = 263,
-     GO = 264,
-     INTERFACE = 265,
-     DEFAULT = 266,
-     IMPORT = 267,
+     CONST = 259,
+     CASE = 260,
+     FUNC = 261,
+     IMPORT = 262,
+     CHAN = 263,
+     DEFER = 264,
+     GO = 265,
+     INTERFACE = 266,
+     DEFAULT = 267,
      VAR = 268,
      RANGE = 269,
      MAP = 270,
@@ -86,20 +86,22 @@ extern int yydebug;
      char_const = 295,
      id = 296,
      string = 297,
-     short_dec = 298
+     short_dec = 298,
+     open_br = 299,
+     close_br = 300
    };
 #endif
 /* Tokens.  */
 #define VTYPE 258
-#define FUNC 259
-#define CONST 260
-#define CASE 261
-#define CHAN 262
-#define DEFER 263
-#define GO 264
-#define INTERFACE 265
-#define DEFAULT 266
-#define IMPORT 267
+#define CONST 259
+#define CASE 260
+#define FUNC 261
+#define IMPORT 262
+#define CHAN 263
+#define DEFER 264
+#define GO 265
+#define INTERFACE 266
+#define DEFAULT 267
 #define VAR 268
 #define RANGE 269
 #define MAP 270
@@ -131,6 +133,8 @@ extern int yydebug;
 #define id 296
 #define string 297
 #define short_dec 298
+#define open_br 299
+#define close_br 300
 
 
 
