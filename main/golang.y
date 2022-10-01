@@ -5,7 +5,7 @@
 	int success = 1;
 %}
 %token type_const CONST CASE DEFAULT IMPORT PACKAGE VAR RANGE MAP DELETE PRINT MAKE APPEND COPY IF SWITCH FALLTHROUGH ELSE TYPE FOR DO WHILE GOTO CONTINUE BREAK struct_const RETURN or_const and_const param_const eq_const rel_const shift_const inc_const point_const PUNC int_const float_const char_const id string
-%token enumeration_const storage_const qual_const enum_const DEFINE asd
+%token enumeration_const storage_const qual_const enum_const DEFINE asd TEMP
 %token SIZEOF
 %token HEADER
 %left '+' '-'
