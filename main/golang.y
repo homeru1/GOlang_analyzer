@@ -11,7 +11,7 @@
 %left '+' '-'
 %left '*' '/'
 %nonassoc "then"
-%nonassoc ELSE
+%nonassoc ELSE karina
 %start program_unit
 %token
 %%
