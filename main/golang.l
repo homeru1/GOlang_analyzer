@@ -4,50 +4,52 @@
 	#include<stdio.h>
 	#include"y.tab.h"
 	#include<math.h>
+	extern int yyerror(const char *);
 %}
 %%
-"func"|"char"|"short"|"int"|"long"|"float"|"double"|"signed"|"unsigned"							 {return type_const;}	
-"const"         																				 {return CONST;}
-"case"																							 {return CASE;}	
-"default"																						 {return DEFAULT;}
-"import"                                                                                         {return IMPORT;}
-"fmt"                                                                                            {return PACKAGE;}
-"var"                                                                                            {return VAR;}
-"range"                                                                                          {return RANGE;}
-"map"                                                                                            {return MAP;}
-"delete"                                                                                         {return DELETE;}
-"Println"                                                                                        {return PRINT;}
-"make"                                                                                           {return MAKE;}
-"append"                                                                                         {return APPEND;}
-"copy"                                                                                           {return COPY;}
-"if"																							 {return IF;}
-"switch"																						 {return SWITCH;}
-"fallthrough"                                                                                    {return FALLTHROUGH;}
-"else"																							 {return ELSE;}
-"type"                                                                                           {return TYPE;}
-"for"																							 {return FOR;}
-"do"																						     {return DO;}
-"while"																							 {return WHILE;}
-"goto"																							 {return GOTO;}
-"continue"																						 {return CONTINUE;}
-"break"																							 {return BREAK;}
-"struct"|"union"																				 {return struct_const;}
-"return"																						 {return RETURN;}
-"||" 																							 {return or_const;}
-"&&"																							 {return and_const;}
-"..."																							 {return param_const;}
-"=="|"!="																						 {return eq_const;}
-"<="|">="																						 {return rel_const;}
-">>"|"<<"																						 {return shift_const;}
-"++"|"--"																						 {return inc_const;}
-"<-"																							 {return point_const;}
-";"|"="|","|"{"|"}"|"("|")"|"["|"]"|"*"|"+"|"-"|"/"|"?"|":"|"&"|"|"|"^"|"!"|"~"|"%"|"<"|">"		 {return yytext[0];}
-"*="|"/="|"+="|"%="|">>="|"-="|"<<="|"&="|"^="|"|="|"&^"|"&^="									 {return PUNC;}
-[0-9]+																							 {return int_const;}
-[0-9]+"."[0-9]+																					 {return float_const;}	
-"'"."'"																							 {return char_const;}
-[a-zA-z_][a-zA-z_0-9]*			 																 {return id;}
-\"(\\.|[^\"])*\"																				 {return string;}
+"string"|"int"|"float32"|"bool"|"rune"|"int8"|"int16"|"int64"|"uint8"|"uint16"|"uint32"|"uint64"|"uint"|"byte"|"uintptr"|"float64"|"complex64"|"complex128"|"uintptr"				 {printf("Vtype ");return VTYPE;}	
+"func"																							 {printf("func "); return FUNC;}
+"const"         																				 {printf("const "); return CONST;}
+"case"																							 {printf("case "); return CASE;}
+"chan"																							 {printf("chan "); return CHAN;}
+"defer"																							 {printf("defer "); return DEFER;}		
+"go"																							 {printf("go "); return GO;}	
+"interface"																						 {printf("interface "); return INTERFACE;}			
+"default"																						 {printf("default "); return DEFAULT;}
+"import"                                                                                         {printf("import "); return IMPORT;}
+"var"                                                                                            {printf("var "); return VAR;}
+"range"                                                                                          {printf("range "); return RANGE;}
+"map"                                                                                            {printf("map "); return MAP;}
+"package"                                                                                        {printf("package "); return PACKAGE;}
+"if"																							 {printf("if ");return IF;}
+"select"																						 {printf("select ");return SELECT;}
+"switch"																						 {printf("switch "); return SWITCH;}
+"fallthrough"                                                                                    {printf("fallthrough "); return FALLTHROUGH;}
+"else"																							 {printf("else "); return ELSE;}
+"type"                                                                                           {printf("type "); return TYPE;}
+"for"																							 {printf("for "); return FOR;}
+"goto"																							 {printf("goto "); return GOTO;}
+"continue"																						 {printf("continue "); return CONTINUE;}
+"break"																							 {printf("break "); return BREAK;}
+"struct"|"union"																				 {printf("struct_const"); return struct_const;}
+"return"																						 {printf("return"); return RETURN;}
+"||" 																							 {printf("||"); return or_const;}
+":=" 																							 {printf(":="); return short_dec;}
+"&&"																							 {printf("&&"); return and_const;}
+"..."																							 {printf("..."); return param_const;}
+"=="|"!="																						 {printf("eq_const"); return eq_const;}
+"<="|">="																						 {printf("rel_const"); return rel_const;}
+">>"|"<<"																						 {printf("shift_const"); return shift_const;}
+"++"|"--"																						 {printf("inc_const"); return inc_const;}
+"<-"																							 {printf("<-"); return point_const;}
+";"|"="|","|"{"|"}"|"("|")"|"["|"]"|"*"|"+"|"-"|"/"|"?"|":"|"&"|"|"|"^"|"!"|"~"|"%"|"<"|">"		 {printf("%c",yytext[0]);return yytext[0];}
+"*="|"/="|"+="|"%="|">>="|"-="|"<<="|"&="|"^="|"|="|"&^"|"&^="									 {printf("punc"); return punc;}
+[0-9]+																							 {printf("int"); return int_const;}
+[0-9]+"."[0-9]+																					 {printf("float"); return float_const;}	
+"'"."'"																							 {printf("\' ");return char_const;}
+[a-zA-z_][a-zA-z_0-9]*			 																 {printf("id ");return id;}
+\"(\\.|[^\"])*\"																				 {printf("String ");return string;}
+"." {printf("DOT ");}
 "//"(\\.|[^\n])*[\n]																						;
 [/][*]([^*]|[*]*[^*/])*[*]+[/]                                                                              ;
 [ \t\n]																										;

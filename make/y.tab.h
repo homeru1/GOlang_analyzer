@@ -46,105 +46,91 @@ extern int yydebug;
    /* Put the tokens into the symbol table, so that GDB and other debuggers
       know about them.  */
    enum yytokentype {
-     type_const = 258,
-     CONST = 259,
-     CASE = 260,
-     DEFAULT = 261,
-     IMPORT = 262,
-     PACKAGE = 263,
-     VAR = 264,
-     RANGE = 265,
-     MAP = 266,
-     DELETE = 267,
-     PRINT = 268,
-     MAKE = 269,
-     APPEND = 270,
-     COPY = 271,
+     VTYPE = 258,
+     FUNC = 259,
+     CONST = 260,
+     CASE = 261,
+     CHAN = 262,
+     DEFER = 263,
+     GO = 264,
+     INTERFACE = 265,
+     DEFAULT = 266,
+     IMPORT = 267,
+     VAR = 268,
+     RANGE = 269,
+     MAP = 270,
+     PACKAGE = 271,
      IF = 272,
-     SWITCH = 273,
-     FALLTHROUGH = 274,
-     ELSE = 275,
-     TYPE = 276,
-     FOR = 277,
-     DO = 278,
-     WHILE = 279,
-     GOTO = 280,
-     CONTINUE = 281,
-     BREAK = 282,
+     SELECT = 273,
+     SWITCH = 274,
+     FALLTHROUGH = 275,
+     ELSE = 276,
+     TYPE = 277,
+     FOR = 278,
+     GOTO = 279,
+     CONTINUE = 280,
+     BREAK = 281,
+     RETURN = 282,
      struct_const = 283,
-     RETURN = 284,
-     or_const = 285,
-     and_const = 286,
-     param_const = 287,
-     eq_const = 288,
-     rel_const = 289,
-     shift_const = 290,
-     inc_const = 291,
-     point_const = 292,
-     PUNC = 293,
-     int_const = 294,
-     float_const = 295,
-     char_const = 296,
-     id = 297,
-     string = 298,
-     enumeration_const = 299,
-     storage_const = 300,
-     qual_const = 301,
-     enum_const = 302,
-     DEFINE = 303,
-     SIZEOF = 304,
-     HEADER = 305
+     or_const = 284,
+     and_const = 285,
+     param_const = 286,
+     eq_const = 287,
+     rel_const = 288,
+     shift_const = 289,
+     inc_const = 290,
+     point_const = 291,
+     punc = 292,
+     int_const = 293,
+     float_const = 294,
+     char_const = 295,
+     id = 296,
+     string = 297,
+     short_dec = 298
    };
 #endif
 /* Tokens.  */
-#define type_const 258
-#define CONST 259
-#define CASE 260
-#define DEFAULT 261
-#define IMPORT 262
-#define PACKAGE 263
-#define VAR 264
-#define RANGE 265
-#define MAP 266
-#define DELETE 267
-#define PRINT 268
-#define MAKE 269
-#define APPEND 270
-#define COPY 271
+#define VTYPE 258
+#define FUNC 259
+#define CONST 260
+#define CASE 261
+#define CHAN 262
+#define DEFER 263
+#define GO 264
+#define INTERFACE 265
+#define DEFAULT 266
+#define IMPORT 267
+#define VAR 268
+#define RANGE 269
+#define MAP 270
+#define PACKAGE 271
 #define IF 272
-#define SWITCH 273
-#define FALLTHROUGH 274
-#define ELSE 275
-#define TYPE 276
-#define FOR 277
-#define DO 278
-#define WHILE 279
-#define GOTO 280
-#define CONTINUE 281
-#define BREAK 282
+#define SELECT 273
+#define SWITCH 274
+#define FALLTHROUGH 275
+#define ELSE 276
+#define TYPE 277
+#define FOR 278
+#define GOTO 279
+#define CONTINUE 280
+#define BREAK 281
+#define RETURN 282
 #define struct_const 283
-#define RETURN 284
-#define or_const 285
-#define and_const 286
-#define param_const 287
-#define eq_const 288
-#define rel_const 289
-#define shift_const 290
-#define inc_const 291
-#define point_const 292
-#define PUNC 293
-#define int_const 294
-#define float_const 295
-#define char_const 296
-#define id 297
-#define string 298
-#define enumeration_const 299
-#define storage_const 300
-#define qual_const 301
-#define enum_const 302
-#define DEFINE 303
-#define SIZEOF 304
-#define HEADER 305
+#define or_const 284
+#define and_const 285
+#define param_const 286
+#define eq_const 287
+#define rel_const 288
+#define shift_const 289
+#define inc_const 290
+#define point_const 291
+#define punc 292
+#define int_const 293
+#define float_const 294
+#define char_const 295
+#define id 296
+#define string 297
+#define short_dec 298
 
 
 

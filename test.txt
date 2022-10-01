@@ -1,4 +1,13 @@
-func plus(a int, b int) int {
+package main
 
-    return a + b
+import "fmt"
+
+func plus 
+{
+    if
+    {
+        return
+    }
 }
+
+
