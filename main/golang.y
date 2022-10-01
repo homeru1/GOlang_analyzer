@@ -13,6 +13,7 @@
 %nonassoc "then"
 %nonassoc ELSE
 %start program_unit
+%token
 %%
 program_unit				: HEADER program_unit                               
 							| DEFINE primary_exp program_unit                 	
