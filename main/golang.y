@@ -11,7 +11,6 @@
 %left '+' '-'
 %left '*' '/'
 %start GLOBAL
-
 %%
 GLOBAL:
 	string;
