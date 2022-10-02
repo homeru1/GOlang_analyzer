@@ -18,7 +18,7 @@ START:        START GLOBAL
 
 GLOBAL:       PACKAGE
             | IMPORT
-			| FUNCC
+			| FUNC
 			;
 
 PACKAGE:     t_package t_id
@@ -27,17 +27,21 @@ PACKAGE:     t_package t_id
 IMPORT:      t_import t_string
              ;
 
-FUNCC:        t_func t_id
-            | BODY
+FUNC:        t_func t_id BODY
 			;
 
-BODY:         t_open_br 
-            | VAR
-            | OPERATORS
-			| CALL 
-			| t_close_br
+BODY:         BODY_START BODY_END
+	        ;
+
+BODY_END:     '}'
+            ;
+
+BODY_START:   '{'
+            | BODY_START VAR
+			| BODY_START OPERATORS
+			| BODY_START CALL
 			;
-	
+
 VAR:         t_var t_id t_type t_eq_const VALUE
             ;
 
@@ -53,7 +57,7 @@ OPERATORS:    IF
 CALL:         t_return
             ;
 
-IF:          t_if BODY
+IF:           t_if BODY
             ;
 
 %%
