@@ -1,0 +1,47 @@
+OPERATORS: FOR
+        |  IF
+        |  ELSE
+        |  SWITCH
+        |  CASE
+        |  ARRAYS
+        ...
+START:        START
+            | START GLOBAL
+	        ;
+
+GLOBAL:       PACKAGE
+            | IMPORT
+			| FUNC
+			;
+
+IMPORT        import string
+             ;
+
+FUNC:         NAME
+            | ARGS
+			| BODY
+			;
+
+NAME:         id
+            ;
+
+FOR:       FOR id yytext[0] int_const BODY 
+        |  FOR id yytext[0] int_const ';' id yytext[0] int_const ';' id yytext[0] int_const BODY
+        |  FOR BODY
+
+IF:        IF
+        |  IF STATEMENT BODY
+        |  IF STATEMENT BODY ELSE
+        |  IF STATEMENT BODY ELSEIF 
+        
+ELSE:      ELSE BODY
+
+ELSEIF:    ELSEIF
+        |  ELSE IF STATEMENT BODY
+
+STATEMENT:  id yytext[0] int_const
+        |   EXPR yytext[0] int_const
+        |   id PUNC int_const
+
+EXPR:       int_const yytext[0] int_const
+        

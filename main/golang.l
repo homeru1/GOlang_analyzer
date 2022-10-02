@@ -33,6 +33,8 @@
 "break"																							 {printf("break "); return BREAK;}
 "struct"|"union"																				 {printf("struct_const"); return struct_const;}
 "return"																						 {printf("return"); return RETURN;}
+"{"																								 {printf("{"); return open_br;}
+"}"																								 {printf("}"); return close_br;}
 "||" 																							 {printf("||"); return or_const;}
 ":=" 																							 {printf(":="); return short_dec;}
 "&&"																							 {printf("&&"); return and_const;}
