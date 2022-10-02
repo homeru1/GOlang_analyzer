@@ -33,10 +33,10 @@ FUNC:        t_func t_id BODY
 BODY:         BODY_START BODY_END
 	        ;
 
-BODY_END:     '}'
+BODY_END:     t_close_br
             ;
 
-BODY_START:   '{'
+BODY_START:   t_open_br
             | BODY_START VAR
 			| BODY_START OPERATORS
 			| BODY_START CALL
