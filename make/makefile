@@ -1,4 +1,4 @@
-all: clear bison flex
+all: clear bison flex start
 
 bison:
 	win_bison.exe -d -y ..\main\golang.y
@@ -11,3 +11,5 @@ clear:
 	del y.tab.c
 	del y.tab.h
 	del lex.yy.c
+start:
+	../golang.exe ../test.txt
