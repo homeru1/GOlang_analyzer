@@ -109,95 +109,95 @@ extern int yydebug;
    /* Put the tokens into the symbol table, so that GDB and other debuggers
       know about them.  */
    enum yytokentype {
-     VTYPE = 258,
-     CONST = 259,
-     CASE = 260,
-     FUNC = 261,
-     IMPORT = 262,
-     CHAN = 263,
-     DEFER = 264,
-     GO = 265,
-     INTERFACE = 266,
-     DEFAULT = 267,
-     VAR = 268,
-     RANGE = 269,
-     MAP = 270,
-     PACKAGE = 271,
-     IF = 272,
-     SELECT = 273,
-     SWITCH = 274,
-     FALLTHROUGH = 275,
-     ELSE = 276,
-     TYPE = 277,
-     FOR = 278,
-     GOTO = 279,
-     CONTINUE = 280,
-     BREAK = 281,
-     RETURN = 282,
-     struct_const = 283,
-     or_const = 284,
-     and_const = 285,
-     param_const = 286,
-     eq_const = 287,
-     rel_const = 288,
-     shift_const = 289,
-     inc_const = 290,
-     point_const = 291,
-     punc = 292,
-     int_const = 293,
-     float_const = 294,
-     char_const = 295,
-     id = 296,
-     string = 297,
-     short_dec = 298,
-     open_br = 299,
-     close_br = 300
+     t_vtype = 258,
+     t_constant = 259,
+     t_case = 260,
+     t_func = 261,
+     t_import = 262,
+     t_chan = 263,
+     t_defer = 264,
+     t_go = 265,
+     t_interface = 266,
+     t_default = 267,
+     t_var = 268,
+     t_range = 269,
+     t_map = 270,
+     t_package = 271,
+     t_if = 272,
+     t_select = 273,
+     t_switch = 274,
+     t_fallthrough = 275,
+     t_else = 276,
+     t_type = 277,
+     t_for = 278,
+     t_goto = 279,
+     t_continue = 280,
+     t_break = 281,
+     t_return = 282,
+     t_struct_const = 283,
+     t_or_const = 284,
+     t_and_const = 285,
+     t_param_const = 286,
+     t_eq_const = 287,
+     t_rel_const = 288,
+     t_shift_const = 289,
+     t_inc_const = 290,
+     t_point_const = 291,
+     t_punc = 292,
+     t_int_const = 293,
+     t_float_const = 294,
+     t_char_const = 295,
+     t_id = 296,
+     t_string = 297,
+     t_short_dec = 298,
+     t_open_br = 299,
+     t_close_br = 300
    };
 #endif
 /* Tokens.  */
-#define VTYPE 258
-#define CONST 259
-#define CASE 260
-#define FUNC 261
-#define IMPORT 262
-#define CHAN 263
-#define DEFER 264
-#define GO 265
-#define INTERFACE 266
-#define DEFAULT 267
-#define VAR 268
-#define RANGE 269
-#define MAP 270
-#define PACKAGE 271
-#define IF 272
-#define SELECT 273
-#define SWITCH 274
-#define FALLTHROUGH 275
-#define ELSE 276
-#define TYPE 277
-#define FOR 278
-#define GOTO 279
-#define CONTINUE 280
-#define BREAK 281
-#define RETURN 282
-#define struct_const 283
-#define or_const 284
-#define and_const 285
-#define param_const 286
-#define eq_const 287
-#define rel_const 288
-#define shift_const 289
-#define inc_const 290
-#define point_const 291
-#define punc 292
-#define int_const 293
-#define float_const 294
-#define char_const 295
-#define id 296
-#define string 297
-#define short_dec 298
-#define open_br 299
-#define close_br 300
+#define t_vtype 258
+#define t_constant 259
+#define t_case 260
+#define t_func 261
+#define t_import 262
+#define t_chan 263
+#define t_defer 264
+#define t_go 265
+#define t_interface 266
+#define t_default 267
+#define t_var 268
+#define t_range 269
+#define t_map 270
+#define t_package 271
+#define t_if 272
+#define t_select 273
+#define t_switch 274
+#define t_fallthrough 275
+#define t_else 276
+#define t_type 277
+#define t_for 278
+#define t_goto 279
+#define t_continue 280
+#define t_break 281
+#define t_return 282
+#define t_struct_const 283
+#define t_or_const 284
+#define t_and_const 285
+#define t_param_const 286
+#define t_eq_const 287
+#define t_rel_const 288
+#define t_shift_const 289
+#define t_inc_const 290
+#define t_point_const 291
+#define t_punc 292
+#define t_int_const 293
+#define t_float_const 294
+#define t_char_const 295
+#define t_id 296
+#define t_string 297
+#define t_short_dec 298
+#define t_open_br 299
+#define t_close_br 300
 
 
 
@@ -528,8 +528,8 @@ static const yytype_int8 yyrhs[] =
 static const yytype_uint8 yyrline[] =
 {
        0,    15,    15,    16,    19,    20,    21,    24,    27,    30,
-      31,    34,    34,    35,    36,    37,    40,    43,    44,    45,
-      46,    49,    52,    55
+      31,    34,    35,    36,    37,    38,    41,    44,    45,    46,
+      47,    50,    53,    56
 };
 #endif
 
@@ -538,16 +538,17 @@ static const yytype_uint8 yyrline[] =
    First, the terminals, then, starting at YYNTOKENS, nonterminals.  */
 static const char *const yytname[] =
 {
-  "$end", "error", "$undefined", "VTYPE", "CONST", "CASE", "FUNC",
-  "IMPORT", "CHAN", "DEFER", "GO", "INTERFACE", "DEFAULT", "VAR", "RANGE",
-  "MAP", "PACKAGE", "IF", "SELECT", "SWITCH", "FALLTHROUGH", "ELSE",
-  "TYPE", "FOR", "GOTO", "CONTINUE", "BREAK", "RETURN", "struct_const",
-  "or_const", "and_const", "param_const", "eq_const", "rel_const",
-  "shift_const", "inc_const", "point_const", "punc", "int_const",
-  "float_const", "char_const", "id", "string", "short_dec", "open_br",
-  "close_br", "'+'", "'-'", "'*'", "'/'", "$accept", "START", "GLOBAL",
-  "PACKAGEE", "IMPORTT", "FUNCC", "BODY", "VARR", "VALUE", "OPERATORS",
-  "CALL", "IFF", YY_NULL
+  "$end", "error", "$undefined", "t_vtype", "t_constant", "t_case",
+  "t_func", "t_import", "t_chan", "t_defer", "t_go", "t_interface",
+  "t_default", "t_var", "t_range", "t_map", "t_package", "t_if",
+  "t_select", "t_switch", "t_fallthrough", "t_else", "t_type", "t_for",
+  "t_goto", "t_continue", "t_break", "t_return", "t_struct_const",
+  "t_or_const", "t_and_const", "t_param_const", "t_eq_const",
+  "t_rel_const", "t_shift_const", "t_inc_const", "t_point_const", "t_punc",
+  "t_int_const", "t_float_const", "t_char_const", "t_id", "t_string",
+  "t_short_dec", "t_open_br", "t_close_br", "'+'", "'-'", "'*'", "'/'",
+  "$accept", "START", "GLOBAL", "PACKAGE", "IMPORT", "FUNCC", "BODY",
+  "VAR", "VALUE", "OPERATORS", "CALL", "IF", YY_NULL
 };
 #endif
 
@@ -1453,7 +1454,7 @@ yyreduce:
     {
       
 /* Line 1792 of yacc.c  */
-#line 1457 "y.tab.c"
+#line 1458 "y.tab.c"
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -1685,7 +1686,7 @@ yyreturn:
 
 
 /* Line 2055 of yacc.c  */
-#line 58 "..\\main\\golang.y"
+#line 59 "..\\main\\golang.y"
 
 
 int main(int argc, char **argv)
