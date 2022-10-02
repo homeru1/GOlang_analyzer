@@ -42,18 +42,18 @@ BODY_START:   t_open_br
 			| BODY_START CALL
 			;
 
-VAR:         t_var ASSIGNMENT
-			|SHORT_ASSIGN
+VAR:         t_var t_id ASSIGNMENT VALUE
+			|t_id SHORT_ASSIGN VALUE
             ;
 
 ASSIGNMENT: 	t_vtype '='
 			| '='
-			| t_id ASSIGNMENT VALUE
-			| ',' ASSIGNMENT ','
+			| ',' t_id ASSIGNMENT VALUE ','
+
 
 SHORT_ASSIGN:  t_short_dec
-			| t_id SHORT_ASSIGN VALUE
-			| ',' SHORT_ASSIGN ','
+			| ',' t_id SHORT_ASSIGN VALUE ','
+			;
 
 
 VALUE:        t_int_const
