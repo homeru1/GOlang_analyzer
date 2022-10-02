@@ -370,8 +370,8 @@ static void yynoreturn yy_fatal_error ( const char* msg  );
 	(yy_hold_char) = *yy_cp; \
 	*yy_cp = '\0'; \
 	(yy_c_buf_p) = yy_cp;
-#define YY_NUM_RULES 50
-#define YY_END_OF_BUFFER 51
+#define YY_NUM_RULES 51
+#define YY_END_OF_BUFFER 52
 /* This struct is not used in this scanner,
    but its presence is necessary. */
 struct yy_trans_info
@@ -381,30 +381,30 @@ struct yy_trans_info
 	};
 static const flex_int16_t yy_accept[216] =
     {   0,
-        0,    0,   51,   50,   49,   39,   50,   39,   39,   50,
-       39,   39,   39,   39,   46,   39,   41,   39,   39,   39,
-       39,   44,   39,   39,   44,   44,   44,   44,   44,   44,
-       44,   44,   44,   44,   44,   44,   44,   44,   28,   39,
-       29,   34,    0,   45,    0,   40,   32,   40,    0,   37,
-        0,    0,    0,    0,   41,   31,   38,   36,   35,   36,
-       44,   44,   44,   44,   44,   44,   44,   44,   44,   44,
-       44,   44,   44,    8,   16,   44,   44,   44,   44,   44,
-       44,   44,   44,   44,   44,   44,   44,   44,   44,   30,
-        0,   45,    0,   43,   33,    0,    0,    0,    0,   47,
+        0,    0,   52,   51,   50,   40,   51,   39,   40,   51,
+       40,   39,   39,   39,   47,   39,   42,   40,   40,   40,
+       40,   45,   40,   40,   45,   45,   45,   45,   45,   45,
+       45,   45,   45,   45,   45,   45,   45,   45,   28,   40,
+       29,   34,    0,   46,    0,   41,   32,   41,    0,   37,
+        0,    0,    0,    0,   42,   31,   38,   36,   35,   36,
+       45,   45,   45,   45,   45,   45,   45,   45,   45,   45,
+       45,   45,   45,    8,   16,   45,   45,   45,   45,   45,
+       45,   45,   45,   45,   45,   45,   45,   45,   45,   30,
+        0,   46,    0,   44,   33,    0,    0,    0,    0,   48,
 
-        0,   42,   44,   44,   44,   44,   44,   44,   44,   44,
-       44,   44,   44,   22,   44,   44,   44,    1,   14,   44,
-       44,   44,   44,   44,   44,   44,   44,   44,   44,   12,
-       48,    0,    0,    1,   44,    2,    5,    6,   44,   44,
-       44,   44,   44,   20,   44,   44,    3,   23,   44,   44,
-       44,   44,   44,   44,   44,   44,   44,   44,   44,   21,
-        2,   44,   25,   44,    4,   44,   44,    7,   44,   44,
-       44,   44,   44,   13,   44,   44,   44,   44,   44,   44,
-       44,   44,   44,   26,   44,   44,   44,   44,   44,   44,
-       11,   44,   44,   27,   17,   18,   44,   44,   44,   10,
+        0,   43,   45,   45,   45,   45,   45,   45,   45,   45,
+       45,   45,   45,   22,   45,   45,   45,    1,   14,   45,
+       45,   45,   45,   45,   45,   45,   45,   45,   45,   12,
+       49,    0,    0,    1,   45,    2,    5,    6,   45,   45,
+       45,   45,   45,   20,   45,   45,    3,   23,   45,   45,
+       45,   45,   45,   45,   45,   45,   45,   45,   45,   21,
+        2,   45,   25,   45,    4,   45,   45,    7,   45,   45,
+       45,   45,   45,   13,   45,   45,   45,   45,   45,   45,
+       45,   45,   45,   26,   45,   45,   45,   45,   45,   45,
+       11,   45,   45,   27,   17,   18,   45,   45,   45,   10,
 
-       44,   44,   15,    2,   44,   44,   24,   44,   44,   44,
-       44,    9,   44,   19,    0
+       45,   45,   15,    2,   45,   45,   24,   45,   45,   45,
+       45,    9,   45,   19,    0
     } ;
 
 static const YY_CHAR yy_ec[256] =
@@ -601,11 +601,11 @@ static const flex_int16_t yy_chk[388] =
     } ;
 
 /* Table of booleans, true if rule could match eol. */
-static const flex_int32_t yy_rule_can_match_eol[51] =
+static const flex_int32_t yy_rule_can_match_eol[52] =
     {   0,
 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
-    0, 0, 0, 0, 0, 1, 0, 1, 1, 1, 0,     };
+    0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 1, 0,     };
 
 static yy_state_type yy_last_accepting_state;
 static char *yy_last_accepting_cpos;
@@ -1047,7 +1047,7 @@ YY_RULE_SETUP
 case 27:
 YY_RULE_SETUP
 #line 36 "..\\main\\golang.l"
-{printf("return"); return t_return;}
+{printf("return "); return t_return;}
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
@@ -1107,49 +1107,48 @@ YY_RULE_SETUP
 case 39:
 YY_RULE_SETUP
 #line 48 "..\\main\\golang.l"
-{printf("%c",yytext[0]);return yytext[0];}
+{printf("sign"); return t_sign;}
 	YY_BREAK
 case 40:
 YY_RULE_SETUP
 #line 49 "..\\main\\golang.l"
-{printf("punc"); return t_punc;}
+{printf("%c",yytext[0]);return yytext[0];}
 	YY_BREAK
 case 41:
 YY_RULE_SETUP
 #line 50 "..\\main\\golang.l"
-{printf("int"); return t_int_const;}
+{printf("punc"); return t_punc;}
 	YY_BREAK
 case 42:
 YY_RULE_SETUP
 #line 51 "..\\main\\golang.l"
-{printf("float"); return t_float_const;}	
+{printf("int"); return t_int_const;}
 	YY_BREAK
 case 43:
 YY_RULE_SETUP
 #line 52 "..\\main\\golang.l"
-{printf("\' ");return t_char_const;}
+{printf("float"); return t_float_const;}	
 	YY_BREAK
 case 44:
 YY_RULE_SETUP
 #line 53 "..\\main\\golang.l"
-{printf("id ");return t_id;}
+{printf("\' ");return t_char_const;}
 	YY_BREAK
 case 45:
-/* rule 45 can match eol */
 YY_RULE_SETUP
 #line 54 "..\\main\\golang.l"
-{printf("String ");return t_string;}
+{printf("id ");return t_id;}
 	YY_BREAK
 case 46:
+/* rule 46 can match eol */
 YY_RULE_SETUP
 #line 55 "..\\main\\golang.l"
-{printf("DOT ");}
+{printf("String ");return t_string;}
 	YY_BREAK
 case 47:
-/* rule 47 can match eol */
 YY_RULE_SETUP
 #line 56 "..\\main\\golang.l"
-;
+{printf("DOT ");}
 	YY_BREAK
 case 48:
 /* rule 48 can match eol */
@@ -1164,11 +1163,17 @@ YY_RULE_SETUP
 ;
 	YY_BREAK
 case 50:
+/* rule 50 can match eol */
 YY_RULE_SETUP
 #line 59 "..\\main\\golang.l"
+;
+	YY_BREAK
+case 51:
+YY_RULE_SETUP
+#line 60 "..\\main\\golang.l"
 ECHO;
 	YY_BREAK
-#line 1171 "lex.yy.c"
+#line 1176 "lex.yy.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -2185,7 +2190,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 59 "..\\main\\golang.l"
+#line 60 "..\\main\\golang.l"
 
 
 int yywrap(void)

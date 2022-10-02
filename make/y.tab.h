@@ -88,7 +88,8 @@ extern int yydebug;
      t_string = 297,
      t_short_dec = 298,
      t_open_br = 299,
-     t_close_br = 300
+     t_close_br = 300,
+     t_sign = 301
    };
 #endif
 /* Tokens.  */
@@ -135,6 +136,7 @@ extern int yydebug;
 #define t_short_dec 298
 #define t_open_br 299
 #define t_close_br 300
+#define t_sign 301
 
 
 

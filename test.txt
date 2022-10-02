@@ -6,6 +6,11 @@ func plus
 {
     if
     {
-        return
+        return 
+    }
+
+    for
+    {
+        a + b
     }
 }

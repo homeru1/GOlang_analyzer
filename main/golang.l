@@ -33,7 +33,7 @@
 "continue"																						 {printf("continue "); return t_continue;}
 "break"																							 {printf("break "); return t_break;}
 "struct"|"union"																				 {printf("struct_const"); return t_struct_const;}
-"return"																						 {printf("return"); return t_return;}
+"return"																						 {printf("return "); return t_return;}
 "{"																								 {printf("{"); return t_open_br;}
 "}"																								 {printf("}"); return t_close_br;}
 "||" 																							 {printf("||"); return t_or_const;}
@@ -45,6 +45,7 @@
 ">>"|"<<"																						 {printf("shift_const"); return t_shift_const;}
 "++"|"--"																						 {printf("inc_const"); return t_inc_const;}
 "<-"																							 {printf("<-"); return t_point_const;}
+"*"|"+"|"-"|"/"|"%"																				 {printf("sign"); return t_sign;}
 ";"|"="|","|"("|")"|"["|"]"|"*"|"+"|"-"|"/"|"?"|":"|"&"|"|"|"^"|"!"|"~"|"%"|"<"|">"		 		 {printf("%c",yytext[0]);return yytext[0];}
 "*="|"/="|"+="|"%="|">>="|"-="|"<<="|"&="|"^="|"|="|"&^"|"&^="									 {printf("punc"); return t_punc;}
 [0-9]+																							 {printf("int"); return t_int_const;}
