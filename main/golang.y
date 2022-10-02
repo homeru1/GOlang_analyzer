@@ -42,8 +42,19 @@ BODY_START:   t_open_br
 			| BODY_START CALL
 			;
 
-VAR:         t_var t_id t_type t_eq_const VALUE
+VAR:         t_var ASSIGNMENT
+			|SHORT_ASSIGN
             ;
+
+ASSIGNMENT: 	t_vtype '='
+			| '='
+			| t_id ASSIGNMENT VALUE
+			| ',' ASSIGNMENT ','
+
+SHORT_ASSIGN:  t_short_dec
+			| t_id SHORT_ASSIGN VALUE
+			| ',' SHORT_ASSIGN ','
+
 
 VALUE:        t_int_const
             | t_float_const
