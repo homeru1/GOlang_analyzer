@@ -4,13 +4,5 @@ import "fmt"
 
 func plus 
 {
-    if
-    {
-        return 
-    }
-
-    for
-    {
-        a + b
-    }
+  (2+2) +2 +2
 }

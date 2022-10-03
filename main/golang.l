@@ -46,7 +46,7 @@
 "++"|"--"																						 {printf("inc_const"); return t_inc_const;}
 "<-"																							 {printf("<-"); return t_point_const;}
 "*"|"+"|"-"|"/"|"%"																				 {printf("sign"); return t_sign;}
-";"|"="|","|"("|")"|"["|"]"|"*"|"+"|"-"|"/"|"?"|":"|"&"|"|"|"^"|"!"|"~"|"%"|"<"|">"		 		 {printf("%c",yytext[0]);return yytext[0];}
+";"|"="|","|"("|")"|"["|"]"|"*"|"-"|"/"|"?"|":"|"&"|"^"|"!"|"~"|"%"|"<"|">"		 		 {printf("%c",yytext[0]);return yytext[0];}
 "*="|"/="|"+="|"%="|">>="|"-="|"<<="|"&="|"^="|"|="|"&^"|"&^="									 {printf("punc"); return t_punc;}
 [0-9]+																							 {printf("int"); return t_int_const;}
 [0-9]+"."[0-9]+																					 {printf("float"); return t_float_const;}	

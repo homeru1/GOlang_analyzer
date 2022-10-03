@@ -49,6 +49,7 @@ VALUE:        t_int_const
             | t_float_const
 			| t_id
 			| t_string
+			| EXPR_BR
 			;
 
 OPERATORS:    IF
@@ -63,14 +64,23 @@ FOR:          t_for BODY
             ;
 
 RET_PARAM:    t_return
-            | t_return t_id
-			| t_return EXPR
-
-EXPR:         t_id t_sign t_id
-            | t_int_const t_sign t_int_const
-            | t_id t_sign EXPR
+            | t_return EXPR
+			| t_return VALUE 
 			;
 
+EXPR:         VALUE t_sign VALUE
+            | EXPR t_sign VALUE
+			;
+
+EXPR_BR:      EXPR_START EXPR EXPR_END
+			| EXPR_START VALUE EXPR_END
+            ;
+
+EXPR_START:   '('
+
+			;
+EXPR_END:     ')'
+            ;
 %%
 
 int main(int argc, char **argv)

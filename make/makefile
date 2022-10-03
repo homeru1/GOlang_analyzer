@@ -1,7 +1,7 @@
 all:  bison flex start
 
 bison:
-	win_bison.exe -d -y ..\main\golang.y
+	win_bison.exe -d -y -v ..\main\golang.y
 
 flex:
 	win_flex.exe ..\main\golang.l

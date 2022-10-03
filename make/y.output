@@ -1,0 +1,688 @@
+Terminals unused in grammar
+
+   t_vtype
+   t_constant
+   t_case
+   t_chan
+   t_defer
+   t_go
+   t_interface
+   t_default
+   t_range
+   t_map
+   t_select
+   t_switch
+   t_fallthrough
+   t_else
+   t_goto
+   t_continue
+   t_break
+   t_struct_const
+   t_or_const
+   t_and_const
+   t_param_const
+   t_rel_const
+   t_shift_const
+   t_inc_const
+   t_point_const
+   t_punc
+   t_char_const
+   t_short_dec
+   '+'
+   '-'
+   '*'
+   '/'
+
+
+State 20 conflicts: 5 shift/reduce
+
+
+Grammar
+
+    0 $accept: START $end
+
+    1 START: START GLOBAL
+    2      | GLOBAL
+
+    3 GLOBAL: PACKAGE
+    4       | IMPORT
+    5       | FUNC
+
+    6 PACKAGE: t_package t_id
+
+    7 IMPORT: t_import t_string
+
+    8 FUNC: t_func t_id BODY
+
+    9 BODY: BODY_START BODY_END
+
+   10 BODY_END: t_close_br
+
+   11 BODY_START: t_open_br
+   12           | BODY_START VAR
+   13           | BODY_START OPERATORS
+   14           | BODY_START EXPR
+
+   15 VAR: t_var t_id t_type t_eq_const VALUE
+
+   16 VALUE: t_int_const
+   17      | t_float_const
+   18      | t_id
+   19      | t_string
+   20      | EXPR_BR
+
+   21 OPERATORS: IF
+   22          | RET_PARAM
+   23          | FOR
+
+   24 IF: t_if BODY
+
+   25 FOR: t_for BODY
+
+   26 RET_PARAM: t_return
+   27          | t_return EXPR
+   28          | t_return VALUE
+
+   29 EXPR: VALUE t_sign VALUE
+   30     | EXPR t_sign VALUE
+
+   31 EXPR_BR: EXPR_START EXPR EXPR_END
+   32        | EXPR_START VALUE EXPR_END
+
+   33 EXPR_START: '('
+
+   34 EXPR_END: ')'
+
+
+Terminals, with rules where they appear
+
+$end (0) 0
+'(' (40) 33
+')' (41) 34
+'*' (42)
+'+' (43)
+'-' (45)
+'/' (47)
+error (256)
+t_vtype (258)
+t_constant (259)
+t_case (260)
+t_func (261) 8
+t_import (262) 7
+t_chan (263)
+t_defer (264)
+t_go (265)
+t_interface (266)
+t_default (267)
+t_var (268) 15
+t_range (269)
+t_map (270)
+t_package (271) 6
+t_if (272) 24
+t_select (273)
+t_switch (274)
+t_fallthrough (275)
+t_else (276)
+t_type (277) 15
+t_for (278) 25
+t_goto (279)
+t_continue (280)
+t_break (281)
+t_return (282) 26 27 28
+t_struct_const (283)
+t_or_const (284)
+t_and_const (285)
+t_param_const (286)
+t_eq_const (287) 15
+t_rel_const (288)
+t_shift_const (289)
+t_inc_const (290)
+t_point_const (291)
+t_punc (292)
+t_int_const (293) 16
+t_float_const (294) 17
+t_char_const (295)
+t_id (296) 6 8 15 18
+t_string (297) 7 19
+t_short_dec (298)
+t_open_br (299) 11
+t_close_br (300) 10
+t_sign (301) 29 30
+
+
+Nonterminals, with rules where they appear
+
+$accept (53)
+    on left: 0
+START (54)
+    on left: 1 2, on right: 0 1
+GLOBAL (55)
+    on left: 3 4 5, on right: 1 2
+PACKAGE (56)
+    on left: 6, on right: 3
+IMPORT (57)
+    on left: 7, on right: 4
+FUNC (58)
+    on left: 8, on right: 5
+BODY (59)
+    on left: 9, on right: 8 24 25
+BODY_END (60)
+    on left: 10, on right: 9
+BODY_START (61)
+    on left: 11 12 13 14, on right: 9 12 13 14
+VAR (62)
+    on left: 15, on right: 12
+VALUE (63)
+    on left: 16 17 18 19 20, on right: 15 28 29 30 32
+OPERATORS (64)
+    on left: 21 22 23, on right: 13
+IF (65)
+    on left: 24, on right: 21
+FOR (66)
+    on left: 25, on right: 23
+RET_PARAM (67)
+    on left: 26 27 28, on right: 22
+EXPR (68)
+    on left: 29 30, on right: 14 27 30 31
+EXPR_BR (69)
+    on left: 31 32, on right: 20
+EXPR_START (70)
+    on left: 33, on right: 31 32
+EXPR_END (71)
+    on left: 34, on right: 31 32
+
+
+State 0
+
+    0 $accept: . START $end
+
+    t_func     shift, and go to state 1
+    t_import   shift, and go to state 2
+    t_package  shift, and go to state 3
+
+    START    go to state 4
+    GLOBAL   go to state 5
+    PACKAGE  go to state 6
+    IMPORT   go to state 7
+    FUNC     go to state 8
+
+
+State 1
+
+    8 FUNC: t_func . t_id BODY
+
+    t_id  shift, and go to state 9
+
+
+State 2
+
+    7 IMPORT: t_import . t_string
+
+    t_string  shift, and go to state 10
+
+
+State 3
+
+    6 PACKAGE: t_package . t_id
+
+    t_id  shift, and go to state 11
+
+
+State 4
+
+    0 $accept: START . $end
+    1 START: START . GLOBAL
+
+    $end       shift, and go to state 12
+    t_func     shift, and go to state 1
+    t_import   shift, and go to state 2
+    t_package  shift, and go to state 3
+
+    GLOBAL   go to state 13
+    PACKAGE  go to state 6
+    IMPORT   go to state 7
+    FUNC     go to state 8
+
+
+State 5
+
+    2 START: GLOBAL .
+
+    $default  reduce using rule 2 (START)
+
+
+State 6
+
+    3 GLOBAL: PACKAGE .
+
+    $default  reduce using rule 3 (GLOBAL)
+
+
+State 7
+
+    4 GLOBAL: IMPORT .
+
+    $default  reduce using rule 4 (GLOBAL)
+
+
+State 8
+
+    5 GLOBAL: FUNC .
+
+    $default  reduce using rule 5 (GLOBAL)
+
+
+State 9
+
+    8 FUNC: t_func t_id . BODY
+
+    t_open_br  shift, and go to state 14
+
+    BODY        go to state 15
+    BODY_START  go to state 16
+
+
+State 10
+
+    7 IMPORT: t_import t_string .
+
+    $default  reduce using rule 7 (IMPORT)
+
+
+State 11
+
+    6 PACKAGE: t_package t_id .
+
+    $default  reduce using rule 6 (PACKAGE)
+
+
+State 12
+
+    0 $accept: START $end .
+
+    $default  accept
+
+
+State 13
+
+    1 START: START GLOBAL .
+
+    $default  reduce using rule 1 (START)
+
+
+State 14
+
+   11 BODY_START: t_open_br .
+
+    $default  reduce using rule 11 (BODY_START)
+
+
+State 15
+
+    8 FUNC: t_func t_id BODY .
+
+    $default  reduce using rule 8 (FUNC)
+
+
+State 16
+
+    9 BODY: BODY_START . BODY_END
+   12 BODY_START: BODY_START . VAR
+   13           | BODY_START . OPERATORS
+   14           | BODY_START . EXPR
+
+    t_var          shift, and go to state 17
+    t_if           shift, and go to state 18
+    t_for          shift, and go to state 19
+    t_return       shift, and go to state 20
+    t_int_const    shift, and go to state 21
+    t_float_const  shift, and go to state 22
+    t_id           shift, and go to state 23
+    t_string       shift, and go to state 24
+    t_close_br     shift, and go to state 25
+    '('            shift, and go to state 26
+
+    BODY_END    go to state 27
+    VAR         go to state 28
+    VALUE       go to state 29
+    OPERATORS   go to state 30
+    IF          go to state 31
+    FOR         go to state 32
+    RET_PARAM   go to state 33
+    EXPR        go to state 34
+    EXPR_BR     go to state 35
+    EXPR_START  go to state 36
+
+
+State 17
+
+   15 VAR: t_var . t_id t_type t_eq_const VALUE
+
+    t_id  shift, and go to state 37
+
+
+State 18
+
+   24 IF: t_if . BODY
+
+    t_open_br  shift, and go to state 14
+
+    BODY        go to state 38
+    BODY_START  go to state 16
+
+
+State 19
+
+   25 FOR: t_for . BODY
+
+    t_open_br  shift, and go to state 14
+
+    BODY        go to state 39
+    BODY_START  go to state 16
+
+
+State 20
+
+   26 RET_PARAM: t_return .
+   27          | t_return . EXPR
+   28          | t_return . VALUE
+
+    t_int_const    shift, and go to state 21
+    t_float_const  shift, and go to state 22
+    t_id           shift, and go to state 23
+    t_string       shift, and go to state 24
+    '('            shift, and go to state 26
+
+    t_int_const    [reduce using rule 26 (RET_PARAM)]
+    t_float_const  [reduce using rule 26 (RET_PARAM)]
+    t_id           [reduce using rule 26 (RET_PARAM)]
+    t_string       [reduce using rule 26 (RET_PARAM)]
+    '('            [reduce using rule 26 (RET_PARAM)]
+    $default       reduce using rule 26 (RET_PARAM)
+
+    VALUE       go to state 40
+    EXPR        go to state 41
+    EXPR_BR     go to state 35
+    EXPR_START  go to state 36
+
+
+State 21
+
+   16 VALUE: t_int_const .
+
+    $default  reduce using rule 16 (VALUE)
+
+
+State 22
+
+   17 VALUE: t_float_const .
+
+    $default  reduce using rule 17 (VALUE)
+
+
+State 23
+
+   18 VALUE: t_id .
+
+    $default  reduce using rule 18 (VALUE)
+
+
+State 24
+
+   19 VALUE: t_string .
+
+    $default  reduce using rule 19 (VALUE)
+
+
+State 25
+
+   10 BODY_END: t_close_br .
+
+    $default  reduce using rule 10 (BODY_END)
+
+
+State 26
+
+   33 EXPR_START: '(' .
+
+    $default  reduce using rule 33 (EXPR_START)
+
+
+State 27
+
+    9 BODY: BODY_START BODY_END .
+
+    $default  reduce using rule 9 (BODY)
+
+
+State 28
+
+   12 BODY_START: BODY_START VAR .
+
+    $default  reduce using rule 12 (BODY_START)
+
+
+State 29
+
+   29 EXPR: VALUE . t_sign VALUE
+
+    t_sign  shift, and go to state 42
+
+
+State 30
+
+   13 BODY_START: BODY_START OPERATORS .
+
+    $default  reduce using rule 13 (BODY_START)
+
+
+State 31
+
+   21 OPERATORS: IF .
+
+    $default  reduce using rule 21 (OPERATORS)
+
+
+State 32
+
+   23 OPERATORS: FOR .
+
+    $default  reduce using rule 23 (OPERATORS)
+
+
+State 33
+
+   22 OPERATORS: RET_PARAM .
+
+    $default  reduce using rule 22 (OPERATORS)
+
+
+State 34
+
+   14 BODY_START: BODY_START EXPR .
+   30 EXPR: EXPR . t_sign VALUE
+
+    t_sign  shift, and go to state 43
+
+    $default  reduce using rule 14 (BODY_START)
+
+
+State 35
+
+   20 VALUE: EXPR_BR .
+
+    $default  reduce using rule 20 (VALUE)
+
+
+State 36
+
+   31 EXPR_BR: EXPR_START . EXPR EXPR_END
+   32        | EXPR_START . VALUE EXPR_END
+
+    t_int_const    shift, and go to state 21
+    t_float_const  shift, and go to state 22
+    t_id           shift, and go to state 23
+    t_string       shift, and go to state 24
+    '('            shift, and go to state 26
+
+    VALUE       go to state 44
+    EXPR        go to state 45
+    EXPR_BR     go to state 35
+    EXPR_START  go to state 36
+
+
+State 37
+
+   15 VAR: t_var t_id . t_type t_eq_const VALUE
+
+    t_type  shift, and go to state 46
+
+
+State 38
+
+   24 IF: t_if BODY .
+
+    $default  reduce using rule 24 (IF)
+
+
+State 39
+
+   25 FOR: t_for BODY .
+
+    $default  reduce using rule 25 (FOR)
+
+
+State 40
+
+   28 RET_PARAM: t_return VALUE .
+   29 EXPR: VALUE . t_sign VALUE
+
+    t_sign  shift, and go to state 42
+
+    $default  reduce using rule 28 (RET_PARAM)
+
+
+State 41
+
+   27 RET_PARAM: t_return EXPR .
+   30 EXPR: EXPR . t_sign VALUE
+
+    t_sign  shift, and go to state 43
+
+    $default  reduce using rule 27 (RET_PARAM)
+
+
+State 42
+
+   29 EXPR: VALUE t_sign . VALUE
+
+    t_int_const    shift, and go to state 21
+    t_float_const  shift, and go to state 22
+    t_id           shift, and go to state 23
+    t_string       shift, and go to state 24
+    '('            shift, and go to state 26
+
+    VALUE       go to state 47
+    EXPR_BR     go to state 35
+    EXPR_START  go to state 36
+
+
+State 43
+
+   30 EXPR: EXPR t_sign . VALUE
+
+    t_int_const    shift, and go to state 21
+    t_float_const  shift, and go to state 22
+    t_id           shift, and go to state 23
+    t_string       shift, and go to state 24
+    '('            shift, and go to state 26
+
+    VALUE       go to state 48
+    EXPR_BR     go to state 35
+    EXPR_START  go to state 36
+
+
+State 44
+
+   29 EXPR: VALUE . t_sign VALUE
+   32 EXPR_BR: EXPR_START VALUE . EXPR_END
+
+    t_sign  shift, and go to state 42
+    ')'     shift, and go to state 49
+
+    EXPR_END  go to state 50
+
+
+State 45
+
+   30 EXPR: EXPR . t_sign VALUE
+   31 EXPR_BR: EXPR_START EXPR . EXPR_END
+
+    t_sign  shift, and go to state 43
+    ')'     shift, and go to state 49
+
+    EXPR_END  go to state 51
+
+
+State 46
+
+   15 VAR: t_var t_id t_type . t_eq_const VALUE
+
+    t_eq_const  shift, and go to state 52
+
+
+State 47
+
+   29 EXPR: VALUE t_sign VALUE .
+
+    $default  reduce using rule 29 (EXPR)
+
+
+State 48
+
+   30 EXPR: EXPR t_sign VALUE .
+
+    $default  reduce using rule 30 (EXPR)
+
+
+State 49
+
+   34 EXPR_END: ')' .
+
+    $default  reduce using rule 34 (EXPR_END)
+
+
+State 50
+
+   32 EXPR_BR: EXPR_START VALUE EXPR_END .
+
+    $default  reduce using rule 32 (EXPR_BR)
+
+
+State 51
+
+   31 EXPR_BR: EXPR_START EXPR EXPR_END .
+
+    $default  reduce using rule 31 (EXPR_BR)
+
+
+State 52
+
+   15 VAR: t_var t_id t_type t_eq_const . VALUE
+
+    t_int_const    shift, and go to state 21
+    t_float_const  shift, and go to state 22
+    t_id           shift, and go to state 23
+    t_string       shift, and go to state 24
+    '('            shift, and go to state 26
+
+    VALUE       go to state 53
+    EXPR_BR     go to state 35
+    EXPR_START  go to state 36
+
+
+State 53
+
+   15 VAR: t_var t_id t_type t_eq_const VALUE .
+
+    $default  reduce using rule 15 (VAR)
