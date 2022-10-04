@@ -6,9 +6,9 @@
 	int success = 1;
 	extern FILE *yyin;
 %}
-%token VTYPE CONST CASE FUNC IMPORT CHAN DEFER GO INTERFACE DEFAULT VAR RANGE MAP PACKAGE IF SELECT SWITCH FALLTHROUGH ELSE
-%token TYPE FOR GOTO CONTINUE BREAK RETURN struct_const or_const and_const param_const eq_const rel_const shift_const inc_const
-%token point_const punc int_const float_const char_const id string short_dec open_br close_br
+%token t_vtype t_constant t_case t_func t_import t_chan t_defer t_go t_interface t_default t_var t_range t_map t_package t_if t_select t_switch t_fallthrough t_else
+%token t_type t_for t_goto t_continue t_break t_return t_struct_const t_or_const t_and_const t_param_const t_eq_const t_rel_const t_shift_const t_inc_const
+%token t_point_const t_punc t_int_const t_float_const t_char_const t_id t_string t_short_dec t_open_br t_close_br
 %left '+' '-'
 %left '*' '/'
 %%
@@ -16,44 +16,59 @@ START:        START GLOBAL
             | GLOBAL
 	        ;
 
-GLOBAL:       PACKAGEE
-            | IMPORTT
-			| FUNCC
+GLOBAL:       PACKAGE
+            | IMPORT
+			| FUNC
 			;
 
-PACKAGEE:     PACKAGE id
+PACKAGE:     t_package t_id
              ;
 			 
-IMPORTT:      IMPORT string
+IMPORT:      t_import t_string
              ;
 
-FUNCC:        FUNC id
-            | BODY
+FUNC:        t_func t_id BODY
 			;
 
-BODY:         open_br 
-            | VARR
-            | OPERATORS
-			| CALL 
-			| close_br
-			;
-	
-VARR:         VAR id TYPE eq_const VALUE
+BODY:         BODY_START BODY_END
+	        ;
+
+BODY_END:     t_close_br
             ;
 
-VALUE:        int_const
-            | float_const
-			| id
-			| string
+BODY_START:   t_open_br
+            | BODY_START VAR
+			| BODY_START OPERATORS
+			| BODY_START CALL
 			;
 
-OPERATORS:    IFF
+VAR:         t_var t_id ASSIGNMENT VALUE
+			|t_id SHORT_ASSIGN VALUE
             ;
 
-CALL:         RETURN
+ASSIGNMENT: 	t_vtype '='
+			| '='
+			| ',' t_id ASSIGNMENT VALUE ','
+
+
+SHORT_ASSIGN:  t_short_dec
+			| ',' t_id SHORT_ASSIGN VALUE ','
+			;
+
+
+VALUE:        t_int_const
+            | t_float_const
+			| t_id
+			| t_string
+			;
+
+OPERATORS:    IF
             ;
 
-IFF:          IF BODY
+CALL:         t_return
+            ;
+
+IF:           t_if BODY
             ;
 
 %%
