@@ -1,4 +1,4 @@
-all: clear bison flex start
+all: bison flex start
 
 bison:
 	win_bison.exe -d -y ..\main\golang.y
