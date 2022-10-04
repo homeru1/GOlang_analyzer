@@ -4,8 +4,6 @@ import "fmt"
 
 func plus 
 {
-    if
-    {
-        return
-    }
-}
+a b := 2 3
+
+} 
