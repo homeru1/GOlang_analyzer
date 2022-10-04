@@ -32,23 +32,27 @@
 "goto"																							 {printf("goto "); return t_goto;}
 "continue"																						 {printf("continue "); return t_continue;}
 "break"																							 {printf("break "); return t_break;}
-"struct"|"union"																				 {printf("struct_const"); return t_struct_const;}
-"return"																						 {printf("return"); return t_return;}
-"{"																								 {printf("{"); return t_open_br;}
-"}"																								 {printf("}"); return t_close_br;}
-"||" 																							 {printf("||"); return t_or_const;}
-":=" 																							 {printf(":="); return t_short_dec;}
-"&&"																							 {printf("&&"); return t_and_const;}
-"..."																							 {printf("..."); return t_param_const;}
-"=="|"!="																						 {printf("eq_const"); return t_eq_const;}
-"<="|">="																						 {printf("rel_const"); return t_rel_const;}
-">>"|"<<"																						 {printf("shift_const"); return t_shift_const;}
-"++"|"--"																						 {printf("inc_const"); return t_inc_const;}
-"<-"																							 {printf("<-"); return t_point_const;}
-";"|"="|","|"("|")"|"["|"]"|"*"|"+"|"-"|"/"|"?"|":"|"&"|"|"|"^"|"!"|"~"|"%"|"<"|">"		 		 {printf("%c",yytext[0]);return yytext[0];}
-"*="|"/="|"+="|"%="|">>="|"-="|"<<="|"&="|"^="|"|="|"&^"|"&^="									 {printf("punc"); return t_punc;}
-[0-9]+																							 {printf("int"); return t_int_const;}
-[0-9]+"."[0-9]+																					 {printf("float"); return t_float_const;}	
+"struct"|"union"																				 {printf("struct_const "); return t_struct_const;}
+"return"																						 {printf("return "); return t_return;}
+"{"																								 {printf("{ "); return t_open_br;}
+"}"																								 {printf("} "); return t_close_br;}
+"||" 																							 {printf("|| "); return t_or_const;}
+":=" 																							 {printf(":= "); return t_short_dec;}
+"&&"																							 {printf("&& "); return t_and_const;}
+"..."																							 {printf("... "); return t_param_const;}
+"=="|"!="																						 {printf("eq_const "); return t_eq_const;}
+"<="|">="																						 {printf("rel_const "); return t_rel_const;}
+">>"|"<<"																						 {printf("shift_const "); return t_shift_const;}
+"++"|"--"																						 {printf("inc_const "); return t_inc_const;}
+"<-"																							 {printf("<- "); return t_point_const;}
+","																						 		 {printf(", "); return t_comma;}
+"("																						 		 {printf("( "); return t_open_paren;}
+")"																						 		 {printf(") "); return t_close_paren;}
+"="																						 		 {printf("= "); return t_equality;}
+";"|"="|"["|"]"|"*"|"+"|"-"|"/"|"?"|":"|"&"|"|"|"^"|"!"|"~"|"%"|"<"|">"		 		 	         {printf("sign ");return t_sign;}
+"*="|"/="|"+="|"%="|">>="|"-="|"<<="|"&="|"^="|"|="|"&^"|"&^="									 {printf("punc "); return t_punc;}
+[0-9]+																							 {printf("int "); return t_int_const;}
+[0-9]+"."[0-9]+																					 {printf("float "); return t_float_const;}	
 "'"."'"																							 {printf("\' ");return t_char_const;}
 [a-zA-z_][a-zA-z_0-9]*			 																 {printf("id ");return t_id;}
 \"(\\.|[^\"])*\"																				 {printf("String ");return t_string;}
