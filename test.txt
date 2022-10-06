@@ -4,5 +4,5 @@ import "fmt"
 
 func plus 
 {
-a := (2 + 3)
+return 1,8
 } 

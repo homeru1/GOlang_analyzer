@@ -34,12 +34,12 @@ BODY:         BODY_START BODY_END
 	        ;
 
 BODY_END:     t_close_br
+			|RETURN BODY_END
             ;
 
 BODY_START:   t_open_br
             | BODY_START VAR
 			| BODY_START OPERATORS
-			| BODY_START CALL
 			;
 
 VAR:         t_var t_id ASSIGNMENT VALUE
@@ -64,20 +64,21 @@ VALUE:        t_int_const
 			;
 
 OPERATORS:    IF
-            | RET_PARAM
 			| FOR
 			;
 FOR:          t_for BODY
             ;
 
-CALL:         t_return
-            ;
-
 IF:           t_if BODY
             ;
-RET_PARAM:    t_return
-            | t_return EXPR
-			| t_return VALUE 
+
+RETURN:		t_return RET_PARAM
+			| t_return
+			;
+RET_PARAM:  RET_PARAM t_comma EXPR
+			|RET_PARAM t_comma VALUE
+			|EXPR
+			|VALUE
 			;
 EXPR:         VALUE t_sign VALUE
             | EXPR t_sign VALUE
