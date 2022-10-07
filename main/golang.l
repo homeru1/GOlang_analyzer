@@ -39,9 +39,7 @@
 "||" 																							 {printf("|| "); return t_or_const;}
 ":=" 																							 {printf(":= "); return t_short_dec;}
 "&&"																							 {printf("&& "); return t_and_const;}
-"..."																							 {printf("... "); return t_param_const;}
-"=="|"!="																						 {printf("eq_const "); return t_eq_const;}
-"<="|">="																						 {printf("rel_const "); return t_rel_const;}
+"..."																							 {printf("... "); return t_param_const;}																						 {printf("eq_const "); return t_eq_const;}																					 {printf("rel_const "); return t_rel_const;}
 ">>"|"<<"																						 {printf("shift_const "); return t_shift_const;}
 "++"|"--"																						 {printf("inc_const "); return t_inc_const;}
 "<-"																							 {printf("<- "); return t_point_const;}
@@ -49,7 +47,8 @@
 "("																						 		 {printf("( "); return t_open_paren;}
 ")"																						 		 {printf(") "); return t_close_paren;}
 "="																						 		 {printf("= "); return t_equality;}
-";"|"="|"["|"]"|"*"|"+"|"-"|"/"|"?"|":"|"&"|"|"|"^"|"!"|"~"|"%"|"<"|">"		 		 	         {printf("sign ");return t_sign;}
+"=="|">"|"<"|"<="|">="|"!="																		 {printf("bool ");return t_bool}
+";"|"="|"["|"]"|"*"|"+"|"-"|"/"|"?"|":"|"&"|"|"|"^"|"!"|"~"|"%"	 		 	         			 {printf("sign ");return t_sign;}
 "*="|"/="|"+="|"%="|">>="|"-="|"<<="|"&="|"^="|"|="|"&^"|"&^="									 {printf("punc "); return t_punc;}
 [0-9]+																							 {printf("int "); return t_int_const;}
 [0-9]+"."[0-9]+																					 {printf("float "); return t_float_const;}	
