@@ -28,6 +28,7 @@ Terminals unused in grammar
    t_point_const
    t_punc
    t_char_const
+   t_bool
    '+'
    '-'
    '*'
@@ -158,53 +159,54 @@ t_comma (302) 19 21 33 34
 t_equality (303) 17 18
 t_open_paren (304) 41
 t_close_paren (305) 42
+t_bool (306)
 
 
 Nonterminals, with rules where they appear
 
-$accept (55)
+$accept (56)
     on left: 0
-START (56)
+START (57)
     on left: 1 2, on right: 0 1
-GLOBAL (57)
+GLOBAL (58)
     on left: 3 4 5, on right: 1 2
-PACKAGE (58)
+PACKAGE (59)
     on left: 6, on right: 3
-IMPORT (59)
+IMPORT (60)
     on left: 7, on right: 4
-FUNC (60)
+FUNC (61)
     on left: 8, on right: 5
-BODY (61)
+BODY (62)
     on left: 9, on right: 8 29 30
-BODY_END (62)
+BODY_END (63)
     on left: 10 11, on right: 9 11
-BODY_START (63)
+BODY_START (64)
     on left: 12 13 14, on right: 9 13 14
-VAR (64)
+VAR (65)
     on left: 15 16, on right: 13
-ASSIGNMENT (65)
+ASSIGNMENT (66)
     on left: 17 18 19, on right: 15 19
-SHORT_ASSIGN (66)
+SHORT_ASSIGN (67)
     on left: 20 21, on right: 16 21
-VALUE (67)
+VALUE (68)
     on left: 22 23 24 25 26, on right: 15 16 19 21 34 36 37 38 40
-OPERATORS (68)
+OPERATORS (69)
     on left: 27 28, on right: 14
-FOR (69)
+FOR (70)
     on left: 29, on right: 28
-IF (70)
+IF (71)
     on left: 30, on right: 27
-RETURN (71)
+RETURN (72)
     on left: 31 32, on right: 11
-RET_PARAM (72)
+RET_PARAM (73)
     on left: 33 34 35 36, on right: 31 33 34
-EXPR (73)
+EXPR (74)
     on left: 37 38, on right: 33 35 38 39
-EXPR_BR (74)
+EXPR_BR (75)
     on left: 39 40, on right: 26
-EXPR_START (75)
+EXPR_START (76)
     on left: 41, on right: 39 40
-EXPR_END (76)
+EXPR_END (77)
     on left: 42, on right: 39 40
 
 
