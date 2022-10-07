@@ -4,5 +4,5 @@ import "fmt"
 
 func plus 
 {
-return 1,8
+ var a := "qwe" + 2
 } 

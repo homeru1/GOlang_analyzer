@@ -47,7 +47,7 @@
 "("																						 		 {printf("( "); return t_open_paren;}
 ")"																						 		 {printf(") "); return t_close_paren;}
 "="																						 		 {printf("= "); return t_equality;}
-"=="|">"|"<"|"<="|">="|"!="																		 {printf("bool ");return t_bool}
+"=="|">"|"<"|"<="|">="|"!="																		 {printf("bool ");return t_bool;}
 ";"|"="|"["|"]"|"*"|"+"|"-"|"/"|"?"|":"|"&"|"|"|"^"|"!"|"~"|"%"	 		 	         			 {printf("sign ");return t_sign;}
 "*="|"/="|"+="|"%="|">>="|"-="|"<<="|"&="|"^="|"|="|"&^"|"&^="									 {printf("punc "); return t_punc;}
 [0-9]+																							 {printf("int "); return t_int_const;}
