@@ -4,5 +4,5 @@ import "fmt"
 
 func plus 
 {
-   var a [5]int
+   x := [5]int{43, 32, 43, 43}
 } 

@@ -44,17 +44,18 @@ BODY_START:   t_open_br
 			| BODY_START ARRAY_BODY
 			;
 
-VAR:         t_var t_id ASSIGNMENT VALUE
-			|t_id SHORT_ASSIGN VALUE
-			| t_id ARRAY_LEN ASSIGNMENT VALUE //new
+VAR:          t_var t_id ASSIGNMENT VALUE
+			| t_id SHORT_ASSIGN VALUE
+			| t_id VALUE ASSIGNMENT VALUE //new
+			| t_id SHORT_ASSIGN VALUE t_vtype PLENTY //new
             ;
 
-ASSIGNMENT: 	t_vtype t_equality
+ASSIGNMENT:   t_vtype t_equality
 			| t_equality
 			| t_comma t_id ASSIGNMENT VALUE t_comma
 
 
-SHORT_ASSIGN:  t_short_dec
+SHORT_ASSIGN: t_short_dec
 			| t_comma t_id SHORT_ASSIGN VALUE t_comma
 			;
 
@@ -64,6 +65,7 @@ VALUE:        t_int_const
 			| t_id
 			| t_string
 			| EXPR_BR
+			| ARRAY_LEN
 			;
 
 OPERATORS:    IF
@@ -96,13 +98,18 @@ EXPR_END:     t_close_paren
             ;
 
 ARRAY_BODY:   t_var t_id ARRAY_LEN t_vtype
+            ;
               
 
-ARRAY_LEN:    t_open_sq t_int_const t_close_sq
+ARRAY_LEN:    t_open_sq VALUE t_close_sq
             ;
 
+PLENTY:       t_open_br ENUM t_close_br
+            ;
 
-
+ENUM:         t_int_const
+            | ENUM t_comma t_int_const 
+		    ;
 
 %%
 
