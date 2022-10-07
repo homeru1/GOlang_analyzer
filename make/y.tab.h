@@ -93,7 +93,9 @@ extern int yydebug;
      t_comma = 302,
      t_equality = 303,
      t_open_paren = 304,
-     t_close_paren = 305
+     t_close_paren = 305,
+     t_open_sq = 306,
+     t_close_sq = 307
    };
 #endif
 /* Tokens.  */
@@ -145,6 +147,8 @@ extern int yydebug;
 #define t_equality 303
 #define t_open_paren 304
 #define t_close_paren 305
+#define t_open_sq 306
+#define t_close_sq 307
 
 
 

@@ -9,6 +9,7 @@
 %token t_vtype t_constant t_case t_func t_import t_chan t_defer t_go t_interface t_default t_var t_range t_map t_package t_if t_select t_switch t_fallthrough t_else
 %token t_type t_for t_goto t_continue t_break t_return t_struct_const t_or_const t_and_const t_param_const t_eq_const t_rel_const t_shift_const t_inc_const
 %token t_point_const t_punc t_int_const t_float_const t_char_const t_id t_string t_short_dec t_open_br t_close_br t_sign t_comma t_equality t_open_paren t_close_paren
+%token t_open_sq t_close_sq
 %left '+' '-'
 %left '*' '/'
 %%
@@ -40,10 +41,12 @@ BODY_START:   t_open_br
             | BODY_START VAR
 			| BODY_START OPERATORS
 			| BODY_START CALL
+			| BODY_START ARRAY_BODY
 			;
 
 VAR:         t_var t_id ASSIGNMENT VALUE
 			|t_id SHORT_ASSIGN VALUE
+			| t_id ARRAY_LEN ASSIGNMENT VALUE //new
             ;
 
 ASSIGNMENT: 	t_vtype t_equality
@@ -75,8 +78,7 @@ CALL:         t_return
 
 IF:           t_if BODY
             ;
-RET_PARAM:    t_return
-            | t_return EXPR
+RET_PARAM:    t_return EXPR
 			| t_return VALUE 
 			;
 EXPR:         VALUE t_sign VALUE
@@ -92,6 +94,15 @@ EXPR_START:   t_open_paren
 			;
 EXPR_END:     t_close_paren
             ;
+
+ARRAY_BODY:   t_var t_id ARRAY_LEN t_vtype
+              
+
+ARRAY_LEN:    t_open_sq t_int_const t_close_sq
+            ;
+
+
+
 
 %%
 
