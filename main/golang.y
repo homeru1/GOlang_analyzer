@@ -41,6 +41,7 @@ BODY_END:     t_close_br
 BODY_START:   t_open_br
             | BODY_START VAR
 			| BODY_START OPERATORS
+			| BODY_START BOOLEAN
 			;
 
 BOOLEAN:	EXPR t_bool EXPR
