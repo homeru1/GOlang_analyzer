@@ -45,13 +45,12 @@ BODY_START:   t_open_br
 			;
 
 VAR:          t_var t_id ASSIGNMENT EXPR
-			| t_id SHORT_ASSIGN EXPR
-			| t_id VALUE ASSIGNMENT EXPR 
 			| t_var t_id ASSIGNMENT EXPR t_vtype
 			| t_var t_id ASSIGNMENT EXPR t_vtype PLENTY
+			|t_var t_id ASSIGNMENT BOOLEAN
+			| t_id SHORT_ASSIGN EXPR
 			| t_id SHORT_ASSIGN EXPR t_vtype //new
 			| t_id SHORT_ASSIGN EXPR t_vtype PLENTY 
-      |t_var t_id ASSIGNMENT BOOLEAN
 			|t_id SHORT_ASSIGN BOOLEAN
       ;
       
@@ -65,7 +64,6 @@ ASSIGNMENT:   t_vtype t_equality
 
 SHORT_ASSIGN: t_short_dec
 			| t_comma t_id SHORT_ASSIGN EXPR t_comma
-      | t_comma t_id SHORT_ASSIGN EXPR t_comma
 			| t_comma t_id SHORT_ASSIGN BOOLEAN t_comma
 			;
 
@@ -73,7 +71,6 @@ VALUE:        t_int_const
             | t_float_const
 			| t_id
 			| t_string
-			| EXPR_BR
 			//| ARRAY_LEN
 			| MULTI_AR
       | t_rune
@@ -108,8 +105,8 @@ ARRAY_LEN:    t_open_sq VALUE t_close_sq
             | t_open_sq t_close_sq
             ;
 
-MULTI_AR:     ARRAY_LEN
-            | ARRAY_LEN MULTI_AR
+MULTI_AR:     ARRAY_LEN MULTI_AR
+			| ARRAY_LEN
             ;
 
 PLENTY:       PLENTY_OLD 
