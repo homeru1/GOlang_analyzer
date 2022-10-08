@@ -1,8 +1,9 @@
 package main
 
 import "fmt"
+import "feiw"
 
 func plus 
 {
-(3+3)<(4*4)
+
 } 
