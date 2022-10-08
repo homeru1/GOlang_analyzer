@@ -52,7 +52,7 @@ VAR:          t_var t_id ASSIGNMENT EXPR
 			| t_id SHORT_ASSIGN EXPR t_vtype //new
 			| t_id SHORT_ASSIGN EXPR t_vtype PLENTY 
 			|t_id SHORT_ASSIGN BOOLEAN
-      ;
+      		;
       
 BOOLEAN:	EXPR t_bool EXPR
 			;
@@ -71,9 +71,8 @@ VALUE:        t_int_const
             | t_float_const
 			| t_id
 			| t_string
-			//| ARRAY_LEN
 			| MULTI_AR
-      | t_rune
+      		| t_rune
 			;
 
 OPERATORS:   RET_PARAM
