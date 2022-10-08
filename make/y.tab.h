@@ -94,7 +94,8 @@ extern int yydebug;
      t_equality = 303,
      t_open_paren = 304,
      t_close_paren = 305,
-     t_bool = 306
+     t_bool = 306,
+     t_rune = 307
    };
 #endif
 /* Tokens.  */
@@ -147,6 +148,7 @@ extern int yydebug;
 #define t_open_paren 304
 #define t_close_paren 305
 #define t_bool 306
+#define t_rune 307
 
 
 
