@@ -36,11 +36,6 @@ Terminals unused in grammar
    '/'
 
 
-State 21 conflicts: 2 shift/reduce
-State 36 conflicts: 1 shift/reduce
-State 56 conflicts: 1 shift/reduce
-
-
 Grammar
 
     0 $accept: START $end
@@ -65,71 +60,63 @@ Grammar
 
    12 BODY_START: t_open_br
    13           | BODY_START VAR
-   14           | BODY_START OPERATORS
-   15           | BODY_START ARRAY_BODY
 
-   16 VAR: t_var t_id ASSIGNMENT EXPR
-   17    | t_var t_id ASSIGNMENT EXPR t_vtype
-   18    | t_var t_id ASSIGNMENT EXPR t_vtype PLENTY
-   19    | t_var t_id ASSIGNMENT BOOLEAN
-   20    | t_id SHORT_ASSIGN EXPR
-   21    | t_id SHORT_ASSIGN EXPR t_vtype
-   22    | t_id SHORT_ASSIGN EXPR t_vtype PLENTY
-   23    | t_id SHORT_ASSIGN BOOLEAN
-   24    | t_id MULTI_AR ASSIGNMENT EXPR
+   14 VAR: t_var t_id ASSIGNMENT EXPR
+   15    | t_var t_id ASSIGNMENT EXPR t_vtype
+   16    | t_var t_id ASSIGNMENT EXPR t_vtype PLENTY
+   17    | t_var t_id ASSIGNMENT BOOLEAN
+   18    | t_id SHORT_ASSIGN EXPR
+   19    | t_id SHORT_ASSIGN EXPR t_vtype
+   20    | t_id SHORT_ASSIGN EXPR t_vtype PLENTY
+   21    | t_id SHORT_ASSIGN BOOLEAN
+   22    | t_id MULTI_AR ASSIGNMENT EXPR
 
-   25 BOOLEAN: EXPR t_bool EXPR
+   23 BOOLEAN: EXPR t_bool EXPR
 
-   26 ASSIGNMENT: t_vtype t_equality
-   27           | t_equality
-   28           | t_comma t_id ASSIGNMENT EXPR t_comma
-   29           | t_comma t_id ASSIGNMENT BOOLEAN t_comma
+   24 ASSIGNMENT: t_vtype t_equality
+   25           | t_equality
+   26           | t_comma t_id ASSIGNMENT EXPR t_comma
+   27           | t_comma t_id ASSIGNMENT BOOLEAN t_comma
 
-   30 SHORT_ASSIGN: t_short_dec
-   31             | t_comma t_id SHORT_ASSIGN EXPR t_comma
-   32             | t_comma t_id SHORT_ASSIGN BOOLEAN t_comma
+   28 SHORT_ASSIGN: t_short_dec
+   29             | t_comma t_id SHORT_ASSIGN EXPR t_comma
+   30             | t_comma t_id SHORT_ASSIGN BOOLEAN t_comma
 
-   33 VALUE: t_int_const
-   34      | t_float_const
-   35      | t_id
-   36      | t_string
-   37      | MULTI_AR
-   38      | t_rune
+   31 VALUE: t_int_const
+   32      | t_float_const
+   33      | t_id
+   34      | t_string
+   35      | t_rune
 
-   39 OPERATORS: RET_PARAM
+   36 RETURN: t_return RET_PARAM
+   37       | t_return
 
-   40 RETURN: t_return RET_PARAM
-   41       | t_return
+   38 RET_PARAM: RET_PARAM t_comma EXPR
+   39          | EXPR
 
-   42 RET_PARAM: RET_PARAM t_comma EXPR
-   43          | EXPR
+   40 EXPR: EXPR t_sign VALUE
+   41     | EXPR_START EXPR EXPR_END
+   42     | VALUE
 
-   44 EXPR: EXPR t_sign VALUE
-   45     | EXPR_START EXPR EXPR_END
-   46     | VALUE
+   43 EXPR_START: t_open_paren
 
-   47 EXPR_START: t_open_paren
+   44 EXPR_END: t_close_paren
 
-   48 EXPR_END: t_close_paren
+   45 ARRAY_LEN: t_open_sq VALUE t_close_sq
+   46          | t_open_sq t_close_sq
 
-   49 ARRAY_BODY: t_var t_id ARRAY_LEN t_vtype
-   50           | t_var t_id MULTI_AR t_vtype
+   47 MULTI_AR: ARRAY_LEN MULTI_AR
+   48         | ARRAY_LEN
 
-   51 ARRAY_LEN: t_open_sq VALUE t_close_sq
-   52          | t_open_sq t_close_sq
+   49 PLENTY: PLENTY_OLD
+   50       | PLENTY_OLD t_comma PLENTY
 
-   53 MULTI_AR: ARRAY_LEN MULTI_AR
-   54         | ARRAY_LEN
+   51 PLENTY_OLD: t_open_br ENUM t_close_br
+   52           | t_open_br t_close_br
+   53           | t_open_br PLENTY t_close_br
 
-   55 PLENTY: PLENTY_OLD
-   56       | PLENTY_OLD t_comma PLENTY
-
-   57 PLENTY_OLD: t_open_br ENUM t_close_br
-   58           | t_open_br t_close_br
-   59           | t_open_br PLENTY t_close_br
-
-   60 ENUM: VALUE
-   61     | ENUM t_comma VALUE
+   54 ENUM: VALUE
+   55     | ENUM t_comma VALUE
 
 
 Terminals, with rules where they appear
@@ -140,7 +127,7 @@ $end (0) 0
 '-' (45)
 '/' (47)
 error (256)
-t_vtype (258) 17 18 21 22 26 49 50
+t_vtype (258) 15 16 19 20 24
 t_constant (259)
 t_case (260)
 t_func (261) 8
@@ -150,7 +137,7 @@ t_defer (264)
 t_go (265)
 t_interface (266)
 t_default (267)
-t_var (268) 16 17 18 19 49 50
+t_var (268) 14 15 16 17
 t_range (269)
 t_map (270)
 t_package (271) 6
@@ -164,7 +151,7 @@ t_for (278)
 t_goto (279)
 t_continue (280)
 t_break (281)
-t_return (282) 40 41
+t_return (282) 36 37
 t_struct_const (283)
 t_or_const (284)
 t_and_const (285)
@@ -175,23 +162,23 @@ t_shift_const (289)
 t_inc_const (290)
 t_point_const (291)
 t_punc (292)
-t_int_const (293) 33
-t_float_const (294) 34
+t_int_const (293) 31
+t_float_const (294) 32
 t_char_const (295)
-t_id (296) 6 8 16 17 18 19 20 21 22 23 24 28 29 31 32 35 49 50
-t_string (297) 7 36
-t_short_dec (298) 30
-t_open_br (299) 12 57 58 59
-t_close_br (300) 10 57 58 59
-t_sign (301) 44
-t_comma (302) 28 29 31 32 42 56 61
-t_equality (303) 26 27
-t_open_paren (304) 47
-t_close_paren (305) 48
-t_open_sq (306) 51 52
-t_close_sq (307) 51 52
-t_bool (308) 25
-t_rune (309) 38
+t_id (296) 6 8 14 15 16 17 18 19 20 21 22 26 27 29 30 33
+t_string (297) 7 34
+t_short_dec (298) 28
+t_open_br (299) 12 51 52 53
+t_close_br (300) 10 51 52 53
+t_sign (301) 40
+t_comma (302) 26 27 29 30 38 50 55
+t_equality (303) 24 25
+t_open_paren (304) 43
+t_close_paren (305) 44
+t_open_sq (306) 45 46
+t_close_sq (307) 45 46
+t_bool (308) 23
+t_rune (309) 35
 
 
 Nonterminals, with rules where they appear
@@ -213,42 +200,38 @@ BODY (65)
 BODY_END (66)
     on left: 10 11, on right: 9 11
 BODY_START (67)
-    on left: 12 13 14 15, on right: 9 13 14 15
+    on left: 12 13, on right: 9 13
 VAR (68)
-    on left: 16 17 18 19 20 21 22 23 24, on right: 13
+    on left: 14 15 16 17 18 19 20 21 22, on right: 13
 BOOLEAN (69)
-    on left: 25, on right: 19 23 29 32
+    on left: 23, on right: 17 21 27 30
 ASSIGNMENT (70)
-    on left: 26 27 28 29, on right: 16 17 18 19 24 28 29
+    on left: 24 25 26 27, on right: 14 15 16 17 22 26 27
 SHORT_ASSIGN (71)
-    on left: 30 31 32, on right: 20 21 22 23 31 32
+    on left: 28 29 30, on right: 18 19 20 21 29 30
 VALUE (72)
-    on left: 33 34 35 36 37 38, on right: 44 46 51 60 61
-OPERATORS (73)
-    on left: 39, on right: 14
-RETURN (74)
-    on left: 40 41, on right: 11
-RET_PARAM (75)
-    on left: 42 43, on right: 39 40 42
-EXPR (76)
-    on left: 44 45 46, on right: 16 17 18 20 21 22 24 25 28 31 42 43
-    44 45
-EXPR_START (77)
-    on left: 47, on right: 45
-EXPR_END (78)
-    on left: 48, on right: 45
-ARRAY_BODY (79)
-    on left: 49 50, on right: 15
-ARRAY_LEN (80)
-    on left: 51 52, on right: 49 53 54
-MULTI_AR (81)
-    on left: 53 54, on right: 24 37 50 53
-PLENTY (82)
-    on left: 55 56, on right: 18 22 56 59
-PLENTY_OLD (83)
-    on left: 57 58 59, on right: 55 56
-ENUM (84)
-    on left: 60 61, on right: 57 61
+    on left: 31 32 33 34 35, on right: 40 42 45 54 55
+RETURN (73)
+    on left: 36 37, on right: 11
+RET_PARAM (74)
+    on left: 38 39, on right: 36 38
+EXPR (75)
+    on left: 40 41 42, on right: 14 15 16 18 19 20 22 23 26 29 38 39
+    40 41
+EXPR_START (76)
+    on left: 43, on right: 41
+EXPR_END (77)
+    on left: 44, on right: 41
+ARRAY_LEN (78)
+    on left: 45 46, on right: 47 48
+MULTI_AR (79)
+    on left: 47 48, on right: 22 47
+PLENTY (80)
+    on left: 49 50, on right: 16 20 50 53
+PLENTY_OLD (81)
+    on left: 51 52 53, on right: 49 50
+ENUM (82)
+    on left: 54 55, on right: 51 55
 
 
 State 0
@@ -387,924 +370,789 @@ State 16
 
     9 BODY: BODY_START . BODY_END
    13 BODY_START: BODY_START . VAR
-   14           | BODY_START . OPERATORS
-   15           | BODY_START . ARRAY_BODY
 
-    t_var          shift, and go to state 17
-    t_return       shift, and go to state 18
-    t_int_const    shift, and go to state 19
-    t_float_const  shift, and go to state 20
-    t_id           shift, and go to state 21
-    t_string       shift, and go to state 22
-    t_close_br     shift, and go to state 23
-    t_open_paren   shift, and go to state 24
-    t_open_sq      shift, and go to state 25
-    t_rune         shift, and go to state 26
+    t_var       shift, and go to state 17
+    t_return    shift, and go to state 18
+    t_id        shift, and go to state 19
+    t_close_br  shift, and go to state 20
 
-    BODY_END    go to state 27
-    VAR         go to state 28
-    VALUE       go to state 29
-    OPERATORS   go to state 30
-    RETURN      go to state 31
-    RET_PARAM   go to state 32
-    EXPR        go to state 33
-    EXPR_START  go to state 34
-    ARRAY_BODY  go to state 35
-    ARRAY_LEN   go to state 36
-    MULTI_AR    go to state 37
+    BODY_END  go to state 21
+    VAR       go to state 22
+    RETURN    go to state 23
 
 
 State 17
 
-   16 VAR: t_var . t_id ASSIGNMENT EXPR
-   17    | t_var . t_id ASSIGNMENT EXPR t_vtype
-   18    | t_var . t_id ASSIGNMENT EXPR t_vtype PLENTY
-   19    | t_var . t_id ASSIGNMENT BOOLEAN
-   49 ARRAY_BODY: t_var . t_id ARRAY_LEN t_vtype
-   50           | t_var . t_id MULTI_AR t_vtype
+   14 VAR: t_var . t_id ASSIGNMENT EXPR
+   15    | t_var . t_id ASSIGNMENT EXPR t_vtype
+   16    | t_var . t_id ASSIGNMENT EXPR t_vtype PLENTY
+   17    | t_var . t_id ASSIGNMENT BOOLEAN
 
-    t_id  shift, and go to state 38
+    t_id  shift, and go to state 24
 
 
 State 18
 
-   40 RETURN: t_return . RET_PARAM
-   41       | t_return .
+   36 RETURN: t_return . RET_PARAM
+   37       | t_return .
 
-    t_int_const    shift, and go to state 19
-    t_float_const  shift, and go to state 20
-    t_id           shift, and go to state 39
-    t_string       shift, and go to state 22
-    t_open_paren   shift, and go to state 24
-    t_open_sq      shift, and go to state 25
-    t_rune         shift, and go to state 26
+    t_int_const    shift, and go to state 25
+    t_float_const  shift, and go to state 26
+    t_id           shift, and go to state 27
+    t_string       shift, and go to state 28
+    t_open_paren   shift, and go to state 29
+    t_rune         shift, and go to state 30
 
-    $default  reduce using rule 41 (RETURN)
+    $default  reduce using rule 37 (RETURN)
 
-    VALUE       go to state 29
-    RET_PARAM   go to state 40
+    VALUE       go to state 31
+    RET_PARAM   go to state 32
     EXPR        go to state 33
     EXPR_START  go to state 34
-    ARRAY_LEN   go to state 36
-    MULTI_AR    go to state 37
 
 
 State 19
 
-   33 VALUE: t_int_const .
+   18 VAR: t_id . SHORT_ASSIGN EXPR
+   19    | t_id . SHORT_ASSIGN EXPR t_vtype
+   20    | t_id . SHORT_ASSIGN EXPR t_vtype PLENTY
+   21    | t_id . SHORT_ASSIGN BOOLEAN
+   22    | t_id . MULTI_AR ASSIGNMENT EXPR
 
-    $default  reduce using rule 33 (VALUE)
+    t_short_dec  shift, and go to state 35
+    t_comma      shift, and go to state 36
+    t_open_sq    shift, and go to state 37
+
+    SHORT_ASSIGN  go to state 38
+    ARRAY_LEN     go to state 39
+    MULTI_AR      go to state 40
 
 
 State 20
-
-   34 VALUE: t_float_const .
-
-    $default  reduce using rule 34 (VALUE)
-
-
-State 21
-
-   20 VAR: t_id . SHORT_ASSIGN EXPR
-   21    | t_id . SHORT_ASSIGN EXPR t_vtype
-   22    | t_id . SHORT_ASSIGN EXPR t_vtype PLENTY
-   23    | t_id . SHORT_ASSIGN BOOLEAN
-   24    | t_id . MULTI_AR ASSIGNMENT EXPR
-   35 VALUE: t_id .
-
-    t_short_dec  shift, and go to state 41
-    t_comma      shift, and go to state 42
-    t_open_sq    shift, and go to state 25
-
-    t_comma    [reduce using rule 35 (VALUE)]
-    t_open_sq  [reduce using rule 35 (VALUE)]
-    $default   reduce using rule 35 (VALUE)
-
-    SHORT_ASSIGN  go to state 43
-    ARRAY_LEN     go to state 36
-    MULTI_AR      go to state 44
-
-
-State 22
-
-   36 VALUE: t_string .
-
-    $default  reduce using rule 36 (VALUE)
-
-
-State 23
 
    10 BODY_END: t_close_br .
 
     $default  reduce using rule 10 (BODY_END)
 
 
-State 24
-
-   47 EXPR_START: t_open_paren .
-
-    $default  reduce using rule 47 (EXPR_START)
-
-
-State 25
-
-   51 ARRAY_LEN: t_open_sq . VALUE t_close_sq
-   52          | t_open_sq . t_close_sq
-
-    t_int_const    shift, and go to state 19
-    t_float_const  shift, and go to state 20
-    t_id           shift, and go to state 39
-    t_string       shift, and go to state 22
-    t_open_sq      shift, and go to state 25
-    t_close_sq     shift, and go to state 45
-    t_rune         shift, and go to state 26
-
-    VALUE      go to state 46
-    ARRAY_LEN  go to state 36
-    MULTI_AR   go to state 37
-
-
-State 26
-
-   38 VALUE: t_rune .
-
-    $default  reduce using rule 38 (VALUE)
-
-
-State 27
+State 21
 
     9 BODY: BODY_START BODY_END .
 
     $default  reduce using rule 9 (BODY)
 
 
-State 28
+State 22
 
    13 BODY_START: BODY_START VAR .
 
     $default  reduce using rule 13 (BODY_START)
 
 
-State 29
-
-   46 EXPR: VALUE .
-
-    $default  reduce using rule 46 (EXPR)
-
-
-State 30
-
-   14 BODY_START: BODY_START OPERATORS .
-
-    $default  reduce using rule 14 (BODY_START)
-
-
-State 31
+State 23
 
    11 BODY_END: RETURN . BODY_END
 
     t_return    shift, and go to state 18
-    t_close_br  shift, and go to state 23
+    t_close_br  shift, and go to state 20
 
-    BODY_END  go to state 47
-    RETURN    go to state 31
-
-
-State 32
-
-   39 OPERATORS: RET_PARAM .
-   42 RET_PARAM: RET_PARAM . t_comma EXPR
-
-    t_comma  shift, and go to state 48
-
-    $default  reduce using rule 39 (OPERATORS)
+    BODY_END  go to state 41
+    RETURN    go to state 23
 
 
-State 33
+State 24
 
-   43 RET_PARAM: EXPR .
-   44 EXPR: EXPR . t_sign VALUE
+   14 VAR: t_var t_id . ASSIGNMENT EXPR
+   15    | t_var t_id . ASSIGNMENT EXPR t_vtype
+   16    | t_var t_id . ASSIGNMENT EXPR t_vtype PLENTY
+   17    | t_var t_id . ASSIGNMENT BOOLEAN
 
-    t_sign  shift, and go to state 49
+    t_vtype     shift, and go to state 42
+    t_comma     shift, and go to state 43
+    t_equality  shift, and go to state 44
 
-    $default  reduce using rule 43 (RET_PARAM)
-
-
-State 34
-
-   45 EXPR: EXPR_START . EXPR EXPR_END
-
-    t_int_const    shift, and go to state 19
-    t_float_const  shift, and go to state 20
-    t_id           shift, and go to state 39
-    t_string       shift, and go to state 22
-    t_open_paren   shift, and go to state 24
-    t_open_sq      shift, and go to state 25
-    t_rune         shift, and go to state 26
-
-    VALUE       go to state 29
-    EXPR        go to state 50
-    EXPR_START  go to state 34
-    ARRAY_LEN   go to state 36
-    MULTI_AR    go to state 37
+    ASSIGNMENT  go to state 45
 
 
-State 35
+State 25
 
-   15 BODY_START: BODY_START ARRAY_BODY .
+   31 VALUE: t_int_const .
 
-    $default  reduce using rule 15 (BODY_START)
-
-
-State 36
-
-   53 MULTI_AR: ARRAY_LEN . MULTI_AR
-   54         | ARRAY_LEN .
-
-    t_open_sq  shift, and go to state 25
-
-    t_open_sq  [reduce using rule 54 (MULTI_AR)]
-    $default   reduce using rule 54 (MULTI_AR)
-
-    ARRAY_LEN  go to state 36
-    MULTI_AR   go to state 51
+    $default  reduce using rule 31 (VALUE)
 
 
-State 37
+State 26
 
-   37 VALUE: MULTI_AR .
+   32 VALUE: t_float_const .
 
-    $default  reduce using rule 37 (VALUE)
-
-
-State 38
-
-   16 VAR: t_var t_id . ASSIGNMENT EXPR
-   17    | t_var t_id . ASSIGNMENT EXPR t_vtype
-   18    | t_var t_id . ASSIGNMENT EXPR t_vtype PLENTY
-   19    | t_var t_id . ASSIGNMENT BOOLEAN
-   49 ARRAY_BODY: t_var t_id . ARRAY_LEN t_vtype
-   50           | t_var t_id . MULTI_AR t_vtype
-
-    t_vtype     shift, and go to state 52
-    t_comma     shift, and go to state 53
-    t_equality  shift, and go to state 54
-    t_open_sq   shift, and go to state 25
-
-    ASSIGNMENT  go to state 55
-    ARRAY_LEN   go to state 56
-    MULTI_AR    go to state 57
+    $default  reduce using rule 32 (VALUE)
 
 
-State 39
+State 27
 
-   35 VALUE: t_id .
+   33 VALUE: t_id .
+
+    $default  reduce using rule 33 (VALUE)
+
+
+State 28
+
+   34 VALUE: t_string .
+
+    $default  reduce using rule 34 (VALUE)
+
+
+State 29
+
+   43 EXPR_START: t_open_paren .
+
+    $default  reduce using rule 43 (EXPR_START)
+
+
+State 30
+
+   35 VALUE: t_rune .
 
     $default  reduce using rule 35 (VALUE)
 
 
+State 31
+
+   42 EXPR: VALUE .
+
+    $default  reduce using rule 42 (EXPR)
+
+
+State 32
+
+   36 RETURN: t_return RET_PARAM .
+   38 RET_PARAM: RET_PARAM . t_comma EXPR
+
+    t_comma  shift, and go to state 46
+
+    $default  reduce using rule 36 (RETURN)
+
+
+State 33
+
+   39 RET_PARAM: EXPR .
+   40 EXPR: EXPR . t_sign VALUE
+
+    t_sign  shift, and go to state 47
+
+    $default  reduce using rule 39 (RET_PARAM)
+
+
+State 34
+
+   41 EXPR: EXPR_START . EXPR EXPR_END
+
+    t_int_const    shift, and go to state 25
+    t_float_const  shift, and go to state 26
+    t_id           shift, and go to state 27
+    t_string       shift, and go to state 28
+    t_open_paren   shift, and go to state 29
+    t_rune         shift, and go to state 30
+
+    VALUE       go to state 31
+    EXPR        go to state 48
+    EXPR_START  go to state 34
+
+
+State 35
+
+   28 SHORT_ASSIGN: t_short_dec .
+
+    $default  reduce using rule 28 (SHORT_ASSIGN)
+
+
+State 36
+
+   29 SHORT_ASSIGN: t_comma . t_id SHORT_ASSIGN EXPR t_comma
+   30             | t_comma . t_id SHORT_ASSIGN BOOLEAN t_comma
+
+    t_id  shift, and go to state 49
+
+
+State 37
+
+   45 ARRAY_LEN: t_open_sq . VALUE t_close_sq
+   46          | t_open_sq . t_close_sq
+
+    t_int_const    shift, and go to state 25
+    t_float_const  shift, and go to state 26
+    t_id           shift, and go to state 27
+    t_string       shift, and go to state 28
+    t_close_sq     shift, and go to state 50
+    t_rune         shift, and go to state 30
+
+    VALUE  go to state 51
+
+
+State 38
+
+   18 VAR: t_id SHORT_ASSIGN . EXPR
+   19    | t_id SHORT_ASSIGN . EXPR t_vtype
+   20    | t_id SHORT_ASSIGN . EXPR t_vtype PLENTY
+   21    | t_id SHORT_ASSIGN . BOOLEAN
+
+    t_int_const    shift, and go to state 25
+    t_float_const  shift, and go to state 26
+    t_id           shift, and go to state 27
+    t_string       shift, and go to state 28
+    t_open_paren   shift, and go to state 29
+    t_rune         shift, and go to state 30
+
+    BOOLEAN     go to state 52
+    VALUE       go to state 31
+    EXPR        go to state 53
+    EXPR_START  go to state 34
+
+
+State 39
+
+   47 MULTI_AR: ARRAY_LEN . MULTI_AR
+   48         | ARRAY_LEN .
+
+    t_open_sq  shift, and go to state 37
+
+    $default  reduce using rule 48 (MULTI_AR)
+
+    ARRAY_LEN  go to state 39
+    MULTI_AR   go to state 54
+
+
 State 40
 
-   40 RETURN: t_return RET_PARAM .
-   42 RET_PARAM: RET_PARAM . t_comma EXPR
+   22 VAR: t_id MULTI_AR . ASSIGNMENT EXPR
 
-    t_comma  shift, and go to state 48
+    t_vtype     shift, and go to state 42
+    t_comma     shift, and go to state 43
+    t_equality  shift, and go to state 44
 
-    $default  reduce using rule 40 (RETURN)
+    ASSIGNMENT  go to state 55
 
 
 State 41
-
-   30 SHORT_ASSIGN: t_short_dec .
-
-    $default  reduce using rule 30 (SHORT_ASSIGN)
-
-
-State 42
-
-   31 SHORT_ASSIGN: t_comma . t_id SHORT_ASSIGN EXPR t_comma
-   32             | t_comma . t_id SHORT_ASSIGN BOOLEAN t_comma
-
-    t_id  shift, and go to state 58
-
-
-State 43
-
-   20 VAR: t_id SHORT_ASSIGN . EXPR
-   21    | t_id SHORT_ASSIGN . EXPR t_vtype
-   22    | t_id SHORT_ASSIGN . EXPR t_vtype PLENTY
-   23    | t_id SHORT_ASSIGN . BOOLEAN
-
-    t_int_const    shift, and go to state 19
-    t_float_const  shift, and go to state 20
-    t_id           shift, and go to state 39
-    t_string       shift, and go to state 22
-    t_open_paren   shift, and go to state 24
-    t_open_sq      shift, and go to state 25
-    t_rune         shift, and go to state 26
-
-    BOOLEAN     go to state 59
-    VALUE       go to state 29
-    EXPR        go to state 60
-    EXPR_START  go to state 34
-    ARRAY_LEN   go to state 36
-    MULTI_AR    go to state 37
-
-
-State 44
-
-   24 VAR: t_id MULTI_AR . ASSIGNMENT EXPR
-
-    t_vtype     shift, and go to state 52
-    t_comma     shift, and go to state 53
-    t_equality  shift, and go to state 54
-
-    ASSIGNMENT  go to state 61
-
-
-State 45
-
-   52 ARRAY_LEN: t_open_sq t_close_sq .
-
-    $default  reduce using rule 52 (ARRAY_LEN)
-
-
-State 46
-
-   51 ARRAY_LEN: t_open_sq VALUE . t_close_sq
-
-    t_close_sq  shift, and go to state 62
-
-
-State 47
 
    11 BODY_END: RETURN BODY_END .
 
     $default  reduce using rule 11 (BODY_END)
 
 
+State 42
+
+   24 ASSIGNMENT: t_vtype . t_equality
+
+    t_equality  shift, and go to state 56
+
+
+State 43
+
+   26 ASSIGNMENT: t_comma . t_id ASSIGNMENT EXPR t_comma
+   27           | t_comma . t_id ASSIGNMENT BOOLEAN t_comma
+
+    t_id  shift, and go to state 57
+
+
+State 44
+
+   25 ASSIGNMENT: t_equality .
+
+    $default  reduce using rule 25 (ASSIGNMENT)
+
+
+State 45
+
+   14 VAR: t_var t_id ASSIGNMENT . EXPR
+   15    | t_var t_id ASSIGNMENT . EXPR t_vtype
+   16    | t_var t_id ASSIGNMENT . EXPR t_vtype PLENTY
+   17    | t_var t_id ASSIGNMENT . BOOLEAN
+
+    t_int_const    shift, and go to state 25
+    t_float_const  shift, and go to state 26
+    t_id           shift, and go to state 27
+    t_string       shift, and go to state 28
+    t_open_paren   shift, and go to state 29
+    t_rune         shift, and go to state 30
+
+    BOOLEAN     go to state 58
+    VALUE       go to state 31
+    EXPR        go to state 59
+    EXPR_START  go to state 34
+
+
+State 46
+
+   38 RET_PARAM: RET_PARAM t_comma . EXPR
+
+    t_int_const    shift, and go to state 25
+    t_float_const  shift, and go to state 26
+    t_id           shift, and go to state 27
+    t_string       shift, and go to state 28
+    t_open_paren   shift, and go to state 29
+    t_rune         shift, and go to state 30
+
+    VALUE       go to state 31
+    EXPR        go to state 60
+    EXPR_START  go to state 34
+
+
+State 47
+
+   40 EXPR: EXPR t_sign . VALUE
+
+    t_int_const    shift, and go to state 25
+    t_float_const  shift, and go to state 26
+    t_id           shift, and go to state 27
+    t_string       shift, and go to state 28
+    t_rune         shift, and go to state 30
+
+    VALUE  go to state 61
+
+
 State 48
 
-   42 RET_PARAM: RET_PARAM t_comma . EXPR
+   40 EXPR: EXPR . t_sign VALUE
+   41     | EXPR_START EXPR . EXPR_END
 
-    t_int_const    shift, and go to state 19
-    t_float_const  shift, and go to state 20
-    t_id           shift, and go to state 39
-    t_string       shift, and go to state 22
-    t_open_paren   shift, and go to state 24
-    t_open_sq      shift, and go to state 25
-    t_rune         shift, and go to state 26
+    t_sign         shift, and go to state 47
+    t_close_paren  shift, and go to state 62
 
-    VALUE       go to state 29
-    EXPR        go to state 63
-    EXPR_START  go to state 34
-    ARRAY_LEN   go to state 36
-    MULTI_AR    go to state 37
+    EXPR_END  go to state 63
 
 
 State 49
 
-   44 EXPR: EXPR t_sign . VALUE
+   29 SHORT_ASSIGN: t_comma t_id . SHORT_ASSIGN EXPR t_comma
+   30             | t_comma t_id . SHORT_ASSIGN BOOLEAN t_comma
 
-    t_int_const    shift, and go to state 19
-    t_float_const  shift, and go to state 20
-    t_id           shift, and go to state 39
-    t_string       shift, and go to state 22
-    t_open_sq      shift, and go to state 25
-    t_rune         shift, and go to state 26
+    t_short_dec  shift, and go to state 35
+    t_comma      shift, and go to state 36
 
-    VALUE      go to state 64
-    ARRAY_LEN  go to state 36
-    MULTI_AR   go to state 37
+    SHORT_ASSIGN  go to state 64
 
 
 State 50
 
-   44 EXPR: EXPR . t_sign VALUE
-   45     | EXPR_START EXPR . EXPR_END
+   46 ARRAY_LEN: t_open_sq t_close_sq .
 
-    t_sign         shift, and go to state 49
-    t_close_paren  shift, and go to state 65
-
-    EXPR_END  go to state 66
+    $default  reduce using rule 46 (ARRAY_LEN)
 
 
 State 51
 
-   53 MULTI_AR: ARRAY_LEN MULTI_AR .
+   45 ARRAY_LEN: t_open_sq VALUE . t_close_sq
 
-    $default  reduce using rule 53 (MULTI_AR)
+    t_close_sq  shift, and go to state 65
 
 
 State 52
 
-   26 ASSIGNMENT: t_vtype . t_equality
+   21 VAR: t_id SHORT_ASSIGN BOOLEAN .
 
-    t_equality  shift, and go to state 67
+    $default  reduce using rule 21 (VAR)
 
 
 State 53
 
-   28 ASSIGNMENT: t_comma . t_id ASSIGNMENT EXPR t_comma
-   29           | t_comma . t_id ASSIGNMENT BOOLEAN t_comma
-
-    t_id  shift, and go to state 68
-
-
-State 54
-
-   27 ASSIGNMENT: t_equality .
-
-    $default  reduce using rule 27 (ASSIGNMENT)
-
-
-State 55
-
-   16 VAR: t_var t_id ASSIGNMENT . EXPR
-   17    | t_var t_id ASSIGNMENT . EXPR t_vtype
-   18    | t_var t_id ASSIGNMENT . EXPR t_vtype PLENTY
-   19    | t_var t_id ASSIGNMENT . BOOLEAN
-
-    t_int_const    shift, and go to state 19
-    t_float_const  shift, and go to state 20
-    t_id           shift, and go to state 39
-    t_string       shift, and go to state 22
-    t_open_paren   shift, and go to state 24
-    t_open_sq      shift, and go to state 25
-    t_rune         shift, and go to state 26
-
-    BOOLEAN     go to state 69
-    VALUE       go to state 29
-    EXPR        go to state 70
-    EXPR_START  go to state 34
-    ARRAY_LEN   go to state 36
-    MULTI_AR    go to state 37
-
-
-State 56
-
-   49 ARRAY_BODY: t_var t_id ARRAY_LEN . t_vtype
-   53 MULTI_AR: ARRAY_LEN . MULTI_AR
-   54         | ARRAY_LEN .
-
-    t_vtype    shift, and go to state 71
-    t_open_sq  shift, and go to state 25
-
-    t_vtype  [reduce using rule 54 (MULTI_AR)]
-
-    ARRAY_LEN  go to state 36
-    MULTI_AR   go to state 51
-
-
-State 57
-
-   50 ARRAY_BODY: t_var t_id MULTI_AR . t_vtype
-
-    t_vtype  shift, and go to state 72
-
-
-State 58
-
-   31 SHORT_ASSIGN: t_comma t_id . SHORT_ASSIGN EXPR t_comma
-   32             | t_comma t_id . SHORT_ASSIGN BOOLEAN t_comma
-
-    t_short_dec  shift, and go to state 41
-    t_comma      shift, and go to state 42
-
-    SHORT_ASSIGN  go to state 73
-
-
-State 59
-
-   23 VAR: t_id SHORT_ASSIGN BOOLEAN .
-
-    $default  reduce using rule 23 (VAR)
-
-
-State 60
-
-   20 VAR: t_id SHORT_ASSIGN EXPR .
-   21    | t_id SHORT_ASSIGN EXPR . t_vtype
-   22    | t_id SHORT_ASSIGN EXPR . t_vtype PLENTY
-   25 BOOLEAN: EXPR . t_bool EXPR
-   44 EXPR: EXPR . t_sign VALUE
-
-    t_vtype  shift, and go to state 74
-    t_sign   shift, and go to state 49
-    t_bool   shift, and go to state 75
-
-    $default  reduce using rule 20 (VAR)
-
-
-State 61
-
-   24 VAR: t_id MULTI_AR ASSIGNMENT . EXPR
-
-    t_int_const    shift, and go to state 19
-    t_float_const  shift, and go to state 20
-    t_id           shift, and go to state 39
-    t_string       shift, and go to state 22
-    t_open_paren   shift, and go to state 24
-    t_open_sq      shift, and go to state 25
-    t_rune         shift, and go to state 26
-
-    VALUE       go to state 29
-    EXPR        go to state 76
-    EXPR_START  go to state 34
-    ARRAY_LEN   go to state 36
-    MULTI_AR    go to state 37
-
-
-State 62
-
-   51 ARRAY_LEN: t_open_sq VALUE t_close_sq .
-
-    $default  reduce using rule 51 (ARRAY_LEN)
-
-
-State 63
-
-   42 RET_PARAM: RET_PARAM t_comma EXPR .
-   44 EXPR: EXPR . t_sign VALUE
-
-    t_sign  shift, and go to state 49
-
-    $default  reduce using rule 42 (RET_PARAM)
-
-
-State 64
-
-   44 EXPR: EXPR t_sign VALUE .
-
-    $default  reduce using rule 44 (EXPR)
-
-
-State 65
-
-   48 EXPR_END: t_close_paren .
-
-    $default  reduce using rule 48 (EXPR_END)
-
-
-State 66
-
-   45 EXPR: EXPR_START EXPR EXPR_END .
-
-    $default  reduce using rule 45 (EXPR)
-
-
-State 67
-
-   26 ASSIGNMENT: t_vtype t_equality .
-
-    $default  reduce using rule 26 (ASSIGNMENT)
-
-
-State 68
-
-   28 ASSIGNMENT: t_comma t_id . ASSIGNMENT EXPR t_comma
-   29           | t_comma t_id . ASSIGNMENT BOOLEAN t_comma
-
-    t_vtype     shift, and go to state 52
-    t_comma     shift, and go to state 53
-    t_equality  shift, and go to state 54
-
-    ASSIGNMENT  go to state 77
-
-
-State 69
-
-   19 VAR: t_var t_id ASSIGNMENT BOOLEAN .
-
-    $default  reduce using rule 19 (VAR)
-
-
-State 70
-
-   16 VAR: t_var t_id ASSIGNMENT EXPR .
-   17    | t_var t_id ASSIGNMENT EXPR . t_vtype
-   18    | t_var t_id ASSIGNMENT EXPR . t_vtype PLENTY
-   25 BOOLEAN: EXPR . t_bool EXPR
-   44 EXPR: EXPR . t_sign VALUE
-
-    t_vtype  shift, and go to state 78
-    t_sign   shift, and go to state 49
-    t_bool   shift, and go to state 75
-
-    $default  reduce using rule 16 (VAR)
-
-
-State 71
-
-   49 ARRAY_BODY: t_var t_id ARRAY_LEN t_vtype .
-
-    $default  reduce using rule 49 (ARRAY_BODY)
-
-
-State 72
-
-   50 ARRAY_BODY: t_var t_id MULTI_AR t_vtype .
-
-    $default  reduce using rule 50 (ARRAY_BODY)
-
-
-State 73
-
-   31 SHORT_ASSIGN: t_comma t_id SHORT_ASSIGN . EXPR t_comma
-   32             | t_comma t_id SHORT_ASSIGN . BOOLEAN t_comma
-
-    t_int_const    shift, and go to state 19
-    t_float_const  shift, and go to state 20
-    t_id           shift, and go to state 39
-    t_string       shift, and go to state 22
-    t_open_paren   shift, and go to state 24
-    t_open_sq      shift, and go to state 25
-    t_rune         shift, and go to state 26
-
-    BOOLEAN     go to state 79
-    VALUE       go to state 29
-    EXPR        go to state 80
-    EXPR_START  go to state 34
-    ARRAY_LEN   go to state 36
-    MULTI_AR    go to state 37
-
-
-State 74
-
-   21 VAR: t_id SHORT_ASSIGN EXPR t_vtype .
-   22    | t_id SHORT_ASSIGN EXPR t_vtype . PLENTY
-
-    t_open_br  shift, and go to state 81
-
-    $default  reduce using rule 21 (VAR)
-
-    PLENTY      go to state 82
-    PLENTY_OLD  go to state 83
-
-
-State 75
-
-   25 BOOLEAN: EXPR t_bool . EXPR
-
-    t_int_const    shift, and go to state 19
-    t_float_const  shift, and go to state 20
-    t_id           shift, and go to state 39
-    t_string       shift, and go to state 22
-    t_open_paren   shift, and go to state 24
-    t_open_sq      shift, and go to state 25
-    t_rune         shift, and go to state 26
-
-    VALUE       go to state 29
-    EXPR        go to state 84
-    EXPR_START  go to state 34
-    ARRAY_LEN   go to state 36
-    MULTI_AR    go to state 37
-
-
-State 76
-
-   24 VAR: t_id MULTI_AR ASSIGNMENT EXPR .
-   44 EXPR: EXPR . t_sign VALUE
-
-    t_sign  shift, and go to state 49
-
-    $default  reduce using rule 24 (VAR)
-
-
-State 77
-
-   28 ASSIGNMENT: t_comma t_id ASSIGNMENT . EXPR t_comma
-   29           | t_comma t_id ASSIGNMENT . BOOLEAN t_comma
-
-    t_int_const    shift, and go to state 19
-    t_float_const  shift, and go to state 20
-    t_id           shift, and go to state 39
-    t_string       shift, and go to state 22
-    t_open_paren   shift, and go to state 24
-    t_open_sq      shift, and go to state 25
-    t_rune         shift, and go to state 26
-
-    BOOLEAN     go to state 85
-    VALUE       go to state 29
-    EXPR        go to state 86
-    EXPR_START  go to state 34
-    ARRAY_LEN   go to state 36
-    MULTI_AR    go to state 37
-
-
-State 78
-
-   17 VAR: t_var t_id ASSIGNMENT EXPR t_vtype .
-   18    | t_var t_id ASSIGNMENT EXPR t_vtype . PLENTY
-
-    t_open_br  shift, and go to state 81
-
-    $default  reduce using rule 17 (VAR)
-
-    PLENTY      go to state 87
-    PLENTY_OLD  go to state 83
-
-
-State 79
-
-   32 SHORT_ASSIGN: t_comma t_id SHORT_ASSIGN BOOLEAN . t_comma
-
-    t_comma  shift, and go to state 88
-
-
-State 80
-
-   25 BOOLEAN: EXPR . t_bool EXPR
-   31 SHORT_ASSIGN: t_comma t_id SHORT_ASSIGN EXPR . t_comma
-   44 EXPR: EXPR . t_sign VALUE
-
-    t_sign   shift, and go to state 49
-    t_comma  shift, and go to state 89
-    t_bool   shift, and go to state 75
-
-
-State 81
-
-   57 PLENTY_OLD: t_open_br . ENUM t_close_br
-   58           | t_open_br . t_close_br
-   59           | t_open_br . PLENTY t_close_br
-
-    t_int_const    shift, and go to state 19
-    t_float_const  shift, and go to state 20
-    t_id           shift, and go to state 39
-    t_string       shift, and go to state 22
-    t_open_br      shift, and go to state 81
-    t_close_br     shift, and go to state 90
-    t_open_sq      shift, and go to state 25
-    t_rune         shift, and go to state 26
-
-    VALUE       go to state 91
-    ARRAY_LEN   go to state 36
-    MULTI_AR    go to state 37
-    PLENTY      go to state 92
-    PLENTY_OLD  go to state 83
-    ENUM        go to state 93
-
-
-State 82
-
-   22 VAR: t_id SHORT_ASSIGN EXPR t_vtype PLENTY .
-
-    $default  reduce using rule 22 (VAR)
-
-
-State 83
-
-   55 PLENTY: PLENTY_OLD .
-   56       | PLENTY_OLD . t_comma PLENTY
-
-    t_comma  shift, and go to state 94
-
-    $default  reduce using rule 55 (PLENTY)
-
-
-State 84
-
-   25 BOOLEAN: EXPR t_bool EXPR .
-   44 EXPR: EXPR . t_sign VALUE
-
-    t_sign  shift, and go to state 49
-
-    $default  reduce using rule 25 (BOOLEAN)
-
-
-State 85
-
-   29 ASSIGNMENT: t_comma t_id ASSIGNMENT BOOLEAN . t_comma
-
-    t_comma  shift, and go to state 95
-
-
-State 86
-
-   25 BOOLEAN: EXPR . t_bool EXPR
-   28 ASSIGNMENT: t_comma t_id ASSIGNMENT EXPR . t_comma
-   44 EXPR: EXPR . t_sign VALUE
-
-    t_sign   shift, and go to state 49
-    t_comma  shift, and go to state 96
-    t_bool   shift, and go to state 75
-
-
-State 87
-
-   18 VAR: t_var t_id ASSIGNMENT EXPR t_vtype PLENTY .
+   18 VAR: t_id SHORT_ASSIGN EXPR .
+   19    | t_id SHORT_ASSIGN EXPR . t_vtype
+   20    | t_id SHORT_ASSIGN EXPR . t_vtype PLENTY
+   23 BOOLEAN: EXPR . t_bool EXPR
+   40 EXPR: EXPR . t_sign VALUE
+
+    t_vtype  shift, and go to state 66
+    t_sign   shift, and go to state 47
+    t_bool   shift, and go to state 67
 
     $default  reduce using rule 18 (VAR)
 
 
+State 54
+
+   47 MULTI_AR: ARRAY_LEN MULTI_AR .
+
+    $default  reduce using rule 47 (MULTI_AR)
+
+
+State 55
+
+   22 VAR: t_id MULTI_AR ASSIGNMENT . EXPR
+
+    t_int_const    shift, and go to state 25
+    t_float_const  shift, and go to state 26
+    t_id           shift, and go to state 27
+    t_string       shift, and go to state 28
+    t_open_paren   shift, and go to state 29
+    t_rune         shift, and go to state 30
+
+    VALUE       go to state 31
+    EXPR        go to state 68
+    EXPR_START  go to state 34
+
+
+State 56
+
+   24 ASSIGNMENT: t_vtype t_equality .
+
+    $default  reduce using rule 24 (ASSIGNMENT)
+
+
+State 57
+
+   26 ASSIGNMENT: t_comma t_id . ASSIGNMENT EXPR t_comma
+   27           | t_comma t_id . ASSIGNMENT BOOLEAN t_comma
+
+    t_vtype     shift, and go to state 42
+    t_comma     shift, and go to state 43
+    t_equality  shift, and go to state 44
+
+    ASSIGNMENT  go to state 69
+
+
+State 58
+
+   17 VAR: t_var t_id ASSIGNMENT BOOLEAN .
+
+    $default  reduce using rule 17 (VAR)
+
+
+State 59
+
+   14 VAR: t_var t_id ASSIGNMENT EXPR .
+   15    | t_var t_id ASSIGNMENT EXPR . t_vtype
+   16    | t_var t_id ASSIGNMENT EXPR . t_vtype PLENTY
+   23 BOOLEAN: EXPR . t_bool EXPR
+   40 EXPR: EXPR . t_sign VALUE
+
+    t_vtype  shift, and go to state 70
+    t_sign   shift, and go to state 47
+    t_bool   shift, and go to state 67
+
+    $default  reduce using rule 14 (VAR)
+
+
+State 60
+
+   38 RET_PARAM: RET_PARAM t_comma EXPR .
+   40 EXPR: EXPR . t_sign VALUE
+
+    t_sign  shift, and go to state 47
+
+    $default  reduce using rule 38 (RET_PARAM)
+
+
+State 61
+
+   40 EXPR: EXPR t_sign VALUE .
+
+    $default  reduce using rule 40 (EXPR)
+
+
+State 62
+
+   44 EXPR_END: t_close_paren .
+
+    $default  reduce using rule 44 (EXPR_END)
+
+
+State 63
+
+   41 EXPR: EXPR_START EXPR EXPR_END .
+
+    $default  reduce using rule 41 (EXPR)
+
+
+State 64
+
+   29 SHORT_ASSIGN: t_comma t_id SHORT_ASSIGN . EXPR t_comma
+   30             | t_comma t_id SHORT_ASSIGN . BOOLEAN t_comma
+
+    t_int_const    shift, and go to state 25
+    t_float_const  shift, and go to state 26
+    t_id           shift, and go to state 27
+    t_string       shift, and go to state 28
+    t_open_paren   shift, and go to state 29
+    t_rune         shift, and go to state 30
+
+    BOOLEAN     go to state 71
+    VALUE       go to state 31
+    EXPR        go to state 72
+    EXPR_START  go to state 34
+
+
+State 65
+
+   45 ARRAY_LEN: t_open_sq VALUE t_close_sq .
+
+    $default  reduce using rule 45 (ARRAY_LEN)
+
+
+State 66
+
+   19 VAR: t_id SHORT_ASSIGN EXPR t_vtype .
+   20    | t_id SHORT_ASSIGN EXPR t_vtype . PLENTY
+
+    t_open_br  shift, and go to state 73
+
+    $default  reduce using rule 19 (VAR)
+
+    PLENTY      go to state 74
+    PLENTY_OLD  go to state 75
+
+
+State 67
+
+   23 BOOLEAN: EXPR t_bool . EXPR
+
+    t_int_const    shift, and go to state 25
+    t_float_const  shift, and go to state 26
+    t_id           shift, and go to state 27
+    t_string       shift, and go to state 28
+    t_open_paren   shift, and go to state 29
+    t_rune         shift, and go to state 30
+
+    VALUE       go to state 31
+    EXPR        go to state 76
+    EXPR_START  go to state 34
+
+
+State 68
+
+   22 VAR: t_id MULTI_AR ASSIGNMENT EXPR .
+   40 EXPR: EXPR . t_sign VALUE
+
+    t_sign  shift, and go to state 47
+
+    $default  reduce using rule 22 (VAR)
+
+
+State 69
+
+   26 ASSIGNMENT: t_comma t_id ASSIGNMENT . EXPR t_comma
+   27           | t_comma t_id ASSIGNMENT . BOOLEAN t_comma
+
+    t_int_const    shift, and go to state 25
+    t_float_const  shift, and go to state 26
+    t_id           shift, and go to state 27
+    t_string       shift, and go to state 28
+    t_open_paren   shift, and go to state 29
+    t_rune         shift, and go to state 30
+
+    BOOLEAN     go to state 77
+    VALUE       go to state 31
+    EXPR        go to state 78
+    EXPR_START  go to state 34
+
+
+State 70
+
+   15 VAR: t_var t_id ASSIGNMENT EXPR t_vtype .
+   16    | t_var t_id ASSIGNMENT EXPR t_vtype . PLENTY
+
+    t_open_br  shift, and go to state 73
+
+    $default  reduce using rule 15 (VAR)
+
+    PLENTY      go to state 79
+    PLENTY_OLD  go to state 75
+
+
+State 71
+
+   30 SHORT_ASSIGN: t_comma t_id SHORT_ASSIGN BOOLEAN . t_comma
+
+    t_comma  shift, and go to state 80
+
+
+State 72
+
+   23 BOOLEAN: EXPR . t_bool EXPR
+   29 SHORT_ASSIGN: t_comma t_id SHORT_ASSIGN EXPR . t_comma
+   40 EXPR: EXPR . t_sign VALUE
+
+    t_sign   shift, and go to state 47
+    t_comma  shift, and go to state 81
+    t_bool   shift, and go to state 67
+
+
+State 73
+
+   51 PLENTY_OLD: t_open_br . ENUM t_close_br
+   52           | t_open_br . t_close_br
+   53           | t_open_br . PLENTY t_close_br
+
+    t_int_const    shift, and go to state 25
+    t_float_const  shift, and go to state 26
+    t_id           shift, and go to state 27
+    t_string       shift, and go to state 28
+    t_open_br      shift, and go to state 73
+    t_close_br     shift, and go to state 82
+    t_rune         shift, and go to state 30
+
+    VALUE       go to state 83
+    PLENTY      go to state 84
+    PLENTY_OLD  go to state 75
+    ENUM        go to state 85
+
+
+State 74
+
+   20 VAR: t_id SHORT_ASSIGN EXPR t_vtype PLENTY .
+
+    $default  reduce using rule 20 (VAR)
+
+
+State 75
+
+   49 PLENTY: PLENTY_OLD .
+   50       | PLENTY_OLD . t_comma PLENTY
+
+    t_comma  shift, and go to state 86
+
+    $default  reduce using rule 49 (PLENTY)
+
+
+State 76
+
+   23 BOOLEAN: EXPR t_bool EXPR .
+   40 EXPR: EXPR . t_sign VALUE
+
+    t_sign  shift, and go to state 47
+
+    $default  reduce using rule 23 (BOOLEAN)
+
+
+State 77
+
+   27 ASSIGNMENT: t_comma t_id ASSIGNMENT BOOLEAN . t_comma
+
+    t_comma  shift, and go to state 87
+
+
+State 78
+
+   23 BOOLEAN: EXPR . t_bool EXPR
+   26 ASSIGNMENT: t_comma t_id ASSIGNMENT EXPR . t_comma
+   40 EXPR: EXPR . t_sign VALUE
+
+    t_sign   shift, and go to state 47
+    t_comma  shift, and go to state 88
+    t_bool   shift, and go to state 67
+
+
+State 79
+
+   16 VAR: t_var t_id ASSIGNMENT EXPR t_vtype PLENTY .
+
+    $default  reduce using rule 16 (VAR)
+
+
+State 80
+
+   30 SHORT_ASSIGN: t_comma t_id SHORT_ASSIGN BOOLEAN t_comma .
+
+    $default  reduce using rule 30 (SHORT_ASSIGN)
+
+
+State 81
+
+   29 SHORT_ASSIGN: t_comma t_id SHORT_ASSIGN EXPR t_comma .
+
+    $default  reduce using rule 29 (SHORT_ASSIGN)
+
+
+State 82
+
+   52 PLENTY_OLD: t_open_br t_close_br .
+
+    $default  reduce using rule 52 (PLENTY_OLD)
+
+
+State 83
+
+   54 ENUM: VALUE .
+
+    $default  reduce using rule 54 (ENUM)
+
+
+State 84
+
+   53 PLENTY_OLD: t_open_br PLENTY . t_close_br
+
+    t_close_br  shift, and go to state 89
+
+
+State 85
+
+   51 PLENTY_OLD: t_open_br ENUM . t_close_br
+   55 ENUM: ENUM . t_comma VALUE
+
+    t_close_br  shift, and go to state 90
+    t_comma     shift, and go to state 91
+
+
+State 86
+
+   50 PLENTY: PLENTY_OLD t_comma . PLENTY
+
+    t_open_br  shift, and go to state 73
+
+    PLENTY      go to state 92
+    PLENTY_OLD  go to state 75
+
+
+State 87
+
+   27 ASSIGNMENT: t_comma t_id ASSIGNMENT BOOLEAN t_comma .
+
+    $default  reduce using rule 27 (ASSIGNMENT)
+
+
 State 88
 
-   32 SHORT_ASSIGN: t_comma t_id SHORT_ASSIGN BOOLEAN t_comma .
+   26 ASSIGNMENT: t_comma t_id ASSIGNMENT EXPR t_comma .
 
-    $default  reduce using rule 32 (SHORT_ASSIGN)
+    $default  reduce using rule 26 (ASSIGNMENT)
 
 
 State 89
 
-   31 SHORT_ASSIGN: t_comma t_id SHORT_ASSIGN EXPR t_comma .
+   53 PLENTY_OLD: t_open_br PLENTY t_close_br .
 
-    $default  reduce using rule 31 (SHORT_ASSIGN)
+    $default  reduce using rule 53 (PLENTY_OLD)
 
 
 State 90
 
-   58 PLENTY_OLD: t_open_br t_close_br .
+   51 PLENTY_OLD: t_open_br ENUM t_close_br .
 
-    $default  reduce using rule 58 (PLENTY_OLD)
+    $default  reduce using rule 51 (PLENTY_OLD)
 
 
 State 91
 
-   60 ENUM: VALUE .
+   55 ENUM: ENUM t_comma . VALUE
 
-    $default  reduce using rule 60 (ENUM)
+    t_int_const    shift, and go to state 25
+    t_float_const  shift, and go to state 26
+    t_id           shift, and go to state 27
+    t_string       shift, and go to state 28
+    t_rune         shift, and go to state 30
+
+    VALUE  go to state 93
 
 
 State 92
 
-   59 PLENTY_OLD: t_open_br PLENTY . t_close_br
+   50 PLENTY: PLENTY_OLD t_comma PLENTY .
 
-    t_close_br  shift, and go to state 97
+    $default  reduce using rule 50 (PLENTY)
 
 
 State 93
 
-   57 PLENTY_OLD: t_open_br ENUM . t_close_br
-   61 ENUM: ENUM . t_comma VALUE
+   55 ENUM: ENUM t_comma VALUE .
 
-    t_close_br  shift, and go to state 98
-    t_comma     shift, and go to state 99
-
-
-State 94
-
-   56 PLENTY: PLENTY_OLD t_comma . PLENTY
-
-    t_open_br  shift, and go to state 81
-
-    PLENTY      go to state 100
-    PLENTY_OLD  go to state 83
-
-
-State 95
-
-   29 ASSIGNMENT: t_comma t_id ASSIGNMENT BOOLEAN t_comma .
-
-    $default  reduce using rule 29 (ASSIGNMENT)
-
-
-State 96
-
-   28 ASSIGNMENT: t_comma t_id ASSIGNMENT EXPR t_comma .
-
-    $default  reduce using rule 28 (ASSIGNMENT)
-
-
-State 97
-
-   59 PLENTY_OLD: t_open_br PLENTY t_close_br .
-
-    $default  reduce using rule 59 (PLENTY_OLD)
-
-
-State 98
-
-   57 PLENTY_OLD: t_open_br ENUM t_close_br .
-
-    $default  reduce using rule 57 (PLENTY_OLD)
-
-
-State 99
-
-   61 ENUM: ENUM t_comma . VALUE
-
-    t_int_const    shift, and go to state 19
-    t_float_const  shift, and go to state 20
-    t_id           shift, and go to state 39
-    t_string       shift, and go to state 22
-    t_open_sq      shift, and go to state 25
-    t_rune         shift, and go to state 26
-
-    VALUE      go to state 101
-    ARRAY_LEN  go to state 36
-    MULTI_AR   go to state 37
-
-
-State 100
-
-   56 PLENTY: PLENTY_OLD t_comma PLENTY .
-
-    $default  reduce using rule 56 (PLENTY)
-
-
-State 101
-
-   61 ENUM: ENUM t_comma VALUE .
-
-    $default  reduce using rule 61 (ENUM)
+    $default  reduce using rule 55 (ENUM)

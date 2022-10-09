@@ -40,8 +40,6 @@ BODY_END:     t_close_br
 
 BODY_START:   t_open_br
             | BODY_START VAR
-			| BODY_START OPERATORS
-			| BODY_START ARRAY_BODY
 			;
 
 VAR:          t_var t_id ASSIGNMENT EXPR
@@ -72,12 +70,9 @@ VALUE:        t_int_const
             | t_float_const
 			| t_id
 			| t_string
-			| MULTI_AR
       		| t_rune
 			;
 
-OPERATORS:    RET_PARAM
-			;
 RETURN:		  t_return RET_PARAM
 			| t_return
             ;
@@ -97,9 +92,6 @@ EXPR_START:   t_open_paren
 EXPR_END:     t_close_paren
             ;
 
-ARRAY_BODY:   t_var t_id ARRAY_LEN t_vtype
-            | t_var t_id MULTI_AR t_vtype 
-            ;
               
 ARRAY_LEN:    t_open_sq VALUE t_close_sq
             | t_open_sq t_close_sq
