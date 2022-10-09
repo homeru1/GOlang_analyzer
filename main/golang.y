@@ -35,7 +35,7 @@ BODY:         BODY_START BODY_END
 	        ;
 
 BODY_END:     t_close_br
-			|RETURN BODY_END
+			| RETURN BODY_END
             ;
 
 BODY_START:   t_open_br
@@ -47,11 +47,12 @@ BODY_START:   t_open_br
 VAR:          t_var t_id ASSIGNMENT EXPR
 			| t_var t_id ASSIGNMENT EXPR t_vtype
 			| t_var t_id ASSIGNMENT EXPR t_vtype PLENTY
-			|t_var t_id ASSIGNMENT BOOLEAN
+			| t_var t_id ASSIGNMENT BOOLEAN
 			| t_id SHORT_ASSIGN EXPR
 			| t_id SHORT_ASSIGN EXPR t_vtype //new
 			| t_id SHORT_ASSIGN EXPR t_vtype PLENTY 
-			|t_id SHORT_ASSIGN BOOLEAN
+			| t_id SHORT_ASSIGN BOOLEAN
+			| t_id MULTI_AR ASSIGNMENT EXPR
       		;
       
 BOOLEAN:	EXPR t_bool EXPR
@@ -75,15 +76,15 @@ VALUE:        t_int_const
       		| t_rune
 			;
 
-OPERATORS:   RET_PARAM
+OPERATORS:    RET_PARAM
 			;
-RETURN:		t_return RET_PARAM
+RETURN:		  t_return RET_PARAM
 			| t_return
-      ;
+            ;
       
-RET_PARAM:  RET_PARAM t_comma EXPR
-			|EXPR
-      ;
+RET_PARAM:    RET_PARAM t_comma EXPR
+			| EXPR
+            ;
 
 EXPR:         EXPR t_sign VALUE
 			| EXPR_START EXPR EXPR_END
@@ -97,7 +98,7 @@ EXPR_END:     t_close_paren
             ;
 
 ARRAY_BODY:   t_var t_id ARRAY_LEN t_vtype
-            | t_var t_id MULTI_AR t_vtype //
+            | t_var t_id MULTI_AR t_vtype 
             ;
               
 ARRAY_LEN:    t_open_sq VALUE t_close_sq
@@ -112,8 +113,8 @@ PLENTY:       PLENTY_OLD
             | PLENTY_OLD t_comma PLENTY 
 
 PLENTY_OLD:   t_open_br ENUM t_close_br
-            | t_open_br t_close_br //
-			| t_open_br PLENTY t_close_br //
+            | t_open_br t_close_br 
+			| t_open_br PLENTY t_close_br 
             ;
 
 ENUM:         VALUE

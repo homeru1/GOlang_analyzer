@@ -3,7 +3,7 @@ package main
 import "fmt"
 import "feiw"
 
-func plus 
-{
-    a := 
-} 
+func plus {
+
+   var twoD [2][3]int
+ } 
