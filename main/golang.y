@@ -9,7 +9,7 @@
 %token t_vtype t_constant t_case t_func t_import t_chan t_defer t_go t_interface t_default t_var t_range t_map t_package t_if t_select t_switch t_fallthrough t_else
 %token t_type t_for t_goto t_continue t_break t_return t_struct_const t_or_const t_and_const t_param_const t_eq_const t_rel_const t_shift_const t_inc_const
 %token t_point_const t_punc t_int_const t_float_const t_char_const t_id t_string t_short_dec t_open_br t_close_br t_sign t_comma t_equality t_open_paren t_close_paren
-%token t_open_sq t_close_sq t_bool t_rune
+%token t_open_sq t_close_sq t_bool t_rune t_semicolon t_blank_identifier t_dot t_colon t_true t_false t_short_expr
 %left '+' '-'
 %left '*' '/'
 %%
@@ -35,22 +35,29 @@ BODY:         BODY_START BODY_END
 	        ;
 
 BODY_END:     t_close_br
-			| RETURN BODY_END
+			|RETURN BODY_END
             ;
 
 BODY_START:   t_open_br
             | BODY_START VAR
+			| BODY_START FOR
+			| BODY_START SWITCH
+			| BODY_START GOTO
+			| BODY_START LABEL
+			| BODY_START IF
+			| BODY_START MULTI_AR
+			| BODY_START FUNC_CALL
+			| BODY_START SHORT_EXPR
 			;
 
 VAR:          t_var t_id ASSIGNMENT EXPR
 			| t_var t_id ASSIGNMENT EXPR t_vtype
 			| t_var t_id ASSIGNMENT EXPR t_vtype PLENTY
-			| t_var t_id ASSIGNMENT BOOLEAN
+			|t_var t_id ASSIGNMENT BOOLEAN
 			| t_id SHORT_ASSIGN EXPR
 			| t_id SHORT_ASSIGN EXPR t_vtype //new
 			| t_id SHORT_ASSIGN EXPR t_vtype PLENTY 
-			| t_id SHORT_ASSIGN BOOLEAN
-			| t_id MULTI_AR ASSIGNMENT EXPR
+			|t_id SHORT_ASSIGN BOOLEAN
       		;
       
 BOOLEAN:	EXPR t_bool EXPR
@@ -66,24 +73,121 @@ SHORT_ASSIGN: t_short_dec
 			| t_comma t_id SHORT_ASSIGN BOOLEAN t_comma
 			;
 
+FUNC_CALL:  t_id t_open_paren PARAM t_close_paren
+			|METHOD FUNC_CALL
+			;
+
+SHIFT:		SHIFT_AC t_shift_const SHIFT_AC
+			;
+
+SHIFT_AC:	t_id
+			|t_int_const
+			;
+
+METHOD:		t_id t_dot
+			;
+
 VALUE:        t_int_const
             | t_float_const
 			| t_id
 			| t_string
       		| t_rune
+			|t_blank_identifier
+			|FUNC_CALL
+			|SHIFT
 			;
 
-RETURN:		  t_return RET_PARAM
-			| t_return
-            ;
+GOTO:		t_goto t_id
+			;
+
+LABEL:		t_id t_colon
+			;
+
+SWITCH:		t_switch INIT_STATE t_semicolon EXPR SWITCH_BODY
+			|t_switch EXPR SWITCH_BODY
+			|t_switch SWITCH_BODY
+			;
+
+SWITCH_BODY: SWITCH_BODY_START SWITCH_BODY_END
+			;
+
+SWITCH_BODY_START: t_open_br 
+			|SWITCH_BODY_START CASE
+			;
+
+CASE:		 t_case CASE_STATEMENT CASE_BODY
+			;
+
+MULTIPLE_ARG:
+			FIRST_PART SECOND_PART
+			;
+
+FIRST_PART: EXPR t_comma
+			|FIRST_PART EXPR t_comma
+			;
+
+SECOND_PART: EXPR
+			;
+
+CASE_STATEMENT:
+			MULTIPLE_ARG
+			|EXPR
+			;
+
+CASE_BODY:	t_colon 
+			|CASE_BODY VAR
+			|CASE_BODY FOR
+			|CASE_BODY SWITCH
+			;
+
+SWITCH_BODY_END:
+			t_close_br
+			;
+
+
+IF:			t_if CONDITION BODY ELSE
+			|t_if CONDITION BODY
+			;
+
+ELSE:		t_else BODY
+			|t_else IF
+			;
+
+
+RETURN:		t_return PARAM
+      ;
       
-RET_PARAM:    RET_PARAM t_comma EXPR
-			| EXPR
-            ;
+PARAM:  	PARAM t_comma EXPR
+			|EXPR
+			|
+      ;
 
 EXPR:         EXPR t_sign VALUE
 			| EXPR_START EXPR EXPR_END
 			| VALUE
+			;
+
+SHORT_EXPR:		t_id t_short_expr t_id
+			;
+
+INIT_STATE:  VAR
+			| FUNC_CALL
+			|
+			;
+
+CONDITION:	BOOLEAN
+			|t_true
+			|t_false
+			|
+			;
+
+POST_STATE:  EXPR
+			|
+			;
+
+FOR:		  t_for INIT_STATE t_semicolon CONDITION t_semicolon POST_STATE BODY
+			| t_for CONDITION BODY
+			| t_for BODY
 			;
 
 EXPR_START:   t_open_paren
@@ -105,8 +209,8 @@ PLENTY:       PLENTY_OLD
             | PLENTY_OLD t_comma PLENTY 
 
 PLENTY_OLD:   t_open_br ENUM t_close_br
-            | t_open_br t_close_br 
-			| t_open_br PLENTY t_close_br 
+            | t_open_br t_close_br //
+			| t_open_br PLENTY t_close_br //
             ;
 
 ENUM:         VALUE

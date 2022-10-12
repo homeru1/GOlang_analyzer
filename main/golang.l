@@ -50,15 +50,20 @@
 "=="|">"|"<"|"<="|">="|"!="																		 {printf("bool ");return t_bool;}
 "["																								 {printf("[ "); return t_open_sq;}
 "]"																								 {printf("] "); return t_close_sq;}
-";"|"="|"*"|"+"|"-"|"/"|"?"|":"|"&"|"|"|"^"|"!"|"~"|"%"|"<"|">"		 		 	         {printf("sign ");return t_sign;}
-"*="|"/="|"+="|"%="|">>="|"-="|"<<="|"&="|"^="|"|="|"&^"|"&^="									 {printf("punc "); return t_punc;}
+";"																								 {printf("; "); return t_semicolon;}
+":"																								 {printf(": "); return t_colon;}
+"true"																							 {printf("true "); return t_true;}
+"false"																							 {printf("false "); return t_false;}
+"_"																								 {printf("_ "); return  t_blank_identifier;}
+"="|"*"|"+"|"-"|"/"|"?"|":"|"&"|"|"|"^"|"!"|"~"|"%"|"<"|">"		 		 	         			 {printf("sign ");return t_sign;}
+"*="|"/="|"+="|"%="|">>="|"-="|"<<="|"&="|"^="|"|="|"&^"|"&^="									 {printf("punc "); return t_short_expr;}
 [0-9]+																							 {printf("int "); return t_int_const;}
-[0-9]+"."[0-9]+																					 {printf("float "); return t_float_const;}	
+[0-9]+"."[0-9]+																					 {printf("float "); return t_float_const;}
+"."																								 {printf(". "); return  t_dot;}	
 "'"."'"																							 {printf("\' ");return t_char_const;}
 [_a-zA-Z][_a-zA-Z0-9]*			 																 {printf("id ");return t_id;}
 \'[a-zA-z]\'																					 {printf("rune ");return t_rune;}
 \"(\\.|[^\"])*\"																				 {printf("String ");return t_string;}
-"." {printf("DOT ");}
 "//"(\\.|[^\n])*[\n]																						;
 [/][*]([^*]|[*]*[^*/])*[*]+[/]                                                                              ;
 [ \t\n]																										;
