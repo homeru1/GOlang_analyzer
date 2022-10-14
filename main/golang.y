@@ -145,14 +145,31 @@ SWITCH_BODY_END:
 			;
 
 
-IF:			t_if CONDITION BODY ELSE
-			|t_if CONDITION BODY
+IF:			IF_FIRST MULTY_ELSEIF_SECOND MULTY_ELSE_THIRD
+			|IF_FIRST MULTY_ELSEIF_SECOND
+			|IF_FIRST MULTY_ELSE_THIRD
+			|IF_FIRST
 			;
 
-ELSE:		t_else BODY
-			|t_else IF
+IF_FIRST:	t_if CONDITION BODY
 			;
 
+MULTY_ELSEIF_SECOND:
+			MULTY_ELSEIF_SECOND ELSEIF_SECOND
+			|ELSEIF_SECOND
+			;
+
+ELSEIF_SECOND:
+			t_else t_if CONDITION BODY
+			;
+
+MULTY_ELSE_THIRD:
+			 ELSE_THIRD
+			|MULTY_ELSE_THIRD ELSE_THIRD
+			;
+
+ELSE_THIRD: t_else BODY
+			;
 
 RETURN:		t_return PARAM
       ;
@@ -160,7 +177,7 @@ RETURN:		t_return PARAM
 PARAM:  	PARAM t_comma EXPR
 			|EXPR
 			|
-      ;
+     		 ;
 
 EXPR:         EXPR t_sign VALUE
 			| EXPR_START EXPR EXPR_END
@@ -187,7 +204,6 @@ POST_STATE:  EXPR
 
 FOR:		  t_for INIT_STATE t_semicolon CONDITION t_semicolon POST_STATE BODY
 			| t_for CONDITION BODY
-			| t_for BODY
 			;
 
 EXPR_START:   t_open_paren

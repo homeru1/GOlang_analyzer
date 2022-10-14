@@ -5,5 +5,7 @@ import "feiw"
 
 func plus {
 
-   var twoD [2][3]int
+   for {
+      a:=2
+   }
  } 
