@@ -97,7 +97,12 @@ extern int yydebug;
      t_open_sq = 306,
      t_close_sq = 307,
      t_bool = 308,
-     t_rune = 309
+     t_rune = 309,
+     t_make = 310,
+     t_append = 311,
+     t_len = 312,
+     t_copy = 313,
+     t_colon = 314
    };
 #endif
 /* Tokens.  */
@@ -153,6 +158,11 @@ extern int yydebug;
 #define t_close_sq 307
 #define t_bool 308
 #define t_rune 309
+#define t_make 310
+#define t_append 311
+#define t_len 312
+#define t_copy 313
+#define t_colon 314
 
 
 

@@ -4,6 +4,5 @@ import "fmt"
 import "feiw"
 
 func plus {
-
-   var twoD [2][3]int
+   v1 := m["kgre"]
  } 
