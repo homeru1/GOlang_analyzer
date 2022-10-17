@@ -4,8 +4,4 @@ import "fmt"
 import "feiw"
 
 func plus {
-
-   for {
-      a:=2
-   }
  } 
