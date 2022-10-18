@@ -3,6 +3,13 @@ package main
 import "fmt"
 import "feiw"
 
+type person struct {
+    name string
+    age  int
+}
+
 func plus {
-   v1 := m["kgre"]
+  
+  var tom person = person{"Tom", 23}
+
  } 

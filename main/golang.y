@@ -20,6 +20,7 @@ START:        START GLOBAL
 GLOBAL:       PACKAGE
             | IMPORT
 			| FUNC
+			| STRUCT
 			;
 
 PACKAGE:     t_package t_id
@@ -141,10 +142,18 @@ SLICE:       t_id t_open_sq VALUE t_colon VALUE t_close_sq
 		   ;
 
 MAPS:         t_map t_open_sq t_vtype t_close_sq t_vtype
-           
            ;
 
+STRUCT:       STRUCT_START STRUCT_BODY STRUCT_END
+           ;
 
+STRUCT_START: t_type t_id t_struct_const t_open_br
+           ;
+
+STRUCT_BODY:  t_id t_vtype 
+           |  t_id t_vtype STRUCT_BODY
+
+STRUCT_END:   t_close_br
              
 
 
