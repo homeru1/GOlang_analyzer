@@ -3,7 +3,13 @@ package main
 import "fmt"
 import "feiw"
 
-func plus {
+type person struct {
+    name string
+    age  int
+}
 
-   var twoD [2][3]int
+func plus {
+  
+  var tom person = person{"Tom", 23}
+
  } 
