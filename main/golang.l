@@ -34,6 +34,10 @@
 "break"																							 {printf("break "); return t_break;}
 "struct"|"union"																				 {printf("struct_const "); return t_struct_const;}
 "return"																						 {printf("return "); return t_return;}
+"make"																						     {printf("make "); return t_make;}
+"append"																						 {printf("append "); return t_append;}
+"len"																							 {printf("len "); return t_len;}
+"copy"																							 {printf("copy "); return t_copy;}
 "{"																								 {printf("{ "); return t_open_br;}
 "}"																								 {printf("} "); return t_close_br;}
 "||" 																							 {printf("|| "); return t_or_const;}

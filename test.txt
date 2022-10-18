@@ -3,5 +3,10 @@ package main
 import "fmt"
 import "feiw"
 
+type person struct {
+    name string
+    age  int
+}
+
 func plus {
  } 
