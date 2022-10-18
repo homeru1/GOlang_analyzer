@@ -41,8 +41,6 @@ BODY_END:     t_close_br
 
 BODY_START:   t_open_br
             | BODY_START VAR
-			| BODY_START OPERATORS
-			| BODY_START ARRAY_BODY
 			;
 
 VAR:          t_var t_id ASSIGNMENT EXPR
@@ -83,8 +81,6 @@ VALUE:        t_int_const
       		| t_rune
 			;
 
-OPERATORS:    RET_PARAM
-			;
 RETURN:		  t_return RET_PARAM
 			| t_return
             ;
