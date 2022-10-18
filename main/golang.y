@@ -49,6 +49,7 @@ BODY_START:   t_open_br
 			| BODY_START MULTI_AR
 			| BODY_START FUNC_CALL
 			| BODY_START SHORT_EXPR
+			| BODY_START ARRAY_BODY
 			;
 
 VAR:          t_var t_id ASSIGNMENT EXPR
@@ -101,7 +102,7 @@ VALUE:        t_int_const
 			| t_id
 			| t_string
       		| t_rune
-			|t_blank_identifier
+			| t_blank_identifier
 			|FUNC_CALL
 			|SHIFT
 			;
@@ -231,10 +232,9 @@ EXPR_START:   t_open_paren
 EXPR_END:     t_close_paren
             ;
 
-ARRAY_BODY:   t_var t_id ARRAY_INDEX t_vtype
-            | t_var t_id MULTI_AR t_vtype 
-			| t_var t_id ARRAY_INDEX t_vtype ASSIGNMENT ARRAY_INDEX t_vtype PLENTY // bug fix (array)
-			| t_var t_id ARRAY_INDEX t_vtype ASSIGNMENT MAKE
+ARRAY_BODY: t_var t_id MULTI_AR t_vtype 
+			| t_var t_id MULTI_AR t_vtype ASSIGNMENT MULTI_AR t_vtype PLENTY
+			| t_var t_id MULTI_AR t_vtype ASSIGNMENT MAKE
             ;
               
 ARRAY_INDEX:  t_open_sq t_int_const t_close_sq
@@ -243,8 +243,8 @@ ARRAY_INDEX:  t_open_sq t_int_const t_close_sq
             | t_open_sq t_close_sq //Also need for slices
             ;
 
-MULTI_AR:     ARRAY_INDEX MULTI_AR
-			| ARRAY_INDEX 
+MULTI_AR:     ARRAY_INDEX
+			| ARRAY_INDEX MULTI_AR
             ;
 
 PLENTY:       PLENTY_OLD 
