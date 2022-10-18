@@ -9,7 +9,4 @@ type person struct {
 }
 
 func plus {
-  
-  var tom person = person{"Tom", 23}
-
  } 
