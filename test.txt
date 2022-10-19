@@ -1,13 +1,7 @@
-package main
-
-import "fmt"
-import "feiw"
-
-type person struct {
-    name string
-    age  int
-}
-
 func plus {
-
+    i := 'a'
+    i := 2
+    switch i {
+    case 1:a:=1; case 1:a:=1
+    }
  } 

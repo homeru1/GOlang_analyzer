@@ -9,16 +9,17 @@
 %token t_vtype t_constant t_case t_func t_import t_chan t_defer t_go t_interface t_default t_var t_range t_map t_package t_if t_select t_switch t_fallthrough t_else
 %token t_type t_for t_goto t_continue t_break t_return t_struct_const t_or_const t_and_const t_param_const t_eq_const t_rel_const t_shift_const t_inc_const
 %token t_point_const t_punc t_int_const t_float_const t_char_const t_id t_string t_short_dec t_open_br t_close_br t_sign t_comma t_equality t_open_paren t_close_paren
-%token t_open_sq t_close_sq t_bool t_rune t_semicolon t_blank_identifier t_dot t_colon t_true t_false t_short_expr t_make 
+%token t_open_sq t_close_sq t_bool t_rune t_semicolon t_blank_identifier t_dot t_colon t_true t_false t_short_expr t_make t_enter t_eof
 %left '+' '-'
 %left '*' '/'
 %%
-START:        START GLOBAL
-            | GLOBAL
+START:        START GLOBAL END_SYMBOLS
+            | GLOBAL END_SYMBOLS
+			| START END_SYMBOLS
 	        ;
 
 GLOBAL:       PACKAGE
-            | IMPORT
+            | IMPORT 
 			| FUNC
 			| STRUCT
 			;
@@ -36,38 +37,42 @@ BODY:         BODY_START BODY_END
 	        ;
 
 BODY_END:     t_close_br
-			|RETURN BODY_END
             ;
 
 BODY_START:   t_open_br
-            | BODY_START VAR
-			| BODY_START FOR
-			| BODY_START SWITCH
-			| BODY_START GOTO
-			| BODY_START LABEL
-			| BODY_START IF
-			| BODY_START MULTI_AR
-			| BODY_START FUNC_CALL
-			| BODY_START SHORT_EXPR
-			| BODY_START ARRAY_BODY
+			| t_open_br t_enter
+            | BODY_START BODY_FILLING END_SYMBOLS
+			;
+
+BODY_FILLING:  VAR 
+			|  FOR
+			|  SWITCH
+			|  GOTO
+			|  LABEL
+			|  IF
+			|  MULTI_AR
+			|  FUNC_CALL
+			|  SHORT_EXPR
+			|  ARRAY_BODY
+			|  RETURN
 			;
 
 VAR:          t_var t_id ASSIGNMENT EXPR
 			| t_var t_id ASSIGNMENT EXPR t_vtype
 			| t_var t_id ASSIGNMENT BOOLEAN
 			| t_id SHORT_ASSIGN EXPR
-			| t_id SHORT_ASSIGN MULTI_AR t_vtype PLENTY // PLENTY
-			| t_var t_id ASSIGNMENT MULTI_AR t_vtype PLENTY  // PLENTY
+			| t_id SHORT_ASSIGN MULTI_AR t_vtype PLENTY 
+			| t_var t_id ASSIGNMENT MULTI_AR t_vtype PLENTY  
 			| t_id SHORT_ASSIGN BOOLEAN
 			| t_id MULTI_AR ASSIGNMENT EXPR
-			| t_var t_id ASSIGNMENT MAKE // MAKE
-			| t_id SHORT_ASSIGN MAKE // MAKE
-			| t_id MULTI_AR ASSIGNMENT MAKE // MAKE
-			| t_id SHORT_ASSIGN SLICE // SLICE
-			| t_id ASSIGNMENT SLICE // SLICE
-			| t_var t_id ASSIGNMENT SLICE // SLICE
-			| t_var t_id MAPS // MAP
-			| t_id SHORT_ASSIGN t_make t_open_paren MAPS t_close_paren //MAP
+			| t_var t_id ASSIGNMENT MAKE 
+			| t_id SHORT_ASSIGN MAKE 
+			| t_id MULTI_AR ASSIGNMENT MAKE 
+			| t_id SHORT_ASSIGN SLICE 
+			| t_id ASSIGNMENT SLICE 
+			| t_var t_id ASSIGNMENT SLICE 
+			| t_var t_id MAPS 
+			| t_id SHORT_ASSIGN t_make t_open_paren MAPS t_close_paren 
       		;
       
 BOOLEAN:	  EXPR t_bool EXPR
@@ -124,6 +129,7 @@ SWITCH_BODY: SWITCH_BODY_START SWITCH_BODY_END
 
 SWITCH_BODY_START: 
 			t_open_br 
+			| t_open_br END_SYMBOLS
 			|SWITCH_BODY_START CASE
 			;
 
@@ -154,11 +160,11 @@ CASE_STATEMENT:
 			|EXPR
 			;
 
-CASE_BODY:	t_colon 
-			|CASE_BODY VAR
-			|CASE_BODY FOR
-			|CASE_BODY SWITCH
+CASE_BODY:	t_colon
+			|t_colon t_enter
+			|CASE_BODY BODY_FILLING END_SYMBOLS
 			;
+
 
 SWITCH_BODY_END:
 			t_close_br
@@ -282,8 +288,9 @@ STRUCT_BODY:  t_id t_vtype
 
 STRUCT_END:   t_close_br
              
-
-
+END_SYMBOLS: t_semicolon
+			|t_enter
+			|t_eof
 
 %%
 
