@@ -9,7 +9,7 @@
 %token t_vtype t_constant t_case t_func t_import t_chan t_defer t_go t_interface t_default t_var t_range t_map t_package t_if t_select t_switch t_fallthrough t_else
 %token t_type t_for t_goto t_continue t_break t_return t_struct_const t_or_const t_and_const t_param_const t_eq_const t_rel_const t_shift_const t_inc_const
 %token t_point_const t_punc t_int_const t_float_const t_char_const t_id t_string t_short_dec t_open_br t_close_br t_sign t_comma t_equality t_open_paren t_close_paren
-%token t_open_sq t_close_sq t_bool t_rune t_semicolon t_blank_identifier t_dot t_colon t_true t_false t_short_expr t_make t_enter t_eof
+%token t_open_sq t_close_sq t_bool t_rune t_semicolon t_blank_identifier t_dot t_colon t_true t_false t_short_expr t_make t_enter t_eof t_pointer t_ampersand
 %left '+' '-'
 %left '*' '/'
 %%
@@ -30,7 +30,7 @@ PACKAGE:     t_package t_id
 IMPORT:      t_import t_string
              ;
 
-FUNC:        t_func t_id BODY
+FUNC:        t_func t_id FUNC_CALL BODY
 			;
 
 BODY:         BODY_START BODY_END
@@ -79,6 +79,7 @@ VAR:          t_var t_id ASSIGNMENT EXPR
 			| t_var t_id ASSIGNMENT t_id ST_EMBEDDED //STRUCT
 			| t_id SHORT_ASSIGN t_id ST_EMBEDDED //STRUCT
 			| t_id ACCESS_FIELDS ASSIGNMENT VALUE //STRUCT
+			| VALUE ASSIGNMENT VALUE //+6 shift/reduce!!!
       		;
       
 BOOLEAN:	  EXPR t_bool EXPR
@@ -96,6 +97,7 @@ SHORT_ASSIGN: t_short_dec
 
 FUNC_CALL:    t_id t_open_paren PARAM t_close_paren
 			| METHOD FUNC_CALL
+			| t_open_paren t_close_paren //////////??still works
 			;
 
 SHIFT:		 SHIFT_AC t_shift_const SHIFT_AC
@@ -116,6 +118,9 @@ VALUE:        t_int_const
 			| t_blank_identifier
 			| FUNC_CALL
 			| SHIFT
+			| t_pointer t_id
+			| t_pointer t_vtype
+			| t_ampersand t_id
 			;
 
 GOTO:		  t_goto t_id
@@ -264,8 +269,8 @@ PLENTY:       PLENTY_OLD
             | PLENTY_OLD t_comma PLENTY 
 
 PLENTY_OLD:   t_open_br ENUM t_close_br
-            | t_open_br t_close_br //
-			| t_open_br PLENTY t_close_br //
+            | t_open_br t_close_br 
+			| t_open_br PLENTY t_close_br 
             ;
 
 ENUM:         VALUE

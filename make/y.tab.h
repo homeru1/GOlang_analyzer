@@ -107,7 +107,9 @@ extern int yydebug;
      t_short_expr = 316,
      t_make = 317,
      t_enter = 318,
-     t_eof = 319
+     t_eof = 319,
+     t_pointer = 320,
+     t_ampersand = 321
    };
 #endif
 /* Tokens.  */
@@ -173,6 +175,8 @@ extern int yydebug;
 #define t_make 317
 #define t_enter 318
 #define t_eof 319
+#define t_pointer 320
+#define t_ampersand 321
 
 
 
