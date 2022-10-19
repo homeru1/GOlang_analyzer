@@ -291,6 +291,7 @@ STRUCT_END:   t_close_br
 END_SYMBOLS: t_semicolon
 			|t_enter
 			|t_eof
+			;
 
 %%
 
