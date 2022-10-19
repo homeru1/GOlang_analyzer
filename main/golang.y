@@ -13,12 +13,13 @@
 %left '+' '-'
 %left '*' '/'
 %%
-START:        START GLOBAL
-            | GLOBAL
+START:        START GLOBAL END_SYMBOLS
+            | GLOBAL END_SYMBOLS
+			| START END_SYMBOLS
 	        ;
 
 GLOBAL:       PACKAGE
-            | IMPORT
+            | IMPORT 
 			| FUNC
 			| STRUCT
 			;
@@ -36,28 +37,32 @@ BODY:         BODY_START BODY_END
 	        ;
 
 BODY_END:     t_close_br
-			|RETURN BODY_END
             ;
 
 BODY_START:   t_open_br
-            | BODY_START VAR
-			| BODY_START FOR
-			| BODY_START SWITCH
-			| BODY_START GOTO
-			| BODY_START LABEL
-			| BODY_START IF
-			| BODY_START MULTI_AR
-			| BODY_START FUNC_CALL
-			| BODY_START SHORT_EXPR
-			| BODY_START ARRAY_BODY
+			| t_open_br t_enter
+            | BODY_START BODY_FILLING END_SYMBOLS
+			;
+
+BODY_FILLING:  VAR 
+			|  FOR
+			|  SWITCH
+			|  GOTO
+			|  LABEL
+			|  IF
+			|  MULTI_AR
+			|  FUNC_CALL
+			|  SHORT_EXPR
+			|  ARRAY_BODY
+			|  RETURN
 			;
 
 VAR:          t_var t_id ASSIGNMENT EXPR
 			| t_var t_id ASSIGNMENT EXPR t_vtype
 			| t_var t_id ASSIGNMENT BOOLEAN
 			| t_id SHORT_ASSIGN EXPR
-			| t_id SHORT_ASSIGN MULTI_AR t_vtype PLENTY // PLENTY
-			| t_var t_id ASSIGNMENT MULTI_AR t_vtype PLENTY  // PLENTY
+			| t_id SHORT_ASSIGN MULTI_AR t_vtype PLENTY 
+			| t_var t_id ASSIGNMENT MULTI_AR t_vtype PLENTY  
 			| t_id SHORT_ASSIGN BOOLEAN
 			| t_id MULTI_AR ASSIGNMENT EXPR
 			| t_var t_id ASSIGNMENT MAKE // MAKE
@@ -127,8 +132,10 @@ SWITCH_BODY:   SWITCH_BODY_START SWITCH_BODY_END
 			;
 
 SWITCH_BODY_START: 
-			  t_open_br 
-			| SWITCH_BODY_START CASE
+			t_open_br 
+			| t_open_br END_SYMBOLS
+			|SWITCH_BODY_START CASE
+
 			;
 
 SWITCH_BODY_START_WITH_DEFAULT: 
@@ -158,11 +165,11 @@ CASE_STATEMENT:
 			|EXPR
 			;
 
-CASE_BODY:	   t_colon 
-			| CASE_BODY VAR
-			| CASE_BODY FOR
-			| CASE_BODY SWITCH
+CASE_BODY:	t_colon
+			|t_colon t_enter
+			|CASE_BODY BODY_FILLING END_SYMBOLS
 			;
+
 
 SWITCH_BODY_END:
 			t_close_br
@@ -295,7 +302,7 @@ STRUCT_ENUM: t_id t_colon VALUE
 		   | t_id t_colon t_id STRUCT_FIELD 
            | STRUCT_ENUM t_comma t_id t_colon t_id STRUCT_FIELD
 		   ;
-             
+
 STRUCT_FIELD: t_open_br STRUCT_ENUM t_close_br 
            | t_open_br STRUCT_ENUM t_comma t_close_br t_comma
            | PLENTY_OLD
@@ -308,6 +315,10 @@ ST_EMBEDDED:  STRUCT_FIELD
 ACCESS_FIELDS: t_dot t_id
            |   t_dot t_id ACCESS_FIELDS
            
+END_SYMBOLS: t_semicolon
+			|t_enter
+			|t_eof
+			;
 
 
 %%
