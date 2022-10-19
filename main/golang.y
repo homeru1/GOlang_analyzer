@@ -40,8 +40,8 @@ BODY_END:     t_close_br
             ;
 
 BODY_START:   t_open_br
-			| t_open_br t_enter
             | BODY_START BODY_FILLING END_SYMBOLS
+			| BODY_START END_SYMBOLS
 			;
 
 BODY_FILLING:  VAR 
@@ -314,8 +314,8 @@ ST_EMBEDDED:  STRUCT_FIELD
            |  STRUCT_FIELD t_comma ST_EMBEDDED 
 		   ;
 
-ACCESS_FIELDS: t_dot t_id
-           |   t_dot t_id ACCESS_FIELDS 
+ACCESS_FIELDS: METHOD
+           |   METHOD ACCESS_FIELDS ///// Conflict
 		   ;
            
 END_SYMBOLS: t_semicolon
