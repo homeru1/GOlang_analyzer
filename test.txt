@@ -1,8 +1,0 @@
-func plus {
-    i := 2
-    switch i {
-    case 1:a:=1; case 1:a:=1
-    }
- }
-
- var a int = 1
