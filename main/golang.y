@@ -55,6 +55,8 @@ BODY_FILLING:  VAR
 			|  SHORT_EXPR
 			|  ARRAY_BODY
 			|  RETURN
+			|  STRUCT
+			|  ACCESS_FIELDS
 			;
 
 VAR:          t_var t_id ASSIGNMENT EXPR
@@ -282,38 +284,39 @@ SLICE:       t_id t_open_sq VALUE t_colon VALUE t_close_sq
 MAPS:         t_map t_open_sq t_vtype t_close_sq t_vtype
            ;
 
-STRUCT:       STRUCT_START STRUCT_BODY STRUCT_END
+STRUCT:       STRUCT_START STRUCT_BODY END_SYMBOLS STRUCT_END
            ;
 
 STRUCT_START: t_type t_id t_struct_const 
            ;
 
-STRUCT_BODY:  t_open_br 
-           |  STRUCT_BODY t_id t_vtype 
-           |  STRUCT_BODY t_id t_id //embedded struct
-		   |  STRUCT_BODY t_id //short definition
+STRUCT_BODY:  t_open_br
+           |  STRUCT_BODY END_SYMBOLS t_id t_vtype 
+           |  STRUCT_BODY END_SYMBOLS t_id t_id //embedded struct
+		   |  STRUCT_BODY END_SYMBOLS t_id //short definition
 		   ;
 
 STRUCT_END:   t_close_br
            ;
 
-STRUCT_ENUM: t_id t_colon VALUE
-           | STRUCT_ENUM t_comma t_id t_colon VALUE
+STRUCT_ENUM: t_id t_colon VALUE 
+           | STRUCT_ENUM t_comma END_SYMBOLS t_id t_colon VALUE
 		   | t_id t_colon t_id STRUCT_FIELD 
-           | STRUCT_ENUM t_comma t_id t_colon t_id STRUCT_FIELD
+           | STRUCT_ENUM t_comma END_SYMBOLS t_id t_colon t_id STRUCT_FIELD 
 		   ;
 
-STRUCT_FIELD: t_open_br STRUCT_ENUM t_close_br 
-           | t_open_br STRUCT_ENUM t_comma t_close_br t_comma
+STRUCT_FIELD: t_open_br END_SYMBOLS STRUCT_ENUM t_close_br 
+           | t_open_br END_SYMBOLS STRUCT_ENUM t_comma END_SYMBOLS t_close_br t_comma END_SYMBOLS
            | PLENTY_OLD
            ;
 
 ST_EMBEDDED:  STRUCT_FIELD 
-           |  STRUCT_FIELD t_comma ST_EMBEDDED
+           |  STRUCT_FIELD t_comma ST_EMBEDDED 
 		   ;
 
 ACCESS_FIELDS: t_dot t_id
-           |   t_dot t_id ACCESS_FIELDS
+           |   t_dot t_id ACCESS_FIELDS 
+		   ;
            
 END_SYMBOLS: t_semicolon
 			|t_enter

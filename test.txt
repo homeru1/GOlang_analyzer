@@ -1,0 +1,18 @@
+package main
+import "fmt"
+ 
+type contact struct{
+    email string
+    phone string
+}
+ 
+type person struct{
+    name string
+    age int
+    contactInfo contact
+}
+ 
+func main {
+    var numbers [3]int = [3]int{1, 2, 3}
+    var numbers2 [4]int = [4]int{1, 2, 3, 4}
+}
