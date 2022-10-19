@@ -65,14 +65,18 @@ VAR:          t_var t_id ASSIGNMENT EXPR
 			| t_var t_id ASSIGNMENT MULTI_AR t_vtype PLENTY  
 			| t_id SHORT_ASSIGN BOOLEAN
 			| t_id MULTI_AR ASSIGNMENT EXPR
-			| t_var t_id ASSIGNMENT MAKE 
-			| t_id SHORT_ASSIGN MAKE 
-			| t_id MULTI_AR ASSIGNMENT MAKE 
-			| t_id SHORT_ASSIGN SLICE 
-			| t_id ASSIGNMENT SLICE 
-			| t_var t_id ASSIGNMENT SLICE 
-			| t_var t_id MAPS 
-			| t_id SHORT_ASSIGN t_make t_open_paren MAPS t_close_paren 
+			| t_var t_id ASSIGNMENT MAKE // MAKE
+			| t_id SHORT_ASSIGN MAKE // MAKE
+			| t_id MULTI_AR ASSIGNMENT MAKE // MAKE
+			| t_id SHORT_ASSIGN SLICE // SLICE
+			| t_id ASSIGNMENT SLICE // SLICE
+			| t_var t_id ASSIGNMENT SLICE // SLICE
+			| t_var t_id MAPS // MAP
+			| t_id SHORT_ASSIGN t_make t_open_paren MAPS t_close_paren //MAP
+			| t_var t_id t_id ASSIGNMENT t_id ST_EMBEDDED //STRUCT
+			| t_var t_id ASSIGNMENT t_id ST_EMBEDDED //STRUCT
+			| t_id SHORT_ASSIGN t_id ST_EMBEDDED //STRUCT
+			| t_id ACCESS_FIELDS ASSIGNMENT VALUE //STRUCT
       		;
       
 BOOLEAN:	  EXPR t_bool EXPR
@@ -88,15 +92,15 @@ SHORT_ASSIGN: t_short_dec
 			| t_comma t_id SHORT_ASSIGN BOOLEAN t_comma
 			;
 
-FUNC_CALL:  t_id t_open_paren PARAM t_close_paren
-			|METHOD FUNC_CALL
+FUNC_CALL:    t_id t_open_paren PARAM t_close_paren
+			| METHOD FUNC_CALL
 			;
 
-SHIFT:		SHIFT_AC t_shift_const SHIFT_AC
+SHIFT:		 SHIFT_AC t_shift_const SHIFT_AC
 			;
 
-SHIFT_AC:	t_id
-			|t_int_const
+SHIFT_AC:	  t_id
+			| t_int_const
 			;
 
 METHOD:		t_id t_dot
@@ -108,22 +112,22 @@ VALUE:        t_int_const
 			| t_string
       		| t_rune
 			| t_blank_identifier
-			|FUNC_CALL
-			|SHIFT
+			| FUNC_CALL
+			| SHIFT
 			;
 
-GOTO:		t_goto t_id
+GOTO:		  t_goto t_id
 			;
 
-LABEL:		t_id t_colon
+LABEL:		  t_id t_colon
 			;
 
-SWITCH:		t_switch INIT_STATE t_semicolon EXPR SWITCH_BODY
-			|t_switch EXPR SWITCH_BODY
-			|t_switch SWITCH_BODY
+SWITCH:		  t_switch INIT_STATE t_semicolon EXPR SWITCH_BODY
+			| t_switch EXPR SWITCH_BODY
+			| t_switch SWITCH_BODY
 			;
 
-SWITCH_BODY: SWITCH_BODY_START SWITCH_BODY_END
+SWITCH_BODY:   SWITCH_BODY_START SWITCH_BODY_END
 			| SWITCH_BODY_START_WITH_DEFAULT SWITCH_BODY_END
 			;
 
@@ -131,11 +135,12 @@ SWITCH_BODY_START:
 			t_open_br 
 			| t_open_br END_SYMBOLS
 			|SWITCH_BODY_START CASE
+
 			;
 
 SWITCH_BODY_START_WITH_DEFAULT: 
-			SWITCH_BODY_START DEFAULT
-			|SWITCH_BODY_START_WITH_DEFAULT CASE
+			   SWITCH_BODY_START DEFAULT
+			| SWITCH_BODY_START_WITH_DEFAULT CASE
 			;
 
 CASE:		 t_case CASE_STATEMENT CASE_BODY
@@ -210,7 +215,7 @@ EXPR:         EXPR t_sign VALUE
 			| VALUE
 			;
 
-SHORT_EXPR:		t_id t_short_expr t_id
+SHORT_EXPR:	  t_id t_short_expr t_id
 			;
 
 INIT_STATE:  VAR
@@ -225,7 +230,7 @@ CONDITION:	BOOLEAN
 			;
 
 POST_STATE:  EXPR
-			|
+			| t_id t_inc_const
 			;
 
 FOR:		  t_for INIT_STATE t_semicolon CONDITION t_semicolon POST_STATE BODY
@@ -280,18 +285,41 @@ MAPS:         t_map t_open_sq t_vtype t_close_sq t_vtype
 STRUCT:       STRUCT_START STRUCT_BODY STRUCT_END
            ;
 
-STRUCT_START: t_type t_id t_struct_const t_open_br
+STRUCT_START: t_type t_id t_struct_const 
            ;
 
-STRUCT_BODY:  t_id t_vtype 
-           |  t_id t_vtype STRUCT_BODY
+STRUCT_BODY:  t_open_br 
+           |  STRUCT_BODY t_id t_vtype 
+           |  STRUCT_BODY t_id t_id //embedded struct
+		   |  STRUCT_BODY t_id //short definition
+		   ;
 
 STRUCT_END:   t_close_br
-             
+           ;
+
+STRUCT_ENUM: t_id t_colon VALUE
+           | STRUCT_ENUM t_comma t_id t_colon VALUE
+		   | t_id t_colon t_id STRUCT_FIELD 
+           | STRUCT_ENUM t_comma t_id t_colon t_id STRUCT_FIELD
+		   ;
+
+STRUCT_FIELD: t_open_br STRUCT_ENUM t_close_br 
+           | t_open_br STRUCT_ENUM t_comma t_close_br t_comma
+           | PLENTY_OLD
+           ;
+
+ST_EMBEDDED:  STRUCT_FIELD 
+           |  STRUCT_FIELD t_comma ST_EMBEDDED
+		   ;
+
+ACCESS_FIELDS: t_dot t_id
+           |   t_dot t_id ACCESS_FIELDS
+           
 END_SYMBOLS: t_semicolon
 			|t_enter
 			|t_eof
 			;
+
 
 %%
 
