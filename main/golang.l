@@ -58,6 +58,7 @@
 "_"																								 {printf("_ "); return  t_blank_identifier;}
 "*"																								 {printf("* "); return t_pointer;}
 "&"																								 {printf("& "); return t_ampersand;}
+"./"																							 {printf("./ "); return t_path_pack;}
 "="|"*"|"+"|"-"|"/"|"?"|":"|"&"|"|"|"^"|"!"|"~"|"%"|"<"|">"		 		 	         			 {printf("sign ");return t_sign;}
 "*="|"/="|"+="|"%="|">>="|"-="|"<<="|"&="|"^="|"|="|"&^"|"&^="									 {printf("punc "); return t_short_expr;}
 [0-9]+																							 {printf("int "); return t_int_const;}

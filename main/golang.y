@@ -9,7 +9,7 @@
 %token t_vtype t_constant t_case t_func t_import t_chan t_defer t_go t_interface t_default t_var t_range t_map t_package t_if t_select t_switch t_fallthrough t_else
 %token t_type t_for t_goto t_continue t_break t_return t_struct_const t_or_const t_and_const t_param_const t_eq_const t_rel_const t_shift_const t_inc_const
 %token t_point_const t_punc t_int_const t_float_const t_char_const t_id t_string t_short_dec t_open_br t_close_br t_sign t_comma t_equality t_open_paren t_close_paren
-%token t_open_sq t_close_sq t_bool t_rune t_semicolon t_blank_identifier t_dot t_colon t_true t_false t_short_expr t_make t_enter t_eof t_pointer t_ampersand
+%token t_open_sq t_close_sq t_bool t_rune t_semicolon t_blank_identifier t_dot t_colon t_true t_false t_short_expr t_make t_enter t_eof t_pointer t_ampersand t_path_pack
 %left '+' '-'
 %left '*' '/'
 %%
@@ -22,16 +22,21 @@ GLOBAL:       PACKAGE
             | IMPORT 
 			| FUNC
 			| STRUCT
+			| INTERFACE
 			;
 
 PACKAGE:     t_package t_id
              ;
 			 
-IMPORT:      t_import t_string
-             ;
+IMPORT:       t_import t_string 
+            | t_import t_open_paren END_SYMBOLS PARAM_IMPORT t_close_paren
+			| t_import t_id t_string
+            ;
 
 FUNC:        t_func t_id FUNC_CALL BODY
-			;
+           | t_func t_id FUNC_CALL POINTER BODY
+		   //| t_func FUNC_CALL t_id FUNC_CALL t_vtype BODY
+		   ;
 
 BODY:         BODY_START BODY_END
 	        ;
@@ -63,6 +68,7 @@ VAR:          t_var t_id ASSIGNMENT EXPR
 			| t_var t_id ASSIGNMENT EXPR t_vtype
 			| t_var t_id ASSIGNMENT BOOLEAN
 			| t_id SHORT_ASSIGN EXPR
+			| t_id ASSIGNMENT EXPR
 			| t_id SHORT_ASSIGN MULTI_AR t_vtype PLENTY 
 			| t_var t_id ASSIGNMENT MULTI_AR t_vtype PLENTY  
 			| t_id SHORT_ASSIGN BOOLEAN
@@ -79,7 +85,9 @@ VAR:          t_var t_id ASSIGNMENT EXPR
 			| t_var t_id ASSIGNMENT t_id ST_EMBEDDED //STRUCT
 			| t_id SHORT_ASSIGN t_id ST_EMBEDDED //STRUCT
 			| t_id ACCESS_FIELDS ASSIGNMENT VALUE //STRUCT
-			| VALUE ASSIGNMENT VALUE //+6 shift/reduce!!!
+			| POINTER ASSIGNMENT EXPR 
+			| t_var t_id POINTER 
+			| t_var t_id POINTER ASSIGNMENT EXPR
       		;
       
 BOOLEAN:	  EXPR t_bool EXPR
@@ -110,6 +118,19 @@ SHIFT_AC:	  t_id
 METHOD:		t_id t_dot
 			;
 
+POINTER:      t_pointer t_id
+			| t_pointer t_vtype
+			| t_ampersand t_id
+			;
+
+PARAM_IMPORT: t_string END_SYMBOLS
+            | t_string '/' t_string END_SYMBOLS
+			| t_string t_path_pack t_string END_SYMBOLS
+			| t_id t_string END_SYMBOLS
+            | PARAM_IMPORT t_string END_SYMBOLS
+			| PARAM_IMPORT t_id t_string END_SYMBOLS
+			;  
+
 VALUE:        t_int_const
             | t_float_const
 			| t_id
@@ -118,9 +139,7 @@ VALUE:        t_int_const
 			| t_blank_identifier
 			| FUNC_CALL
 			| SHIFT
-			| t_pointer t_id
-			| t_pointer t_vtype
-			| t_ampersand t_id
+			| POINTER
 			;
 
 GOTO:		  t_goto t_id
@@ -212,13 +231,13 @@ ELSE_THIRD: t_else BODY
 RETURN:		t_return PARAM
       ;
       
-PARAM:  	PARAM t_comma EXPR
-			|EXPR
-			|
-     		 ;
+PARAM:  	  PARAM t_comma EXPR
+			| EXPR
+			| 
+     		;
 
-EXPR:         EXPR t_sign VALUE
-			| EXPR_START EXPR EXPR_END
+EXPR:         EXPR t_sign VALUE 
+			| EXPR_START EXPR EXPR_END 
 			| VALUE
 			;
 
@@ -328,6 +347,14 @@ END_SYMBOLS: t_semicolon
 			|t_eof
 			;
 
+INTERFACE:     t_type t_id t_interface INT_BODY END_SYMBOLS INT_END
+            ;
+
+INT_BODY:      t_open_br END_SYMBOLS t_id t_open_paren t_close_paren
+            //|  t_id t_open_paren t_close_paren t_vtype 
+
+INT_END:       t_close_br
+            ;
 
 %%
 

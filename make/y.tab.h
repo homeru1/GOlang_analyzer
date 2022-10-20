@@ -109,7 +109,8 @@ extern int yydebug;
      t_enter = 318,
      t_eof = 319,
      t_pointer = 320,
-     t_ampersand = 321
+     t_ampersand = 321,
+     t_path_pack = 322
    };
 #endif
 /* Tokens.  */
@@ -177,6 +178,7 @@ extern int yydebug;
 #define t_eof 319
 #define t_pointer 320
 #define t_ampersand 321
+#define t_path_pack 322
 
 
 
