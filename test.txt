@@ -1,7 +1,7 @@
-type Vehicle interface{
-    move() 
+type base struct {
+    num int
 }
 
-func main() {
-    
+func main (){
+     tom.email = 4
 }

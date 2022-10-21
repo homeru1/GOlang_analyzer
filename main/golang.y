@@ -29,13 +29,13 @@ PACKAGE:     t_package t_id
              ;
 			 
 IMPORT:       t_import t_string 
-            | t_import t_open_paren END_SYMBOLS PARAM_IMPORT t_close_paren
+            | t_import t_open_paren PARAM_IMPORT t_close_paren
+			| t_import t_open_paren t_enter PARAM_IMPORT t_close_paren
 			| t_import t_id t_string
             ;
 
 FUNC:        t_func t_id FUNC_CALL BODY
            | t_func t_id FUNC_CALL POINTER BODY
-		   //| t_func FUNC_CALL t_id FUNC_CALL t_vtype BODY
 		   ;
 
 BODY:         BODY_START BODY_END
@@ -62,6 +62,7 @@ BODY_FILLING:  VAR
 			|  RETURN
 			|  STRUCT
 			|  ACCESS_FIELDS
+			|  SLICE
 			;
 
 VAR:          t_var t_id ASSIGNMENT EXPR
@@ -124,7 +125,7 @@ POINTER:      t_pointer t_id
 			;
 
 PARAM_IMPORT: t_string END_SYMBOLS
-            | t_string '/' t_string END_SYMBOLS
+            //| t_string '/' t_string END_SYMBOLS {printf("here");}
 			| t_string t_path_pack t_string END_SYMBOLS
 			| t_id t_string END_SYMBOLS
             | PARAM_IMPORT t_string END_SYMBOLS
@@ -140,6 +141,7 @@ VALUE:        t_int_const
 			| FUNC_CALL
 			| SHIFT
 			| POINTER
+			//| SLICE
 			;
 
 GOTO:		  t_goto t_id
@@ -324,7 +326,7 @@ STRUCT_END:   t_close_br
            ;
 
 STRUCT_ENUM: t_id t_colon VALUE 
-           | STRUCT_ENUM t_comma END_SYMBOLS t_id t_colon VALUE
+           | STRUCT_ENUM t_comma END_SYMBOLS t_id t_colon VALUE 
 		   | t_id t_colon t_id STRUCT_FIELD 
            | STRUCT_ENUM t_comma END_SYMBOLS t_id t_colon t_id STRUCT_FIELD 
 		   ;
