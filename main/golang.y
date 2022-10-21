@@ -61,6 +61,7 @@ BODY_FILLING:  VAR
 			|  RETURN
 			|  STRUCT
 			|  SLICE
+			| DEFER
 			;
 
 VAR:          t_var t_id ASSIGNMENT EXPR
@@ -90,6 +91,10 @@ VAR:          t_var t_id ASSIGNMENT EXPR
       		;
       
 BOOLEAN:	  EXPR t_bool EXPR
+			;
+
+
+DEFER:		t_defer FUNC_CALL
 			;
 
 ASSIGNMENT:   t_vtype t_equality
