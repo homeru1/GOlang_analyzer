@@ -61,7 +61,6 @@ BODY_FILLING:  VAR
 			|  ARRAY_BODY
 			|  RETURN
 			|  STRUCT
-			|  ACCESS_FIELDS
 			|  SLICE
 			;
 
@@ -85,7 +84,7 @@ VAR:          t_var t_id ASSIGNMENT EXPR
 			| t_var t_id t_id ASSIGNMENT t_id ST_EMBEDDED //STRUCT
 			| t_var t_id ASSIGNMENT t_id ST_EMBEDDED //STRUCT
 			| t_id SHORT_ASSIGN t_id ST_EMBEDDED //STRUCT
-			| t_id ACCESS_FIELDS ASSIGNMENT VALUE //STRUCT
+			| METHOD ASSIGNMENT VALUE //STRUCT
 			| POINTER ASSIGNMENT EXPR 
 			| t_var t_id POINTER 
 			| t_var t_id POINTER ASSIGNMENT EXPR
@@ -105,8 +104,8 @@ SHORT_ASSIGN: t_short_dec
 			;
 
 FUNC_CALL:    t_id t_open_paren PARAM t_close_paren
-			| METHOD FUNC_CALL
-			| t_open_paren t_close_paren //////////??still works
+			 |METHOD t_open_paren PARAM t_close_paren
+			//| t_open_paren PARAM t_close_paren 
 			;
 
 SHIFT:		 SHIFT_AC t_shift_const SHIFT_AC
@@ -116,8 +115,9 @@ SHIFT_AC:	  t_id
 			| t_int_const
 			;
 
-METHOD:		t_id t_dot
-			;
+METHOD:		t_id t_dot t_id
+           | METHOD t_dot t_id
+		   ;
 
 POINTER:      t_pointer t_id
 			| t_pointer t_vtype
@@ -314,6 +314,7 @@ STRUCT:       STRUCT_START STRUCT_BODY END_SYMBOLS STRUCT_END
            ;
 
 STRUCT_START: t_type t_id t_struct_const 
+           |  t_type t_id t_struct_const t_enter
            ;
 
 STRUCT_BODY:  t_open_br
@@ -340,9 +341,9 @@ ST_EMBEDDED:  STRUCT_FIELD
            |  STRUCT_FIELD t_comma ST_EMBEDDED 
 		   ;
 
-ACCESS_FIELDS: METHOD
-           |   METHOD ACCESS_FIELDS ///// Conflict
-		   ;
+//ACCESS_FIELDS: METHOD {printf("HERE");}
+//           |   ACCESS_FIELDS METHOD  ///// Conflict
+//		   ;
            
 END_SYMBOLS: t_semicolon
 			|t_enter
