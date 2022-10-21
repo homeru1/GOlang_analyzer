@@ -41,12 +41,10 @@ FUNC_SECOND_PART:
 
 FUNC_PARAM:	FUNC_PARAM_FULFILL
 			|FUNC_PARAM t_comma FUNC_PARAM_FULFILL
-			|
 			;	
 
 FUNC_PARAM_FULFILL:
-			t_id t_vtype
-			|t_id t_id
+			t_id TYPE_AND_STRUCT //Допилить
 			| t_id
 			;
 
@@ -56,9 +54,8 @@ FUNC_PARAM_SECOND:
 			;
 
 FUNC_PARAM_FULFILL_SECOND:
-			t_id t_vtype
-			| t_id t_id
-			| t_vtype
+			t_id TYPE_AND_STRUCT
+			| TYPE_AND_STRUCT
 			;
 
 FUNC_RETURN_VALUE:
@@ -66,10 +63,13 @@ FUNC_RETURN_VALUE:
 			|FUNC_RETURN_VALUE FUNC_RETURN_VALUE_FULFILL
 			;
 FUNC_RETURN_VALUE_FULFILL:
-			 t_vtype
-			|t_id
-			|t_func t_open_paren t_vtype t_close_paren
+			 TYPE_AND_STRUCT
+			|t_func t_open_paren TYPE_AND_STRUCT t_close_paren
 			|t_func t_open_paren t_close_paren
+			;
+TYPE_AND_STRUCT:
+			t_vtype
+			|t_id
 			;
 BODY:        BODY_START BODY_END
 	        ;

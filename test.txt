@@ -1,10 +1,6 @@
-// You can edit this code!
-// Click here and start typing.
-package main
-
-import "fmt"
-
-func add(x int, y int) (c int,d int) {
-	total := 0
-	return total
+func add(x int) int int {
+    c,a := os.Open("asd")
+    if err != nil{
+        a:=2
+    }
 }
