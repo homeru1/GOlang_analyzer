@@ -1,7 +1,0 @@
-type base struct {
-    num int
-}
-
-func main {
-    tom.email.number()
-}   

@@ -34,8 +34,7 @@ IMPORT:       t_import t_string
 			| t_import t_id t_string
             ;
 
-FUNC:        t_func t_id FUNC_CALL BODY
-           | t_func t_id FUNC_CALL POINTER BODY
+FUNC:        t_func t_id BODY
 		   ;
 
 BODY:         BODY_START BODY_END
@@ -104,8 +103,7 @@ SHORT_ASSIGN: t_short_dec
 			;
 
 FUNC_CALL:    t_id t_open_paren PARAM t_close_paren
-			 |METHOD t_open_paren PARAM t_close_paren
-			//| t_open_paren PARAM t_close_paren 
+			| METHOD t_open_paren PARAM t_close_paren
 			;
 
 SHIFT:		 SHIFT_AC t_shift_const SHIFT_AC
