@@ -34,10 +34,49 @@ IMPORT:       t_import t_string
 			| t_import t_id t_string
             ;
 
-FUNC:        t_func t_id BODY
-		   ;
+FUNC:        t_func t_id t_open_paren FUNC_PARAM t_close_paren FUNC_SECOND_PART
+			;
 
-BODY:         BODY_START BODY_END
+FUNC_SECOND_PART:
+			BODY
+			| FUNC_RETURN_VALUE BODY
+			| t_open_paren FUNC_PARAM_SECOND t_close_paren BODY
+			;
+
+FUNC_PARAM:	FUNC_PARAM_FULFILL
+			|FUNC_PARAM t_comma FUNC_PARAM_FULFILL
+			;	
+
+FUNC_PARAM_FULFILL:
+			t_id TYPE_AND_STRUCT //Допилить
+			| t_id
+			|
+			;
+
+FUNC_PARAM_SECOND:
+			 FUNC_PARAM_FULFILL_SECOND
+			|FUNC_PARAM_SECOND t_comma FUNC_PARAM_FULFILL_SECOND
+			;
+
+FUNC_PARAM_FULFILL_SECOND:
+			t_id TYPE_AND_STRUCT
+			| TYPE_AND_STRUCT
+			;
+
+FUNC_RETURN_VALUE:
+			 FUNC_RETURN_VALUE_FULFILL
+			|FUNC_RETURN_VALUE FUNC_RETURN_VALUE_FULFILL
+			;
+FUNC_RETURN_VALUE_FULFILL:
+			 TYPE_AND_STRUCT
+			|t_func t_open_paren TYPE_AND_STRUCT t_close_paren
+			|t_func t_open_paren t_close_paren
+			;
+TYPE_AND_STRUCT:
+			t_vtype
+			|t_id
+			;
+BODY:        BODY_START BODY_END
 	        ;
 
 BODY_END:     t_close_br
