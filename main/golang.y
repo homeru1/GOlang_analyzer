@@ -30,20 +30,48 @@ PACKAGE:     t_package t_id
 IMPORT:      t_import t_string
              ;
 
-FUNC:        t_func t_id t_open_paren FUNC_PARAM t_close_paren  BODY
-			|t_func t_id t_open_paren FUNC_PARAM t_close_paren t_open_paren FUNC_PARAM t_close_paren BODY
+FUNC:        t_func t_id t_open_paren FUNC_PARAM t_close_paren FUNC_SECOND_PART
 			;
 
-FUNC_PARAM:	t_id t_vtype
-			| t_id
-			|FUNC_PARAM t_comma t_id t_vtype
-			|FUNC_PARAM t_comma t_id
+FUNC_SECOND_PART:
+			BODY
+			| FUNC_RETURN_VALUE BODY
+			| t_open_paren FUNC_PARAM_SECOND t_close_paren BODY
+			;
+
+FUNC_PARAM:	FUNC_PARAM_FULFILL
+			|FUNC_PARAM t_comma FUNC_PARAM_FULFILL
+			|
 			;	
 
+FUNC_PARAM_FULFILL:
+			t_id t_vtype
+			|t_id t_id
+			| t_id
+			;
+
+FUNC_PARAM_SECOND:
+			 FUNC_PARAM_FULFILL_SECOND
+			|FUNC_PARAM_SECOND t_comma FUNC_PARAM_FULFILL_SECOND
+			;
+
+FUNC_PARAM_FULFILL_SECOND:
+			t_id t_vtype
+			| t_id t_id
+			| t_vtype
+			;
+
 FUNC_RETURN_VALUE:
-			t_vtype
-			|
-BODY:         BODY_START BODY_END
+			 FUNC_RETURN_VALUE_FULFILL
+			|FUNC_RETURN_VALUE FUNC_RETURN_VALUE_FULFILL
+			;
+FUNC_RETURN_VALUE_FULFILL:
+			 t_vtype
+			|t_id
+			|t_func t_open_paren t_vtype t_close_paren
+			|t_func t_open_paren t_close_paren
+			;
+BODY:        BODY_START BODY_END
 	        ;
 
 BODY_END:     t_close_br
