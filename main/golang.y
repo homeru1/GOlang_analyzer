@@ -46,6 +46,7 @@ FUNC_PARAM:	FUNC_PARAM_FULFILL
 FUNC_PARAM_FULFILL:
 			t_id TYPE_AND_STRUCT //Допилить
 			| t_id
+			|
 			;
 
 FUNC_PARAM_SECOND:

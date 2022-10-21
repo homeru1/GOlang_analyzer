@@ -1,5 +1,4 @@
-func add(x int) int int {
-    c,a := os.Open("asd")
+func add() int {
     if err != nil{
         a:=2
     }
