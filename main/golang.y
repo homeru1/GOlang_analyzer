@@ -30,9 +30,19 @@ PACKAGE:     t_package t_id
 IMPORT:      t_import t_string
              ;
 
-FUNC:        t_func t_id BODY
+FUNC:        t_func t_id t_open_paren FUNC_PARAM t_close_paren  BODY
+			|t_func t_id t_open_paren FUNC_PARAM t_close_paren t_open_paren FUNC_PARAM t_close_paren BODY
 			;
 
+FUNC_PARAM:	t_id t_vtype
+			| t_id
+			|FUNC_PARAM t_comma t_id t_vtype
+			|FUNC_PARAM t_comma t_id
+			;	
+
+FUNC_RETURN_VALUE:
+			t_vtype
+			|
 BODY:         BODY_START BODY_END
 	        ;
 
