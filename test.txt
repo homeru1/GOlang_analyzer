@@ -1,5 +1,18 @@
-func add() int {
-    if err != nil{
-        a:=2
-    }
-}
+func main() {
+		switch i {
+
+
+
+
+
+
+
+            
+      case 1:
+	  break;
+      case 2:
+      break
+      break
+		}
+        	fmt.Println()
+	}

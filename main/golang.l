@@ -66,13 +66,13 @@
 "."																								 {printf(". "); return  t_dot;}	
 "'"."'"																							 {printf("\' ");return t_char_const;}
 [_a-zA-Z][_a-zA-Z0-9]*			 																 {printf("id ");return t_id;}
-\'[a-zA-z]\'																					 {printf("rune ");return t_rune;}
+"\'[a-zA-z]\'"																				     {printf("rune ");return t_rune;}
 \"(\\.|[^\"])*\"																				 {printf("String ");return t_string;}
-"\n"																				 			 {printf("\\n ");return t_enter;}
+\n																					 			 {printf("\\n ");return t_enter;}
 <<EOF>> 																						 {printf("eof "); static int once = 0; return (once = !once) ? t_eof : 0; }
 "//"(\\.|[^\n])*[\n]																						;
 [/][*]([^*]|[*]*[^*/])*[*]+[/]                                                                              ;
-[ \t\n]																										;
+[ \t]																										;
 %%
 
 int yywrap(void)

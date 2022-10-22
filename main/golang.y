@@ -100,7 +100,7 @@ BODY_FILLING:  VAR
 			|  RETURN
 			|  STRUCT
 			|  SLICE
-			| DEFER
+			|  DEFER
 			;
 
 VAR:          t_var t_id ASSIGNMENT EXPR
@@ -167,8 +167,6 @@ POINTER:      t_pointer t_id
 			;
 
 PARAM_IMPORT: t_string END_SYMBOLS
-            //| t_string '/' t_string END_SYMBOLS {printf("here");}
-			| t_string t_path_pack t_string END_SYMBOLS
 			| t_id t_string END_SYMBOLS
             | PARAM_IMPORT t_string END_SYMBOLS
 			| PARAM_IMPORT t_id t_string END_SYMBOLS
@@ -183,7 +181,7 @@ VALUE:        t_int_const
 			| FUNC_CALL
 			| SHIFT
 			| POINTER
-			//| SLICE
+			| METHOD
 			;
 
 GOTO:		  t_goto t_id
@@ -202,11 +200,13 @@ SWITCH_BODY:   SWITCH_BODY_START SWITCH_BODY_END
 			;
 
 SWITCH_BODY_START: 
-			t_open_br 
-			| t_open_br END_SYMBOLS
+			TMP
 			|SWITCH_BODY_START CASE
-
 			;
+
+TMP: t_open_br // make everywhere
+	|TMP END_SYMBOLS
+	;
 
 SWITCH_BODY_START_WITH_DEFAULT: 
 			   SWITCH_BODY_START DEFAULT
@@ -236,8 +236,8 @@ CASE_STATEMENT:
 			;
 
 CASE_BODY:	t_colon
-			|t_colon t_enter
-			|CASE_BODY BODY_FILLING END_SYMBOLS
+			|CASE_BODY LOOP_FILLING END_SYMBOLS
+			|CASE_BODY END_SYMBOLS
 			;
 
 
@@ -252,16 +252,36 @@ IF:			IF_FIRST MULTY_ELSEIF_SECOND MULTY_ELSE_THIRD
 			|IF_FIRST
 			;
 
-IF_FIRST:	t_if CONDITION BODY
+IF_FIRST:	t_if CONDITION BODY_FOR_LOOP
+			;
+
+BODY_FOR_LOOP: BODY_FOR_LOOP_START BODY_FOR_LOOP_END
+			;
+
+BODY_FOR_LOOP_START:
+			 t_open_br
+            | BODY_FOR_LOOP_START LOOP_FILLING END_SYMBOLS
+			| BODY_FOR_LOOP_START END_SYMBOLS
+			;
+
+
+BODY_FOR_LOOP_END:     t_close_br
+            ;
+
+
+LOOP_FILLING:  
+			 BODY_FILLING
+			|t_break
+			|t_continue
 			;
 
 MULTY_ELSEIF_SECOND:
-			MULTY_ELSEIF_SECOND ELSEIF_SECOND
-			|ELSEIF_SECOND
+			 ELSEIF_SECOND
+			|MULTY_ELSEIF_SECOND ELSEIF_SECOND
 			;
 
 ELSEIF_SECOND:
-			t_else t_if CONDITION BODY
+			t_else t_if CONDITION BODY_FOR_LOOP
 			;
 
 MULTY_ELSE_THIRD:
@@ -269,7 +289,7 @@ MULTY_ELSE_THIRD:
 			|MULTY_ELSE_THIRD ELSE_THIRD
 			;
 
-ELSE_THIRD: t_else BODY
+ELSE_THIRD: t_else BODY_FOR_LOOP
 			;
 
 RETURN:		t_return PARAM
@@ -303,8 +323,8 @@ POST_STATE:  EXPR
 			| t_id t_inc_const
 			;
 
-FOR:		  t_for INIT_STATE t_semicolon CONDITION t_semicolon POST_STATE BODY
-			| t_for CONDITION BODY
+FOR:		  t_for INIT_STATE t_semicolon CONDITION t_semicolon POST_STATE BODY_FOR_LOOP
+			| t_for CONDITION BODY_FOR_LOOP
 			;
 
 EXPR_START:   t_open_paren
