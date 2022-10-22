@@ -82,9 +82,8 @@ BODY:        BODY_START BODY_END
 BODY_END:     t_close_br
             ;
 
-BODY_START:   t_open_br
+BODY_START:   ABSORB_EMPTYNESS
             | BODY_START BODY_FILLING END_SYMBOLS
-			| BODY_START END_SYMBOLS
 			;
 
 BODY_FILLING:  VAR 
@@ -149,6 +148,8 @@ SHORT_ASSIGN: t_short_dec
 FUNC_CALL:    t_id t_open_paren PARAM t_close_paren
 			| METHOD t_open_paren PARAM t_close_paren
 			;
+FUNC_CALL_START:
+			
 
 SHIFT:		 SHIFT_AC t_shift_const SHIFT_AC
 			;
@@ -200,12 +201,12 @@ SWITCH_BODY:   SWITCH_BODY_START SWITCH_BODY_END
 			;
 
 SWITCH_BODY_START: 
-			TMP
+			ABSORB_EMPTYNESS
 			|SWITCH_BODY_START CASE
 			;
 
-TMP: t_open_br // make everywhere
-	|TMP END_SYMBOLS
+ABSORB_EMPTYNESS: t_open_br // make everywhere
+	|ABSORB_EMPTYNESS END_SYMBOLS
 	;
 
 SWITCH_BODY_START_WITH_DEFAULT: 
@@ -253,15 +254,15 @@ IF:			IF_FIRST MULTY_ELSEIF_SECOND MULTY_ELSE_THIRD
 			;
 
 IF_FIRST:	t_if CONDITION BODY_FOR_LOOP
+			|t_if INIT_STATE t_semicolon CONDITION BODY_FOR_LOOP
 			;
 
 BODY_FOR_LOOP: BODY_FOR_LOOP_START BODY_FOR_LOOP_END
 			;
 
 BODY_FOR_LOOP_START:
-			 t_open_br
+			  ABSORB_EMPTYNESS
             | BODY_FOR_LOOP_START LOOP_FILLING END_SYMBOLS
-			| BODY_FOR_LOOP_START END_SYMBOLS
 			;
 
 
@@ -297,7 +298,7 @@ RETURN:		t_return PARAM
       
 PARAM:  	  PARAM t_comma EXPR
 			| EXPR
-			| 
+			|
      		;
 
 EXPR:         EXPR t_sign VALUE 

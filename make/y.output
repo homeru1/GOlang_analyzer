@@ -1,0 +1,5157 @@
+Terminals unused in grammar
+
+   t_constant
+   t_chan
+   t_go
+   t_range
+   t_select
+   t_fallthrough
+   t_or_const
+   t_and_const
+   t_param_const
+   t_eq_const
+   t_rel_const
+   t_point_const
+   t_punc
+   t_char_const
+   t_path_pack
+   '+'
+   '-'
+   '*'
+   '/'
+
+
+State 106 conflicts: 11 shift/reduce
+State 165 conflicts: 1 shift/reduce
+State 167 conflicts: 1 shift/reduce
+State 193 conflicts: 1 shift/reduce
+
+
+Grammar
+
+    0 $accept: START $end
+
+    1 START: START GLOBAL END_SYMBOLS
+    2      | GLOBAL END_SYMBOLS
+    3      | START END_SYMBOLS
+
+    4 GLOBAL: PACKAGE
+    5       | IMPORT
+    6       | FUNC
+    7       | STRUCT
+    8       | INTERFACE
+
+    9 PACKAGE: t_package t_id
+
+   10 IMPORT: t_import t_string
+   11       | t_import t_open_paren PARAM_IMPORT t_close_paren
+   12       | t_import t_open_paren t_enter PARAM_IMPORT t_close_paren
+   13       | t_import t_id t_string
+
+   14 FUNC: t_func t_id t_open_paren FUNC_PARAM t_close_paren FUNC_SECOND_PART
+
+   15 FUNC_SECOND_PART: BODY
+   16                 | FUNC_RETURN_VALUE BODY
+   17                 | t_open_paren FUNC_PARAM_SECOND t_close_paren BODY
+
+   18 FUNC_PARAM: FUNC_PARAM_FULFILL
+   19           | FUNC_PARAM t_comma FUNC_PARAM_FULFILL
+
+   20 FUNC_PARAM_FULFILL: t_id TYPE_AND_STRUCT
+   21                   | t_id
+   22                   | /* empty */
+
+   23 FUNC_PARAM_SECOND: FUNC_PARAM_FULFILL_SECOND
+   24                  | FUNC_PARAM_SECOND t_comma FUNC_PARAM_FULFILL_SECOND
+
+   25 FUNC_PARAM_FULFILL_SECOND: t_id TYPE_AND_STRUCT
+   26                          | TYPE_AND_STRUCT
+
+   27 FUNC_RETURN_VALUE: FUNC_RETURN_VALUE_FULFILL
+   28                  | FUNC_RETURN_VALUE FUNC_RETURN_VALUE_FULFILL
+
+   29 FUNC_RETURN_VALUE_FULFILL: TYPE_AND_STRUCT
+   30                          | t_func t_open_paren TYPE_AND_STRUCT t_close_paren
+   31                          | t_func t_open_paren t_close_paren
+
+   32 TYPE_AND_STRUCT: t_vtype
+   33                | t_id
+
+   34 BODY: BODY_START BODY_END
+
+   35 BODY_END: t_close_br
+
+   36 BODY_START: ABSORB_EMPTYNESS
+   37           | BODY_START BODY_FILLING END_SYMBOLS
+
+   38 BODY_FILLING: VAR
+   39             | FOR
+   40             | SWITCH
+   41             | GOTO
+   42             | LABEL
+   43             | IF
+   44             | MULTI_AR
+   45             | FUNC_CALL
+   46             | SHORT_EXPR
+   47             | ARRAY_BODY
+   48             | RETURN
+   49             | STRUCT
+   50             | SLICE
+   51             | DEFER
+
+   52 VAR: t_var t_id ASSIGNMENT EXPR
+   53    | t_var t_id ASSIGNMENT EXPR t_vtype
+   54    | t_var t_id ASSIGNMENT BOOLEAN
+   55    | t_id SHORT_ASSIGN EXPR
+   56    | t_id ASSIGNMENT EXPR
+   57    | t_id SHORT_ASSIGN MULTI_AR t_vtype PLENTY
+   58    | t_var t_id ASSIGNMENT MULTI_AR t_vtype PLENTY
+   59    | t_id SHORT_ASSIGN BOOLEAN
+   60    | t_id MULTI_AR ASSIGNMENT EXPR
+   61    | t_var t_id ASSIGNMENT MAKE
+   62    | t_id SHORT_ASSIGN MAKE
+   63    | t_id MULTI_AR ASSIGNMENT MAKE
+   64    | t_id SHORT_ASSIGN SLICE
+   65    | t_id ASSIGNMENT SLICE
+   66    | t_var t_id ASSIGNMENT SLICE
+   67    | t_var t_id MAPS
+   68    | t_id SHORT_ASSIGN t_make t_open_paren MAPS t_close_paren
+   69    | t_var t_id t_id ASSIGNMENT t_id ST_EMBEDDED
+   70    | t_var t_id ASSIGNMENT t_id ST_EMBEDDED
+   71    | t_id SHORT_ASSIGN t_id ST_EMBEDDED
+   72    | METHOD ASSIGNMENT VALUE
+   73    | POINTER ASSIGNMENT EXPR
+   74    | t_var t_id POINTER
+   75    | t_var t_id POINTER ASSIGNMENT EXPR
+
+   76 BOOLEAN: EXPR t_bool EXPR
+
+   77 DEFER: t_defer FUNC_CALL
+
+   78 ASSIGNMENT: t_vtype t_equality
+   79           | t_equality
+   80           | t_comma t_id ASSIGNMENT EXPR t_comma
+   81           | t_comma t_id ASSIGNMENT BOOLEAN t_comma
+
+   82 SHORT_ASSIGN: t_short_dec
+   83             | t_comma t_id SHORT_ASSIGN EXPR t_comma
+   84             | t_comma t_id SHORT_ASSIGN BOOLEAN t_comma
+
+   85 FUNC_CALL: FUNC_CALL_START t_close_paren
+
+   86 FUNC_CALL_START: t_id t_open_paren
+   87                | METHOD t_open_paren
+   88                | FUNC_CALL_START t_enter
+   89                | FUNC_CALL_START PARAM
+
+   90 SHIFT: SHIFT_AC t_shift_const SHIFT_AC
+
+   91 SHIFT_AC: t_id
+   92         | t_int_const
+
+   93 METHOD: t_id t_dot t_id
+   94       | METHOD t_dot t_id
+
+   95 POINTER: t_pointer t_id
+   96        | t_pointer t_vtype
+   97        | t_ampersand t_id
+
+   98 PARAM_IMPORT: t_string END_SYMBOLS
+   99             | t_id t_string END_SYMBOLS
+  100             | PARAM_IMPORT t_string END_SYMBOLS
+  101             | PARAM_IMPORT t_id t_string END_SYMBOLS
+
+  102 VALUE: t_int_const
+  103      | t_float_const
+  104      | t_id
+  105      | t_string
+  106      | t_rune
+  107      | t_blank_identifier
+  108      | FUNC_CALL
+  109      | SHIFT
+  110      | POINTER
+  111      | METHOD
+
+  112 GOTO: t_goto t_id
+
+  113 LABEL: t_id t_colon
+
+  114 SWITCH: t_switch INIT_STATE t_semicolon EXPR SWITCH_BODY
+  115       | t_switch EXPR SWITCH_BODY
+  116       | t_switch SWITCH_BODY
+
+  117 SWITCH_BODY: SWITCH_BODY_START SWITCH_BODY_END
+  118            | SWITCH_BODY_START_WITH_DEFAULT SWITCH_BODY_END
+
+  119 SWITCH_BODY_START: ABSORB_EMPTYNESS
+  120                  | SWITCH_BODY_START CASE
+
+  121 ABSORB_EMPTYNESS: t_open_br
+  122                 | ABSORB_EMPTYNESS END_SYMBOLS
+
+  123 SWITCH_BODY_START_WITH_DEFAULT: SWITCH_BODY_START DEFAULT
+  124                               | SWITCH_BODY_START_WITH_DEFAULT CASE
+
+  125 CASE: t_case CASE_STATEMENT CASE_BODY
+
+  126 DEFAULT: t_default CASE_BODY
+
+  127 MULTIPLE_ARG: FIRST_PART SECOND_PART
+
+  128 FIRST_PART: EXPR t_comma
+  129           | FIRST_PART EXPR t_comma
+
+  130 SECOND_PART: EXPR
+
+  131 CASE_STATEMENT: MULTIPLE_ARG
+  132               | EXPR
+
+  133 CASE_BODY: t_colon
+  134          | CASE_BODY LOOP_FILLING END_SYMBOLS
+  135          | CASE_BODY END_SYMBOLS
+
+  136 SWITCH_BODY_END: t_close_br
+
+  137 IF: IF_FIRST MULTY_ELSEIF_SECOND MULTY_ELSE_THIRD
+  138   | IF_FIRST MULTY_ELSEIF_SECOND
+  139   | IF_FIRST MULTY_ELSE_THIRD
+  140   | IF_FIRST
+
+  141 IF_FIRST: t_if CONDITION BODY_FOR_LOOP
+  142         | t_if INIT_STATE t_semicolon CONDITION BODY_FOR_LOOP
+
+  143 BODY_FOR_LOOP: BODY_FOR_LOOP_START BODY_FOR_LOOP_END
+
+  144 BODY_FOR_LOOP_START: ABSORB_EMPTYNESS
+  145                    | BODY_FOR_LOOP_START LOOP_FILLING END_SYMBOLS
+
+  146 BODY_FOR_LOOP_END: t_close_br
+
+  147 LOOP_FILLING: BODY_FILLING
+  148             | t_break
+  149             | t_continue
+
+  150 MULTY_ELSEIF_SECOND: ELSEIF_SECOND
+  151                    | MULTY_ELSEIF_SECOND ELSEIF_SECOND
+
+  152 ELSEIF_SECOND: t_else t_if CONDITION BODY_FOR_LOOP
+
+  153 MULTY_ELSE_THIRD: ELSE_THIRD
+  154                 | MULTY_ELSE_THIRD ELSE_THIRD
+
+  155 ELSE_THIRD: t_else BODY_FOR_LOOP
+
+  156 RETURN: t_return PARAM
+
+  157 PARAM: PARAM t_comma EXPR
+  158      | EXPR
+  159      | /* empty */
+
+  160 EXPR: EXPR t_sign VALUE
+  161     | EXPR_START EXPR EXPR_END
+  162     | VALUE
+
+  163 SHORT_EXPR: t_id t_short_expr t_id
+
+  164 INIT_STATE: VAR
+  165           | FUNC_CALL
+  166           | /* empty */
+
+  167 CONDITION: BOOLEAN
+  168          | t_true
+  169          | t_false
+  170          | /* empty */
+
+  171 POST_STATE: EXPR
+  172           | t_id t_inc_const
+
+  173 FOR: t_for INIT_STATE t_semicolon CONDITION t_semicolon POST_STATE BODY_FOR_LOOP
+  174    | t_for CONDITION BODY_FOR_LOOP
+
+  175 EXPR_START: t_open_paren
+
+  176 EXPR_END: t_close_paren
+
+  177 ARRAY_BODY: t_var t_id MULTI_AR t_vtype
+  178           | t_var t_id MULTI_AR t_vtype ASSIGNMENT MULTI_AR t_vtype PLENTY
+  179           | t_var t_id MULTI_AR t_vtype ASSIGNMENT MAKE
+
+  180 ARRAY_INDEX: t_open_sq t_int_const t_close_sq
+  181            | t_open_sq t_id t_close_sq
+  182            | t_open_sq t_string t_close_sq
+  183            | t_open_sq t_close_sq
+
+  184 MULTI_AR: ARRAY_INDEX
+  185         | ARRAY_INDEX MULTI_AR
+
+  186 PLENTY: PLENTY_OLD
+  187       | PLENTY_OLD t_comma PLENTY
+
+  188 PLENTY_OLD: t_open_br ENUM t_close_br
+  189           | t_open_br t_close_br
+  190           | t_open_br PLENTY t_close_br
+
+  191 ENUM: VALUE
+  192     | ENUM t_comma VALUE
+
+  193 MAKE: t_make t_open_paren MULTI_AR t_vtype t_comma VALUE t_close_paren
+  194     | t_make t_open_paren MULTI_AR t_vtype t_comma VALUE t_comma t_int_const VALUE
+
+  195 SLICE: t_id t_open_sq VALUE t_colon VALUE t_close_sq
+  196      | t_id t_open_sq t_colon VALUE t_close_sq
+  197      | t_id t_open_sq VALUE t_colon t_close_sq
+
+  198 MAPS: t_map t_open_sq t_vtype t_close_sq t_vtype
+
+  199 STRUCT: STRUCT_START STRUCT_BODY END_SYMBOLS STRUCT_END
+
+  200 STRUCT_START: t_type t_id t_struct_const
+  201             | t_type t_id t_struct_const t_enter
+
+  202 STRUCT_BODY: t_open_br
+  203            | STRUCT_BODY END_SYMBOLS t_id t_vtype
+  204            | STRUCT_BODY END_SYMBOLS t_id t_id
+  205            | STRUCT_BODY END_SYMBOLS t_id
+
+  206 STRUCT_END: t_close_br
+
+  207 STRUCT_ENUM: t_id t_colon VALUE
+  208            | STRUCT_ENUM t_comma END_SYMBOLS t_id t_colon VALUE
+  209            | t_id t_colon t_id STRUCT_FIELD
+  210            | STRUCT_ENUM t_comma END_SYMBOLS t_id t_colon t_id STRUCT_FIELD
+
+  211 STRUCT_FIELD: t_open_br END_SYMBOLS STRUCT_ENUM t_close_br
+  212             | t_open_br END_SYMBOLS STRUCT_ENUM t_comma END_SYMBOLS t_close_br t_comma END_SYMBOLS
+  213             | PLENTY_OLD
+
+  214 ST_EMBEDDED: STRUCT_FIELD
+  215            | STRUCT_FIELD t_comma ST_EMBEDDED
+
+  216 END_SYMBOLS: t_semicolon
+  217            | t_enter
+  218            | t_eof
+
+  219 INTERFACE: t_type t_id t_interface INT_BODY END_SYMBOLS INT_END
+
+  220 INT_BODY: t_open_br END_SYMBOLS t_id t_open_paren t_close_paren
+
+  221 INT_END: t_close_br
+
+
+Terminals, with rules where they appear
+
+$end (0) 0
+'*' (42)
+'+' (43)
+'-' (45)
+'/' (47)
+error (256)
+t_vtype (258) 32 53 57 58 78 96 177 178 179 193 194 198 203
+t_constant (259)
+t_case (260) 125
+t_func (261) 14 30 31
+t_import (262) 10 11 12 13
+t_chan (263)
+t_defer (264) 77
+t_go (265)
+t_interface (266) 219
+t_default (267) 126
+t_var (268) 52 53 54 58 61 66 67 69 70 74 75 177 178 179
+t_range (269)
+t_map (270) 198
+t_package (271) 9
+t_if (272) 141 142 152
+t_select (273)
+t_switch (274) 114 115 116
+t_fallthrough (275)
+t_else (276) 152 155
+t_type (277) 200 201 219
+t_for (278) 173 174
+t_goto (279) 112
+t_continue (280) 149
+t_break (281) 148
+t_return (282) 156
+t_struct_const (283) 200 201
+t_or_const (284)
+t_and_const (285)
+t_param_const (286)
+t_eq_const (287)
+t_rel_const (288)
+t_shift_const (289) 90
+t_inc_const (290) 172
+t_point_const (291)
+t_punc (292)
+t_int_const (293) 92 102 180 194
+t_float_const (294) 103
+t_char_const (295)
+t_id (296) 9 13 14 20 21 25 33 52 53 54 55 56 57 58 59 60 61 62 63
+    64 65 66 67 68 69 70 71 74 75 80 81 83 84 86 91 93 94 95 97 99
+    101 104 112 113 163 172 177 178 179 181 195 196 197 200 201 203
+    204 205 207 208 209 210 219 220
+t_string (297) 10 13 98 99 100 101 105 182
+t_short_dec (298) 82
+t_open_br (299) 121 188 189 190 202 211 212 220
+t_close_br (300) 35 136 146 188 189 190 206 211 212 221
+t_sign (301) 160
+t_comma (302) 19 24 80 81 83 84 128 129 157 187 192 193 194 208 210
+    212 215
+t_equality (303) 78 79
+t_open_paren (304) 11 12 14 17 30 31 68 86 87 175 193 194 220
+t_close_paren (305) 11 12 14 17 30 31 68 85 176 193 220
+t_open_sq (306) 180 181 182 183 195 196 197 198
+t_close_sq (307) 180 181 182 183 195 196 197 198
+t_bool (308) 76
+t_rune (309) 106
+t_semicolon (310) 114 142 173 216
+t_blank_identifier (311) 107
+t_dot (312) 93 94
+t_colon (313) 113 133 195 196 197 207 208 209 210
+t_true (314) 168
+t_false (315) 169
+t_short_expr (316) 163
+t_make (317) 68 193 194
+t_enter (318) 12 88 201 217
+t_eof (319) 218
+t_pointer (320) 95 96
+t_ampersand (321) 97
+t_path_pack (322)
+
+
+Nonterminals, with rules where they appear
+
+$accept (72)
+    on left: 0
+START (73)
+    on left: 1 2 3, on right: 0 1 3
+GLOBAL (74)
+    on left: 4 5 6 7 8, on right: 1 2
+PACKAGE (75)
+    on left: 9, on right: 4
+IMPORT (76)
+    on left: 10 11 12 13, on right: 5
+FUNC (77)
+    on left: 14, on right: 6
+FUNC_SECOND_PART (78)
+    on left: 15 16 17, on right: 14
+FUNC_PARAM (79)
+    on left: 18 19, on right: 14 19
+FUNC_PARAM_FULFILL (80)
+    on left: 20 21 22, on right: 18 19
+FUNC_PARAM_SECOND (81)
+    on left: 23 24, on right: 17 24
+FUNC_PARAM_FULFILL_SECOND (82)
+    on left: 25 26, on right: 23 24
+FUNC_RETURN_VALUE (83)
+    on left: 27 28, on right: 16 28
+FUNC_RETURN_VALUE_FULFILL (84)
+    on left: 29 30 31, on right: 27 28
+TYPE_AND_STRUCT (85)
+    on left: 32 33, on right: 20 25 26 29 30
+BODY (86)
+    on left: 34, on right: 15 16 17
+BODY_END (87)
+    on left: 35, on right: 34
+BODY_START (88)
+    on left: 36 37, on right: 34 37
+BODY_FILLING (89)
+    on left: 38 39 40 41 42 43 44 45 46 47 48 49 50 51, on right: 37
+    147
+VAR (90)
+    on left: 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69
+    70 71 72 73 74 75, on right: 38 164
+BOOLEAN (91)
+    on left: 76, on right: 54 59 81 84 167
+DEFER (92)
+    on left: 77, on right: 51
+ASSIGNMENT (93)
+    on left: 78 79 80 81, on right: 52 53 54 56 58 60 61 63 65 66 69
+    70 72 73 75 80 81 178 179
+SHORT_ASSIGN (94)
+    on left: 82 83 84, on right: 55 57 59 62 64 68 71 83 84
+FUNC_CALL (95)
+    on left: 85, on right: 45 77 108 165
+FUNC_CALL_START (96)
+    on left: 86 87 88 89, on right: 85 88 89
+SHIFT (97)
+    on left: 90, on right: 109
+SHIFT_AC (98)
+    on left: 91 92, on right: 90
+METHOD (99)
+    on left: 93 94, on right: 72 87 94 111
+POINTER (100)
+    on left: 95 96 97, on right: 73 74 75 110
+PARAM_IMPORT (101)
+    on left: 98 99 100 101, on right: 11 12 100 101
+VALUE (102)
+    on left: 102 103 104 105 106 107 108 109 110 111, on right: 72
+    160 162 191 192 193 194 195 196 197 207 208
+GOTO (103)
+    on left: 112, on right: 41
+LABEL (104)
+    on left: 113, on right: 42
+SWITCH (105)
+    on left: 114 115 116, on right: 40
+SWITCH_BODY (106)
+    on left: 117 118, on right: 114 115 116
+SWITCH_BODY_START (107)
+    on left: 119 120, on right: 117 120 123
+ABSORB_EMPTYNESS (108)
+    on left: 121 122, on right: 36 119 122 144
+SWITCH_BODY_START_WITH_DEFAULT (109)
+    on left: 123 124, on right: 118 124
+CASE (110)
+    on left: 125, on right: 120 124
+DEFAULT (111)
+    on left: 126, on right: 123
+MULTIPLE_ARG (112)
+    on left: 127, on right: 131
+FIRST_PART (113)
+    on left: 128 129, on right: 127 129
+SECOND_PART (114)
+    on left: 130, on right: 127
+CASE_STATEMENT (115)
+    on left: 131 132, on right: 125
+CASE_BODY (116)
+    on left: 133 134 135, on right: 125 126 134 135
+SWITCH_BODY_END (117)
+    on left: 136, on right: 117 118
+IF (118)
+    on left: 137 138 139 140, on right: 43
+IF_FIRST (119)
+    on left: 141 142, on right: 137 138 139 140
+BODY_FOR_LOOP (120)
+    on left: 143, on right: 141 142 152 155 173 174
+BODY_FOR_LOOP_START (121)
+    on left: 144 145, on right: 143 145
+BODY_FOR_LOOP_END (122)
+    on left: 146, on right: 143
+LOOP_FILLING (123)
+    on left: 147 148 149, on right: 134 145
+MULTY_ELSEIF_SECOND (124)
+    on left: 150 151, on right: 137 138 151
+ELSEIF_SECOND (125)
+    on left: 152, on right: 150 151
+MULTY_ELSE_THIRD (126)
+    on left: 153 154, on right: 137 139 154
+ELSE_THIRD (127)
+    on left: 155, on right: 153 154
+RETURN (128)
+    on left: 156, on right: 48
+PARAM (129)
+    on left: 157 158 159, on right: 89 156 157
+EXPR (130)
+    on left: 160 161 162, on right: 52 53 55 56 60 73 75 76 80 83 114
+    115 128 129 130 132 157 158 160 161 171
+SHORT_EXPR (131)
+    on left: 163, on right: 46
+INIT_STATE (132)
+    on left: 164 165 166, on right: 114 142 173
+CONDITION (133)
+    on left: 167 168 169 170, on right: 141 142 152 173 174
+POST_STATE (134)
+    on left: 171 172, on right: 173
+FOR (135)
+    on left: 173 174, on right: 39
+EXPR_START (136)
+    on left: 175, on right: 161
+EXPR_END (137)
+    on left: 176, on right: 161
+ARRAY_BODY (138)
+    on left: 177 178 179, on right: 47
+ARRAY_INDEX (139)
+    on left: 180 181 182 183, on right: 184 185
+MULTI_AR (140)
+    on left: 184 185, on right: 44 57 58 60 63 177 178 179 185 193
+    194
+PLENTY (141)
+    on left: 186 187, on right: 57 58 178 187 190
+PLENTY_OLD (142)
+    on left: 188 189 190, on right: 186 187 213
+ENUM (143)
+    on left: 191 192, on right: 188 192
+MAKE (144)
+    on left: 193 194, on right: 61 62 63 179
+SLICE (145)
+    on left: 195 196 197, on right: 50 64 65 66
+MAPS (146)
+    on left: 198, on right: 67 68
+STRUCT (147)
+    on left: 199, on right: 7 49
+STRUCT_START (148)
+    on left: 200 201, on right: 199
+STRUCT_BODY (149)
+    on left: 202 203 204 205, on right: 199 203 204 205
+STRUCT_END (150)
+    on left: 206, on right: 199
+STRUCT_ENUM (151)
+    on left: 207 208 209 210, on right: 208 210 211 212
+STRUCT_FIELD (152)
+    on left: 211 212 213, on right: 209 210 214 215
+ST_EMBEDDED (153)
+    on left: 214 215, on right: 69 70 71 215
+END_SYMBOLS (154)
+    on left: 216 217 218, on right: 1 2 3 37 98 99 100 101 122 134
+    135 145 199 203 204 205 208 210 211 212 219 220
+INTERFACE (155)
+    on left: 219, on right: 8
+INT_BODY (156)
+    on left: 220, on right: 219
+INT_END (157)
+    on left: 221, on right: 219
+
+
+State 0
+
+    0 $accept: . START $end
+
+    t_func     shift, and go to state 1
+    t_import   shift, and go to state 2
+    t_package  shift, and go to state 3
+    t_type     shift, and go to state 4
+
+    START         go to state 5
+    GLOBAL        go to state 6
+    PACKAGE       go to state 7
+    IMPORT        go to state 8
+    FUNC          go to state 9
+    STRUCT        go to state 10
+    STRUCT_START  go to state 11
+    INTERFACE     go to state 12
+
+
+State 1
+
+   14 FUNC: t_func . t_id t_open_paren FUNC_PARAM t_close_paren FUNC_SECOND_PART
+
+    t_id  shift, and go to state 13
+
+
+State 2
+
+   10 IMPORT: t_import . t_string
+   11       | t_import . t_open_paren PARAM_IMPORT t_close_paren
+   12       | t_import . t_open_paren t_enter PARAM_IMPORT t_close_paren
+   13       | t_import . t_id t_string
+
+    t_id          shift, and go to state 14
+    t_string      shift, and go to state 15
+    t_open_paren  shift, and go to state 16
+
+
+State 3
+
+    9 PACKAGE: t_package . t_id
+
+    t_id  shift, and go to state 17
+
+
+State 4
+
+  200 STRUCT_START: t_type . t_id t_struct_const
+  201             | t_type . t_id t_struct_const t_enter
+  219 INTERFACE: t_type . t_id t_interface INT_BODY END_SYMBOLS INT_END
+
+    t_id  shift, and go to state 18
+
+
+State 5
+
+    0 $accept: START . $end
+    1 START: START . GLOBAL END_SYMBOLS
+    3      | START . END_SYMBOLS
+
+    $end         shift, and go to state 19
+    t_func       shift, and go to state 1
+    t_import     shift, and go to state 2
+    t_package    shift, and go to state 3
+    t_type       shift, and go to state 4
+    t_semicolon  shift, and go to state 20
+    t_enter      shift, and go to state 21
+    t_eof        shift, and go to state 22
+
+    GLOBAL        go to state 23
+    PACKAGE       go to state 7
+    IMPORT        go to state 8
+    FUNC          go to state 9
+    STRUCT        go to state 10
+    STRUCT_START  go to state 11
+    END_SYMBOLS   go to state 24
+    INTERFACE     go to state 12
+
+
+State 6
+
+    2 START: GLOBAL . END_SYMBOLS
+
+    t_semicolon  shift, and go to state 20
+    t_enter      shift, and go to state 21
+    t_eof        shift, and go to state 22
+
+    END_SYMBOLS  go to state 25
+
+
+State 7
+
+    4 GLOBAL: PACKAGE .
+
+    $default  reduce using rule 4 (GLOBAL)
+
+
+State 8
+
+    5 GLOBAL: IMPORT .
+
+    $default  reduce using rule 5 (GLOBAL)
+
+
+State 9
+
+    6 GLOBAL: FUNC .
+
+    $default  reduce using rule 6 (GLOBAL)
+
+
+State 10
+
+    7 GLOBAL: STRUCT .
+
+    $default  reduce using rule 7 (GLOBAL)
+
+
+State 11
+
+  199 STRUCT: STRUCT_START . STRUCT_BODY END_SYMBOLS STRUCT_END
+
+    t_open_br  shift, and go to state 26
+
+    STRUCT_BODY  go to state 27
+
+
+State 12
+
+    8 GLOBAL: INTERFACE .
+
+    $default  reduce using rule 8 (GLOBAL)
+
+
+State 13
+
+   14 FUNC: t_func t_id . t_open_paren FUNC_PARAM t_close_paren FUNC_SECOND_PART
+
+    t_open_paren  shift, and go to state 28
+
+
+State 14
+
+   13 IMPORT: t_import t_id . t_string
+
+    t_string  shift, and go to state 29
+
+
+State 15
+
+   10 IMPORT: t_import t_string .
+
+    $default  reduce using rule 10 (IMPORT)
+
+
+State 16
+
+   11 IMPORT: t_import t_open_paren . PARAM_IMPORT t_close_paren
+   12       | t_import t_open_paren . t_enter PARAM_IMPORT t_close_paren
+
+    t_id      shift, and go to state 30
+    t_string  shift, and go to state 31
+    t_enter   shift, and go to state 32
+
+    PARAM_IMPORT  go to state 33
+
+
+State 17
+
+    9 PACKAGE: t_package t_id .
+
+    $default  reduce using rule 9 (PACKAGE)
+
+
+State 18
+
+  200 STRUCT_START: t_type t_id . t_struct_const
+  201             | t_type t_id . t_struct_const t_enter
+  219 INTERFACE: t_type t_id . t_interface INT_BODY END_SYMBOLS INT_END
+
+    t_interface     shift, and go to state 34
+    t_struct_const  shift, and go to state 35
+
+
+State 19
+
+    0 $accept: START $end .
+
+    $default  accept
+
+
+State 20
+
+  216 END_SYMBOLS: t_semicolon .
+
+    $default  reduce using rule 216 (END_SYMBOLS)
+
+
+State 21
+
+  217 END_SYMBOLS: t_enter .
+
+    $default  reduce using rule 217 (END_SYMBOLS)
+
+
+State 22
+
+  218 END_SYMBOLS: t_eof .
+
+    $default  reduce using rule 218 (END_SYMBOLS)
+
+
+State 23
+
+    1 START: START GLOBAL . END_SYMBOLS
+
+    t_semicolon  shift, and go to state 20
+    t_enter      shift, and go to state 21
+    t_eof        shift, and go to state 22
+
+    END_SYMBOLS  go to state 36
+
+
+State 24
+
+    3 START: START END_SYMBOLS .
+
+    $default  reduce using rule 3 (START)
+
+
+State 25
+
+    2 START: GLOBAL END_SYMBOLS .
+
+    $default  reduce using rule 2 (START)
+
+
+State 26
+
+  202 STRUCT_BODY: t_open_br .
+
+    $default  reduce using rule 202 (STRUCT_BODY)
+
+
+State 27
+
+  199 STRUCT: STRUCT_START STRUCT_BODY . END_SYMBOLS STRUCT_END
+  203 STRUCT_BODY: STRUCT_BODY . END_SYMBOLS t_id t_vtype
+  204            | STRUCT_BODY . END_SYMBOLS t_id t_id
+  205            | STRUCT_BODY . END_SYMBOLS t_id
+
+    t_semicolon  shift, and go to state 20
+    t_enter      shift, and go to state 21
+    t_eof        shift, and go to state 22
+
+    END_SYMBOLS  go to state 37
+
+
+State 28
+
+   14 FUNC: t_func t_id t_open_paren . FUNC_PARAM t_close_paren FUNC_SECOND_PART
+
+    t_id  shift, and go to state 38
+
+    $default  reduce using rule 22 (FUNC_PARAM_FULFILL)
+
+    FUNC_PARAM          go to state 39
+    FUNC_PARAM_FULFILL  go to state 40
+
+
+State 29
+
+   13 IMPORT: t_import t_id t_string .
+
+    $default  reduce using rule 13 (IMPORT)
+
+
+State 30
+
+   99 PARAM_IMPORT: t_id . t_string END_SYMBOLS
+
+    t_string  shift, and go to state 41
+
+
+State 31
+
+   98 PARAM_IMPORT: t_string . END_SYMBOLS
+
+    t_semicolon  shift, and go to state 20
+    t_enter      shift, and go to state 21
+    t_eof        shift, and go to state 22
+
+    END_SYMBOLS  go to state 42
+
+
+State 32
+
+   12 IMPORT: t_import t_open_paren t_enter . PARAM_IMPORT t_close_paren
+
+    t_id      shift, and go to state 30
+    t_string  shift, and go to state 31
+
+    PARAM_IMPORT  go to state 43
+
+
+State 33
+
+   11 IMPORT: t_import t_open_paren PARAM_IMPORT . t_close_paren
+  100 PARAM_IMPORT: PARAM_IMPORT . t_string END_SYMBOLS
+  101             | PARAM_IMPORT . t_id t_string END_SYMBOLS
+
+    t_id           shift, and go to state 44
+    t_string       shift, and go to state 45
+    t_close_paren  shift, and go to state 46
+
+
+State 34
+
+  219 INTERFACE: t_type t_id t_interface . INT_BODY END_SYMBOLS INT_END
+
+    t_open_br  shift, and go to state 47
+
+    INT_BODY  go to state 48
+
+
+State 35
+
+  200 STRUCT_START: t_type t_id t_struct_const .
+  201             | t_type t_id t_struct_const . t_enter
+
+    t_enter  shift, and go to state 49
+
+    $default  reduce using rule 200 (STRUCT_START)
+
+
+State 36
+
+    1 START: START GLOBAL END_SYMBOLS .
+
+    $default  reduce using rule 1 (START)
+
+
+State 37
+
+  199 STRUCT: STRUCT_START STRUCT_BODY END_SYMBOLS . STRUCT_END
+  203 STRUCT_BODY: STRUCT_BODY END_SYMBOLS . t_id t_vtype
+  204            | STRUCT_BODY END_SYMBOLS . t_id t_id
+  205            | STRUCT_BODY END_SYMBOLS . t_id
+
+    t_id        shift, and go to state 50
+    t_close_br  shift, and go to state 51
+
+    STRUCT_END  go to state 52
+
+
+State 38
+
+   20 FUNC_PARAM_FULFILL: t_id . TYPE_AND_STRUCT
+   21                   | t_id .
+
+    t_vtype  shift, and go to state 53
+    t_id     shift, and go to state 54
+
+    $default  reduce using rule 21 (FUNC_PARAM_FULFILL)
+
+    TYPE_AND_STRUCT  go to state 55
+
+
+State 39
+
+   14 FUNC: t_func t_id t_open_paren FUNC_PARAM . t_close_paren FUNC_SECOND_PART
+   19 FUNC_PARAM: FUNC_PARAM . t_comma FUNC_PARAM_FULFILL
+
+    t_comma        shift, and go to state 56
+    t_close_paren  shift, and go to state 57
+
+
+State 40
+
+   18 FUNC_PARAM: FUNC_PARAM_FULFILL .
+
+    $default  reduce using rule 18 (FUNC_PARAM)
+
+
+State 41
+
+   99 PARAM_IMPORT: t_id t_string . END_SYMBOLS
+
+    t_semicolon  shift, and go to state 20
+    t_enter      shift, and go to state 21
+    t_eof        shift, and go to state 22
+
+    END_SYMBOLS  go to state 58
+
+
+State 42
+
+   98 PARAM_IMPORT: t_string END_SYMBOLS .
+
+    $default  reduce using rule 98 (PARAM_IMPORT)
+
+
+State 43
+
+   12 IMPORT: t_import t_open_paren t_enter PARAM_IMPORT . t_close_paren
+  100 PARAM_IMPORT: PARAM_IMPORT . t_string END_SYMBOLS
+  101             | PARAM_IMPORT . t_id t_string END_SYMBOLS
+
+    t_id           shift, and go to state 44
+    t_string       shift, and go to state 45
+    t_close_paren  shift, and go to state 59
+
+
+State 44
+
+  101 PARAM_IMPORT: PARAM_IMPORT t_id . t_string END_SYMBOLS
+
+    t_string  shift, and go to state 60
+
+
+State 45
+
+  100 PARAM_IMPORT: PARAM_IMPORT t_string . END_SYMBOLS
+
+    t_semicolon  shift, and go to state 20
+    t_enter      shift, and go to state 21
+    t_eof        shift, and go to state 22
+
+    END_SYMBOLS  go to state 61
+
+
+State 46
+
+   11 IMPORT: t_import t_open_paren PARAM_IMPORT t_close_paren .
+
+    $default  reduce using rule 11 (IMPORT)
+
+
+State 47
+
+  220 INT_BODY: t_open_br . END_SYMBOLS t_id t_open_paren t_close_paren
+
+    t_semicolon  shift, and go to state 20
+    t_enter      shift, and go to state 21
+    t_eof        shift, and go to state 22
+
+    END_SYMBOLS  go to state 62
+
+
+State 48
+
+  219 INTERFACE: t_type t_id t_interface INT_BODY . END_SYMBOLS INT_END
+
+    t_semicolon  shift, and go to state 20
+    t_enter      shift, and go to state 21
+    t_eof        shift, and go to state 22
+
+    END_SYMBOLS  go to state 63
+
+
+State 49
+
+  201 STRUCT_START: t_type t_id t_struct_const t_enter .
+
+    $default  reduce using rule 201 (STRUCT_START)
+
+
+State 50
+
+  203 STRUCT_BODY: STRUCT_BODY END_SYMBOLS t_id . t_vtype
+  204            | STRUCT_BODY END_SYMBOLS t_id . t_id
+  205            | STRUCT_BODY END_SYMBOLS t_id .
+
+    t_vtype  shift, and go to state 64
+    t_id     shift, and go to state 65
+
+    $default  reduce using rule 205 (STRUCT_BODY)
+
+
+State 51
+
+  206 STRUCT_END: t_close_br .
+
+    $default  reduce using rule 206 (STRUCT_END)
+
+
+State 52
+
+  199 STRUCT: STRUCT_START STRUCT_BODY END_SYMBOLS STRUCT_END .
+
+    $default  reduce using rule 199 (STRUCT)
+
+
+State 53
+
+   32 TYPE_AND_STRUCT: t_vtype .
+
+    $default  reduce using rule 32 (TYPE_AND_STRUCT)
+
+
+State 54
+
+   33 TYPE_AND_STRUCT: t_id .
+
+    $default  reduce using rule 33 (TYPE_AND_STRUCT)
+
+
+State 55
+
+   20 FUNC_PARAM_FULFILL: t_id TYPE_AND_STRUCT .
+
+    $default  reduce using rule 20 (FUNC_PARAM_FULFILL)
+
+
+State 56
+
+   19 FUNC_PARAM: FUNC_PARAM t_comma . FUNC_PARAM_FULFILL
+
+    t_id  shift, and go to state 38
+
+    $default  reduce using rule 22 (FUNC_PARAM_FULFILL)
+
+    FUNC_PARAM_FULFILL  go to state 66
+
+
+State 57
+
+   14 FUNC: t_func t_id t_open_paren FUNC_PARAM t_close_paren . FUNC_SECOND_PART
+
+    t_vtype       shift, and go to state 53
+    t_func        shift, and go to state 67
+    t_id          shift, and go to state 54
+    t_open_br     shift, and go to state 68
+    t_open_paren  shift, and go to state 69
+
+    FUNC_SECOND_PART           go to state 70
+    FUNC_RETURN_VALUE          go to state 71
+    FUNC_RETURN_VALUE_FULFILL  go to state 72
+    TYPE_AND_STRUCT            go to state 73
+    BODY                       go to state 74
+    BODY_START                 go to state 75
+    ABSORB_EMPTYNESS           go to state 76
+
+
+State 58
+
+   99 PARAM_IMPORT: t_id t_string END_SYMBOLS .
+
+    $default  reduce using rule 99 (PARAM_IMPORT)
+
+
+State 59
+
+   12 IMPORT: t_import t_open_paren t_enter PARAM_IMPORT t_close_paren .
+
+    $default  reduce using rule 12 (IMPORT)
+
+
+State 60
+
+  101 PARAM_IMPORT: PARAM_IMPORT t_id t_string . END_SYMBOLS
+
+    t_semicolon  shift, and go to state 20
+    t_enter      shift, and go to state 21
+    t_eof        shift, and go to state 22
+
+    END_SYMBOLS  go to state 77
+
+
+State 61
+
+  100 PARAM_IMPORT: PARAM_IMPORT t_string END_SYMBOLS .
+
+    $default  reduce using rule 100 (PARAM_IMPORT)
+
+
+State 62
+
+  220 INT_BODY: t_open_br END_SYMBOLS . t_id t_open_paren t_close_paren
+
+    t_id  shift, and go to state 78
+
+
+State 63
+
+  219 INTERFACE: t_type t_id t_interface INT_BODY END_SYMBOLS . INT_END
+
+    t_close_br  shift, and go to state 79
+
+    INT_END  go to state 80
+
+
+State 64
+
+  203 STRUCT_BODY: STRUCT_BODY END_SYMBOLS t_id t_vtype .
+
+    $default  reduce using rule 203 (STRUCT_BODY)
+
+
+State 65
+
+  204 STRUCT_BODY: STRUCT_BODY END_SYMBOLS t_id t_id .
+
+    $default  reduce using rule 204 (STRUCT_BODY)
+
+
+State 66
+
+   19 FUNC_PARAM: FUNC_PARAM t_comma FUNC_PARAM_FULFILL .
+
+    $default  reduce using rule 19 (FUNC_PARAM)
+
+
+State 67
+
+   30 FUNC_RETURN_VALUE_FULFILL: t_func . t_open_paren TYPE_AND_STRUCT t_close_paren
+   31                          | t_func . t_open_paren t_close_paren
+
+    t_open_paren  shift, and go to state 81
+
+
+State 68
+
+  121 ABSORB_EMPTYNESS: t_open_br .
+
+    $default  reduce using rule 121 (ABSORB_EMPTYNESS)
+
+
+State 69
+
+   17 FUNC_SECOND_PART: t_open_paren . FUNC_PARAM_SECOND t_close_paren BODY
+
+    t_vtype  shift, and go to state 53
+    t_id     shift, and go to state 82
+
+    FUNC_PARAM_SECOND          go to state 83
+    FUNC_PARAM_FULFILL_SECOND  go to state 84
+    TYPE_AND_STRUCT            go to state 85
+
+
+State 70
+
+   14 FUNC: t_func t_id t_open_paren FUNC_PARAM t_close_paren FUNC_SECOND_PART .
+
+    $default  reduce using rule 14 (FUNC)
+
+
+State 71
+
+   16 FUNC_SECOND_PART: FUNC_RETURN_VALUE . BODY
+   28 FUNC_RETURN_VALUE: FUNC_RETURN_VALUE . FUNC_RETURN_VALUE_FULFILL
+
+    t_vtype    shift, and go to state 53
+    t_func     shift, and go to state 67
+    t_id       shift, and go to state 54
+    t_open_br  shift, and go to state 68
+
+    FUNC_RETURN_VALUE_FULFILL  go to state 86
+    TYPE_AND_STRUCT            go to state 73
+    BODY                       go to state 87
+    BODY_START                 go to state 75
+    ABSORB_EMPTYNESS           go to state 76
+
+
+State 72
+
+   27 FUNC_RETURN_VALUE: FUNC_RETURN_VALUE_FULFILL .
+
+    $default  reduce using rule 27 (FUNC_RETURN_VALUE)
+
+
+State 73
+
+   29 FUNC_RETURN_VALUE_FULFILL: TYPE_AND_STRUCT .
+
+    $default  reduce using rule 29 (FUNC_RETURN_VALUE_FULFILL)
+
+
+State 74
+
+   15 FUNC_SECOND_PART: BODY .
+
+    $default  reduce using rule 15 (FUNC_SECOND_PART)
+
+
+State 75
+
+   34 BODY: BODY_START . BODY_END
+   37 BODY_START: BODY_START . BODY_FILLING END_SYMBOLS
+
+    t_defer      shift, and go to state 88
+    t_var        shift, and go to state 89
+    t_if         shift, and go to state 90
+    t_switch     shift, and go to state 91
+    t_type       shift, and go to state 92
+    t_for        shift, and go to state 93
+    t_goto       shift, and go to state 94
+    t_return     shift, and go to state 95
+    t_id         shift, and go to state 96
+    t_close_br   shift, and go to state 97
+    t_open_sq    shift, and go to state 98
+    t_pointer    shift, and go to state 99
+    t_ampersand  shift, and go to state 100
+
+    BODY_END         go to state 101
+    BODY_FILLING     go to state 102
+    VAR              go to state 103
+    DEFER            go to state 104
+    FUNC_CALL        go to state 105
+    FUNC_CALL_START  go to state 106
+    METHOD           go to state 107
+    POINTER          go to state 108
+    GOTO             go to state 109
+    LABEL            go to state 110
+    SWITCH           go to state 111
+    IF               go to state 112
+    IF_FIRST         go to state 113
+    RETURN           go to state 114
+    SHORT_EXPR       go to state 115
+    FOR              go to state 116
+    ARRAY_BODY       go to state 117
+    ARRAY_INDEX      go to state 118
+    MULTI_AR         go to state 119
+    SLICE            go to state 120
+    STRUCT           go to state 121
+    STRUCT_START     go to state 11
+
+
+State 76
+
+   36 BODY_START: ABSORB_EMPTYNESS .
+  122 ABSORB_EMPTYNESS: ABSORB_EMPTYNESS . END_SYMBOLS
+
+    t_semicolon  shift, and go to state 20
+    t_enter      shift, and go to state 21
+    t_eof        shift, and go to state 22
+
+    $default  reduce using rule 36 (BODY_START)
+
+    END_SYMBOLS  go to state 122
+
+
+State 77
+
+  101 PARAM_IMPORT: PARAM_IMPORT t_id t_string END_SYMBOLS .
+
+    $default  reduce using rule 101 (PARAM_IMPORT)
+
+
+State 78
+
+  220 INT_BODY: t_open_br END_SYMBOLS t_id . t_open_paren t_close_paren
+
+    t_open_paren  shift, and go to state 123
+
+
+State 79
+
+  221 INT_END: t_close_br .
+
+    $default  reduce using rule 221 (INT_END)
+
+
+State 80
+
+  219 INTERFACE: t_type t_id t_interface INT_BODY END_SYMBOLS INT_END .
+
+    $default  reduce using rule 219 (INTERFACE)
+
+
+State 81
+
+   30 FUNC_RETURN_VALUE_FULFILL: t_func t_open_paren . TYPE_AND_STRUCT t_close_paren
+   31                          | t_func t_open_paren . t_close_paren
+
+    t_vtype        shift, and go to state 53
+    t_id           shift, and go to state 54
+    t_close_paren  shift, and go to state 124
+
+    TYPE_AND_STRUCT  go to state 125
+
+
+State 82
+
+   25 FUNC_PARAM_FULFILL_SECOND: t_id . TYPE_AND_STRUCT
+   33 TYPE_AND_STRUCT: t_id .
+
+    t_vtype  shift, and go to state 53
+    t_id     shift, and go to state 54
+
+    $default  reduce using rule 33 (TYPE_AND_STRUCT)
+
+    TYPE_AND_STRUCT  go to state 126
+
+
+State 83
+
+   17 FUNC_SECOND_PART: t_open_paren FUNC_PARAM_SECOND . t_close_paren BODY
+   24 FUNC_PARAM_SECOND: FUNC_PARAM_SECOND . t_comma FUNC_PARAM_FULFILL_SECOND
+
+    t_comma        shift, and go to state 127
+    t_close_paren  shift, and go to state 128
+
+
+State 84
+
+   23 FUNC_PARAM_SECOND: FUNC_PARAM_FULFILL_SECOND .
+
+    $default  reduce using rule 23 (FUNC_PARAM_SECOND)
+
+
+State 85
+
+   26 FUNC_PARAM_FULFILL_SECOND: TYPE_AND_STRUCT .
+
+    $default  reduce using rule 26 (FUNC_PARAM_FULFILL_SECOND)
+
+
+State 86
+
+   28 FUNC_RETURN_VALUE: FUNC_RETURN_VALUE FUNC_RETURN_VALUE_FULFILL .
+
+    $default  reduce using rule 28 (FUNC_RETURN_VALUE)
+
+
+State 87
+
+   16 FUNC_SECOND_PART: FUNC_RETURN_VALUE BODY .
+
+    $default  reduce using rule 16 (FUNC_SECOND_PART)
+
+
+State 88
+
+   77 DEFER: t_defer . FUNC_CALL
+
+    t_id  shift, and go to state 129
+
+    FUNC_CALL        go to state 130
+    FUNC_CALL_START  go to state 106
+    METHOD           go to state 131
+
+
+State 89
+
+   52 VAR: t_var . t_id ASSIGNMENT EXPR
+   53    | t_var . t_id ASSIGNMENT EXPR t_vtype
+   54    | t_var . t_id ASSIGNMENT BOOLEAN
+   58    | t_var . t_id ASSIGNMENT MULTI_AR t_vtype PLENTY
+   61    | t_var . t_id ASSIGNMENT MAKE
+   66    | t_var . t_id ASSIGNMENT SLICE
+   67    | t_var . t_id MAPS
+   69    | t_var . t_id t_id ASSIGNMENT t_id ST_EMBEDDED
+   70    | t_var . t_id ASSIGNMENT t_id ST_EMBEDDED
+   74    | t_var . t_id POINTER
+   75    | t_var . t_id POINTER ASSIGNMENT EXPR
+  177 ARRAY_BODY: t_var . t_id MULTI_AR t_vtype
+  178           | t_var . t_id MULTI_AR t_vtype ASSIGNMENT MULTI_AR t_vtype PLENTY
+  179           | t_var . t_id MULTI_AR t_vtype ASSIGNMENT MAKE
+
+    t_id  shift, and go to state 132
+
+
+State 90
+
+  141 IF_FIRST: t_if . CONDITION BODY_FOR_LOOP
+  142         | t_if . INIT_STATE t_semicolon CONDITION BODY_FOR_LOOP
+
+    t_var               shift, and go to state 133
+    t_int_const         shift, and go to state 134
+    t_float_const       shift, and go to state 135
+    t_id                shift, and go to state 136
+    t_string            shift, and go to state 137
+    t_open_paren        shift, and go to state 138
+    t_rune              shift, and go to state 139
+    t_blank_identifier  shift, and go to state 140
+    t_true              shift, and go to state 141
+    t_false             shift, and go to state 142
+    t_pointer           shift, and go to state 99
+    t_ampersand         shift, and go to state 100
+
+    t_open_br  reduce using rule 170 (CONDITION)
+    $default   reduce using rule 166 (INIT_STATE)
+
+    VAR              go to state 143
+    BOOLEAN          go to state 144
+    FUNC_CALL        go to state 145
+    FUNC_CALL_START  go to state 106
+    SHIFT            go to state 146
+    SHIFT_AC         go to state 147
+    METHOD           go to state 148
+    POINTER          go to state 149
+    VALUE            go to state 150
+    EXPR             go to state 151
+    INIT_STATE       go to state 152
+    CONDITION        go to state 153
+    EXPR_START       go to state 154
+
+
+State 91
+
+  114 SWITCH: t_switch . INIT_STATE t_semicolon EXPR SWITCH_BODY
+  115       | t_switch . EXPR SWITCH_BODY
+  116       | t_switch . SWITCH_BODY
+
+    t_var               shift, and go to state 133
+    t_int_const         shift, and go to state 134
+    t_float_const       shift, and go to state 135
+    t_id                shift, and go to state 136
+    t_string            shift, and go to state 137
+    t_open_br           shift, and go to state 68
+    t_open_paren        shift, and go to state 138
+    t_rune              shift, and go to state 139
+    t_blank_identifier  shift, and go to state 140
+    t_pointer           shift, and go to state 99
+    t_ampersand         shift, and go to state 100
+
+    $default  reduce using rule 166 (INIT_STATE)
+
+    VAR                             go to state 143
+    FUNC_CALL                       go to state 145
+    FUNC_CALL_START                 go to state 106
+    SHIFT                           go to state 146
+    SHIFT_AC                        go to state 147
+    METHOD                          go to state 148
+    POINTER                         go to state 149
+    VALUE                           go to state 150
+    SWITCH_BODY                     go to state 155
+    SWITCH_BODY_START               go to state 156
+    ABSORB_EMPTYNESS                go to state 157
+    SWITCH_BODY_START_WITH_DEFAULT  go to state 158
+    EXPR                            go to state 159
+    INIT_STATE                      go to state 160
+    EXPR_START                      go to state 154
+
+
+State 92
+
+  200 STRUCT_START: t_type . t_id t_struct_const
+  201             | t_type . t_id t_struct_const t_enter
+
+    t_id  shift, and go to state 161
+
+
+State 93
+
+  173 FOR: t_for . INIT_STATE t_semicolon CONDITION t_semicolon POST_STATE BODY_FOR_LOOP
+  174    | t_for . CONDITION BODY_FOR_LOOP
+
+    t_var               shift, and go to state 133
+    t_int_const         shift, and go to state 134
+    t_float_const       shift, and go to state 135
+    t_id                shift, and go to state 136
+    t_string            shift, and go to state 137
+    t_open_paren        shift, and go to state 138
+    t_rune              shift, and go to state 139
+    t_blank_identifier  shift, and go to state 140
+    t_true              shift, and go to state 141
+    t_false             shift, and go to state 142
+    t_pointer           shift, and go to state 99
+    t_ampersand         shift, and go to state 100
+
+    t_open_br  reduce using rule 170 (CONDITION)
+    $default   reduce using rule 166 (INIT_STATE)
+
+    VAR              go to state 143
+    BOOLEAN          go to state 144
+    FUNC_CALL        go to state 145
+    FUNC_CALL_START  go to state 106
+    SHIFT            go to state 146
+    SHIFT_AC         go to state 147
+    METHOD           go to state 148
+    POINTER          go to state 149
+    VALUE            go to state 150
+    EXPR             go to state 151
+    INIT_STATE       go to state 162
+    CONDITION        go to state 163
+    EXPR_START       go to state 154
+
+
+State 94
+
+  112 GOTO: t_goto . t_id
+
+    t_id  shift, and go to state 164
+
+
+State 95
+
+  156 RETURN: t_return . PARAM
+
+    t_int_const         shift, and go to state 134
+    t_float_const       shift, and go to state 135
+    t_id                shift, and go to state 165
+    t_string            shift, and go to state 137
+    t_open_paren        shift, and go to state 138
+    t_rune              shift, and go to state 139
+    t_blank_identifier  shift, and go to state 140
+    t_pointer           shift, and go to state 99
+    t_ampersand         shift, and go to state 100
+
+    $default  reduce using rule 159 (PARAM)
+
+    FUNC_CALL        go to state 166
+    FUNC_CALL_START  go to state 106
+    SHIFT            go to state 146
+    SHIFT_AC         go to state 147
+    METHOD           go to state 167
+    POINTER          go to state 168
+    VALUE            go to state 150
+    PARAM            go to state 169
+    EXPR             go to state 170
+    EXPR_START       go to state 154
+
+
+State 96
+
+   55 VAR: t_id . SHORT_ASSIGN EXPR
+   56    | t_id . ASSIGNMENT EXPR
+   57    | t_id . SHORT_ASSIGN MULTI_AR t_vtype PLENTY
+   59    | t_id . SHORT_ASSIGN BOOLEAN
+   60    | t_id . MULTI_AR ASSIGNMENT EXPR
+   62    | t_id . SHORT_ASSIGN MAKE
+   63    | t_id . MULTI_AR ASSIGNMENT MAKE
+   64    | t_id . SHORT_ASSIGN SLICE
+   65    | t_id . ASSIGNMENT SLICE
+   68    | t_id . SHORT_ASSIGN t_make t_open_paren MAPS t_close_paren
+   71    | t_id . SHORT_ASSIGN t_id ST_EMBEDDED
+   86 FUNC_CALL_START: t_id . t_open_paren
+   93 METHOD: t_id . t_dot t_id
+  113 LABEL: t_id . t_colon
+  163 SHORT_EXPR: t_id . t_short_expr t_id
+  195 SLICE: t_id . t_open_sq VALUE t_colon VALUE t_close_sq
+  196      | t_id . t_open_sq t_colon VALUE t_close_sq
+  197      | t_id . t_open_sq VALUE t_colon t_close_sq
+
+    t_vtype       shift, and go to state 171
+    t_short_dec   shift, and go to state 172
+    t_comma       shift, and go to state 173
+    t_equality    shift, and go to state 174
+    t_open_paren  shift, and go to state 175
+    t_open_sq     shift, and go to state 176
+    t_dot         shift, and go to state 177
+    t_colon       shift, and go to state 178
+    t_short_expr  shift, and go to state 179
+
+    ASSIGNMENT    go to state 180
+    SHORT_ASSIGN  go to state 181
+    ARRAY_INDEX   go to state 118
+    MULTI_AR      go to state 182
+
+
+State 97
+
+   35 BODY_END: t_close_br .
+
+    $default  reduce using rule 35 (BODY_END)
+
+
+State 98
+
+  180 ARRAY_INDEX: t_open_sq . t_int_const t_close_sq
+  181            | t_open_sq . t_id t_close_sq
+  182            | t_open_sq . t_string t_close_sq
+  183            | t_open_sq . t_close_sq
+
+    t_int_const  shift, and go to state 183
+    t_id         shift, and go to state 184
+    t_string     shift, and go to state 185
+    t_close_sq   shift, and go to state 186
+
+
+State 99
+
+   95 POINTER: t_pointer . t_id
+   96        | t_pointer . t_vtype
+
+    t_vtype  shift, and go to state 187
+    t_id     shift, and go to state 188
+
+
+State 100
+
+   97 POINTER: t_ampersand . t_id
+
+    t_id  shift, and go to state 189
+
+
+State 101
+
+   34 BODY: BODY_START BODY_END .
+
+    $default  reduce using rule 34 (BODY)
+
+
+State 102
+
+   37 BODY_START: BODY_START BODY_FILLING . END_SYMBOLS
+
+    t_semicolon  shift, and go to state 20
+    t_enter      shift, and go to state 21
+    t_eof        shift, and go to state 22
+
+    END_SYMBOLS  go to state 190
+
+
+State 103
+
+   38 BODY_FILLING: VAR .
+
+    $default  reduce using rule 38 (BODY_FILLING)
+
+
+State 104
+
+   51 BODY_FILLING: DEFER .
+
+    $default  reduce using rule 51 (BODY_FILLING)
+
+
+State 105
+
+   45 BODY_FILLING: FUNC_CALL .
+
+    $default  reduce using rule 45 (BODY_FILLING)
+
+
+State 106
+
+   85 FUNC_CALL: FUNC_CALL_START . t_close_paren
+   88 FUNC_CALL_START: FUNC_CALL_START . t_enter
+   89                | FUNC_CALL_START . PARAM
+
+    t_int_const         shift, and go to state 134
+    t_float_const       shift, and go to state 135
+    t_id                shift, and go to state 165
+    t_string            shift, and go to state 137
+    t_open_paren        shift, and go to state 138
+    t_close_paren       shift, and go to state 191
+    t_rune              shift, and go to state 139
+    t_blank_identifier  shift, and go to state 140
+    t_enter             shift, and go to state 192
+    t_pointer           shift, and go to state 99
+    t_ampersand         shift, and go to state 100
+
+    t_int_const         [reduce using rule 159 (PARAM)]
+    t_float_const       [reduce using rule 159 (PARAM)]
+    t_id                [reduce using rule 159 (PARAM)]
+    t_string            [reduce using rule 159 (PARAM)]
+    t_open_paren        [reduce using rule 159 (PARAM)]
+    t_close_paren       [reduce using rule 159 (PARAM)]
+    t_rune              [reduce using rule 159 (PARAM)]
+    t_blank_identifier  [reduce using rule 159 (PARAM)]
+    t_enter             [reduce using rule 159 (PARAM)]
+    t_pointer           [reduce using rule 159 (PARAM)]
+    t_ampersand         [reduce using rule 159 (PARAM)]
+    $default            reduce using rule 159 (PARAM)
+
+    FUNC_CALL        go to state 166
+    FUNC_CALL_START  go to state 106
+    SHIFT            go to state 146
+    SHIFT_AC         go to state 147
+    METHOD           go to state 167
+    POINTER          go to state 168
+    VALUE            go to state 150
+    PARAM            go to state 193
+    EXPR             go to state 170
+    EXPR_START       go to state 154
+
+
+State 107
+
+   72 VAR: METHOD . ASSIGNMENT VALUE
+   87 FUNC_CALL_START: METHOD . t_open_paren
+   94 METHOD: METHOD . t_dot t_id
+
+    t_vtype       shift, and go to state 171
+    t_comma       shift, and go to state 194
+    t_equality    shift, and go to state 174
+    t_open_paren  shift, and go to state 195
+    t_dot         shift, and go to state 196
+
+    ASSIGNMENT  go to state 197
+
+
+State 108
+
+   73 VAR: POINTER . ASSIGNMENT EXPR
+
+    t_vtype     shift, and go to state 171
+    t_comma     shift, and go to state 194
+    t_equality  shift, and go to state 174
+
+    ASSIGNMENT  go to state 198
+
+
+State 109
+
+   41 BODY_FILLING: GOTO .
+
+    $default  reduce using rule 41 (BODY_FILLING)
+
+
+State 110
+
+   42 BODY_FILLING: LABEL .
+
+    $default  reduce using rule 42 (BODY_FILLING)
+
+
+State 111
+
+   40 BODY_FILLING: SWITCH .
+
+    $default  reduce using rule 40 (BODY_FILLING)
+
+
+State 112
+
+   43 BODY_FILLING: IF .
+
+    $default  reduce using rule 43 (BODY_FILLING)
+
+
+State 113
+
+  137 IF: IF_FIRST . MULTY_ELSEIF_SECOND MULTY_ELSE_THIRD
+  138   | IF_FIRST . MULTY_ELSEIF_SECOND
+  139   | IF_FIRST . MULTY_ELSE_THIRD
+  140   | IF_FIRST .
+
+    t_else  shift, and go to state 199
+
+    $default  reduce using rule 140 (IF)
+
+    MULTY_ELSEIF_SECOND  go to state 200
+    ELSEIF_SECOND        go to state 201
+    MULTY_ELSE_THIRD     go to state 202
+    ELSE_THIRD           go to state 203
+
+
+State 114
+
+   48 BODY_FILLING: RETURN .
+
+    $default  reduce using rule 48 (BODY_FILLING)
+
+
+State 115
+
+   46 BODY_FILLING: SHORT_EXPR .
+
+    $default  reduce using rule 46 (BODY_FILLING)
+
+
+State 116
+
+   39 BODY_FILLING: FOR .
+
+    $default  reduce using rule 39 (BODY_FILLING)
+
+
+State 117
+
+   47 BODY_FILLING: ARRAY_BODY .
+
+    $default  reduce using rule 47 (BODY_FILLING)
+
+
+State 118
+
+  184 MULTI_AR: ARRAY_INDEX .
+  185         | ARRAY_INDEX . MULTI_AR
+
+    t_open_sq  shift, and go to state 98
+
+    $default  reduce using rule 184 (MULTI_AR)
+
+    ARRAY_INDEX  go to state 118
+    MULTI_AR     go to state 204
+
+
+State 119
+
+   44 BODY_FILLING: MULTI_AR .
+
+    $default  reduce using rule 44 (BODY_FILLING)
+
+
+State 120
+
+   50 BODY_FILLING: SLICE .
+
+    $default  reduce using rule 50 (BODY_FILLING)
+
+
+State 121
+
+   49 BODY_FILLING: STRUCT .
+
+    $default  reduce using rule 49 (BODY_FILLING)
+
+
+State 122
+
+  122 ABSORB_EMPTYNESS: ABSORB_EMPTYNESS END_SYMBOLS .
+
+    $default  reduce using rule 122 (ABSORB_EMPTYNESS)
+
+
+State 123
+
+  220 INT_BODY: t_open_br END_SYMBOLS t_id t_open_paren . t_close_paren
+
+    t_close_paren  shift, and go to state 205
+
+
+State 124
+
+   31 FUNC_RETURN_VALUE_FULFILL: t_func t_open_paren t_close_paren .
+
+    $default  reduce using rule 31 (FUNC_RETURN_VALUE_FULFILL)
+
+
+State 125
+
+   30 FUNC_RETURN_VALUE_FULFILL: t_func t_open_paren TYPE_AND_STRUCT . t_close_paren
+
+    t_close_paren  shift, and go to state 206
+
+
+State 126
+
+   25 FUNC_PARAM_FULFILL_SECOND: t_id TYPE_AND_STRUCT .
+
+    $default  reduce using rule 25 (FUNC_PARAM_FULFILL_SECOND)
+
+
+State 127
+
+   24 FUNC_PARAM_SECOND: FUNC_PARAM_SECOND t_comma . FUNC_PARAM_FULFILL_SECOND
+
+    t_vtype  shift, and go to state 53
+    t_id     shift, and go to state 82
+
+    FUNC_PARAM_FULFILL_SECOND  go to state 207
+    TYPE_AND_STRUCT            go to state 85
+
+
+State 128
+
+   17 FUNC_SECOND_PART: t_open_paren FUNC_PARAM_SECOND t_close_paren . BODY
+
+    t_open_br  shift, and go to state 68
+
+    BODY              go to state 208
+    BODY_START        go to state 75
+    ABSORB_EMPTYNESS  go to state 76
+
+
+State 129
+
+   86 FUNC_CALL_START: t_id . t_open_paren
+   93 METHOD: t_id . t_dot t_id
+
+    t_open_paren  shift, and go to state 175
+    t_dot         shift, and go to state 177
+
+
+State 130
+
+   77 DEFER: t_defer FUNC_CALL .
+
+    $default  reduce using rule 77 (DEFER)
+
+
+State 131
+
+   87 FUNC_CALL_START: METHOD . t_open_paren
+   94 METHOD: METHOD . t_dot t_id
+
+    t_open_paren  shift, and go to state 195
+    t_dot         shift, and go to state 196
+
+
+State 132
+
+   52 VAR: t_var t_id . ASSIGNMENT EXPR
+   53    | t_var t_id . ASSIGNMENT EXPR t_vtype
+   54    | t_var t_id . ASSIGNMENT BOOLEAN
+   58    | t_var t_id . ASSIGNMENT MULTI_AR t_vtype PLENTY
+   61    | t_var t_id . ASSIGNMENT MAKE
+   66    | t_var t_id . ASSIGNMENT SLICE
+   67    | t_var t_id . MAPS
+   69    | t_var t_id . t_id ASSIGNMENT t_id ST_EMBEDDED
+   70    | t_var t_id . ASSIGNMENT t_id ST_EMBEDDED
+   74    | t_var t_id . POINTER
+   75    | t_var t_id . POINTER ASSIGNMENT EXPR
+  177 ARRAY_BODY: t_var t_id . MULTI_AR t_vtype
+  178           | t_var t_id . MULTI_AR t_vtype ASSIGNMENT MULTI_AR t_vtype PLENTY
+  179           | t_var t_id . MULTI_AR t_vtype ASSIGNMENT MAKE
+
+    t_vtype      shift, and go to state 171
+    t_map        shift, and go to state 209
+    t_id         shift, and go to state 210
+    t_comma      shift, and go to state 194
+    t_equality   shift, and go to state 174
+    t_open_sq    shift, and go to state 98
+    t_pointer    shift, and go to state 99
+    t_ampersand  shift, and go to state 100
+
+    ASSIGNMENT   go to state 211
+    POINTER      go to state 212
+    ARRAY_INDEX  go to state 118
+    MULTI_AR     go to state 213
+    MAPS         go to state 214
+
+
+State 133
+
+   52 VAR: t_var . t_id ASSIGNMENT EXPR
+   53    | t_var . t_id ASSIGNMENT EXPR t_vtype
+   54    | t_var . t_id ASSIGNMENT BOOLEAN
+   58    | t_var . t_id ASSIGNMENT MULTI_AR t_vtype PLENTY
+   61    | t_var . t_id ASSIGNMENT MAKE
+   66    | t_var . t_id ASSIGNMENT SLICE
+   67    | t_var . t_id MAPS
+   69    | t_var . t_id t_id ASSIGNMENT t_id ST_EMBEDDED
+   70    | t_var . t_id ASSIGNMENT t_id ST_EMBEDDED
+   74    | t_var . t_id POINTER
+   75    | t_var . t_id POINTER ASSIGNMENT EXPR
+
+    t_id  shift, and go to state 215
+
+
+State 134
+
+   92 SHIFT_AC: t_int_const .
+  102 VALUE: t_int_const .
+
+    t_shift_const  reduce using rule 92 (SHIFT_AC)
+    $default       reduce using rule 102 (VALUE)
+
+
+State 135
+
+  103 VALUE: t_float_const .
+
+    $default  reduce using rule 103 (VALUE)
+
+
+State 136
+
+   55 VAR: t_id . SHORT_ASSIGN EXPR
+   56    | t_id . ASSIGNMENT EXPR
+   57    | t_id . SHORT_ASSIGN MULTI_AR t_vtype PLENTY
+   59    | t_id . SHORT_ASSIGN BOOLEAN
+   60    | t_id . MULTI_AR ASSIGNMENT EXPR
+   62    | t_id . SHORT_ASSIGN MAKE
+   63    | t_id . MULTI_AR ASSIGNMENT MAKE
+   64    | t_id . SHORT_ASSIGN SLICE
+   65    | t_id . ASSIGNMENT SLICE
+   68    | t_id . SHORT_ASSIGN t_make t_open_paren MAPS t_close_paren
+   71    | t_id . SHORT_ASSIGN t_id ST_EMBEDDED
+   86 FUNC_CALL_START: t_id . t_open_paren
+   91 SHIFT_AC: t_id .
+   93 METHOD: t_id . t_dot t_id
+  104 VALUE: t_id .
+
+    t_vtype       shift, and go to state 171
+    t_short_dec   shift, and go to state 172
+    t_comma       shift, and go to state 173
+    t_equality    shift, and go to state 174
+    t_open_paren  shift, and go to state 175
+    t_open_sq     shift, and go to state 98
+    t_dot         shift, and go to state 177
+
+    t_shift_const  reduce using rule 91 (SHIFT_AC)
+    $default       reduce using rule 104 (VALUE)
+
+    ASSIGNMENT    go to state 180
+    SHORT_ASSIGN  go to state 181
+    ARRAY_INDEX   go to state 118
+    MULTI_AR      go to state 182
+
+
+State 137
+
+  105 VALUE: t_string .
+
+    $default  reduce using rule 105 (VALUE)
+
+
+State 138
+
+  175 EXPR_START: t_open_paren .
+
+    $default  reduce using rule 175 (EXPR_START)
+
+
+State 139
+
+  106 VALUE: t_rune .
+
+    $default  reduce using rule 106 (VALUE)
+
+
+State 140
+
+  107 VALUE: t_blank_identifier .
+
+    $default  reduce using rule 107 (VALUE)
+
+
+State 141
+
+  168 CONDITION: t_true .
+
+    $default  reduce using rule 168 (CONDITION)
+
+
+State 142
+
+  169 CONDITION: t_false .
+
+    $default  reduce using rule 169 (CONDITION)
+
+
+State 143
+
+  164 INIT_STATE: VAR .
+
+    $default  reduce using rule 164 (INIT_STATE)
+
+
+State 144
+
+  167 CONDITION: BOOLEAN .
+
+    $default  reduce using rule 167 (CONDITION)
+
+
+State 145
+
+  108 VALUE: FUNC_CALL .
+  165 INIT_STATE: FUNC_CALL .
+
+    t_semicolon  reduce using rule 165 (INIT_STATE)
+    $default     reduce using rule 108 (VALUE)
+
+
+State 146
+
+  109 VALUE: SHIFT .
+
+    $default  reduce using rule 109 (VALUE)
+
+
+State 147
+
+   90 SHIFT: SHIFT_AC . t_shift_const SHIFT_AC
+
+    t_shift_const  shift, and go to state 216
+
+
+State 148
+
+   72 VAR: METHOD . ASSIGNMENT VALUE
+   87 FUNC_CALL_START: METHOD . t_open_paren
+   94 METHOD: METHOD . t_dot t_id
+  111 VALUE: METHOD .
+
+    t_vtype       shift, and go to state 171
+    t_comma       shift, and go to state 194
+    t_equality    shift, and go to state 174
+    t_open_paren  shift, and go to state 195
+    t_dot         shift, and go to state 196
+
+    $default  reduce using rule 111 (VALUE)
+
+    ASSIGNMENT  go to state 197
+
+
+State 149
+
+   73 VAR: POINTER . ASSIGNMENT EXPR
+  110 VALUE: POINTER .
+
+    t_vtype     shift, and go to state 171
+    t_comma     shift, and go to state 194
+    t_equality  shift, and go to state 174
+
+    $default  reduce using rule 110 (VALUE)
+
+    ASSIGNMENT  go to state 198
+
+
+State 150
+
+  162 EXPR: VALUE .
+
+    $default  reduce using rule 162 (EXPR)
+
+
+State 151
+
+   76 BOOLEAN: EXPR . t_bool EXPR
+  160 EXPR: EXPR . t_sign VALUE
+
+    t_sign  shift, and go to state 217
+    t_bool  shift, and go to state 218
+
+
+State 152
+
+  142 IF_FIRST: t_if INIT_STATE . t_semicolon CONDITION BODY_FOR_LOOP
+
+    t_semicolon  shift, and go to state 219
+
+
+State 153
+
+  141 IF_FIRST: t_if CONDITION . BODY_FOR_LOOP
+
+    t_open_br  shift, and go to state 68
+
+    ABSORB_EMPTYNESS     go to state 220
+    BODY_FOR_LOOP        go to state 221
+    BODY_FOR_LOOP_START  go to state 222
+
+
+State 154
+
+  161 EXPR: EXPR_START . EXPR EXPR_END
+
+    t_int_const         shift, and go to state 134
+    t_float_const       shift, and go to state 135
+    t_id                shift, and go to state 165
+    t_string            shift, and go to state 137
+    t_open_paren        shift, and go to state 138
+    t_rune              shift, and go to state 139
+    t_blank_identifier  shift, and go to state 140
+    t_pointer           shift, and go to state 99
+    t_ampersand         shift, and go to state 100
+
+    FUNC_CALL        go to state 166
+    FUNC_CALL_START  go to state 106
+    SHIFT            go to state 146
+    SHIFT_AC         go to state 147
+    METHOD           go to state 167
+    POINTER          go to state 168
+    VALUE            go to state 150
+    EXPR             go to state 223
+    EXPR_START       go to state 154
+
+
+State 155
+
+  116 SWITCH: t_switch SWITCH_BODY .
+
+    $default  reduce using rule 116 (SWITCH)
+
+
+State 156
+
+  117 SWITCH_BODY: SWITCH_BODY_START . SWITCH_BODY_END
+  120 SWITCH_BODY_START: SWITCH_BODY_START . CASE
+  123 SWITCH_BODY_START_WITH_DEFAULT: SWITCH_BODY_START . DEFAULT
+
+    t_case      shift, and go to state 224
+    t_default   shift, and go to state 225
+    t_close_br  shift, and go to state 226
+
+    CASE             go to state 227
+    DEFAULT          go to state 228
+    SWITCH_BODY_END  go to state 229
+
+
+State 157
+
+  119 SWITCH_BODY_START: ABSORB_EMPTYNESS .
+  122 ABSORB_EMPTYNESS: ABSORB_EMPTYNESS . END_SYMBOLS
+
+    t_semicolon  shift, and go to state 20
+    t_enter      shift, and go to state 21
+    t_eof        shift, and go to state 22
+
+    $default  reduce using rule 119 (SWITCH_BODY_START)
+
+    END_SYMBOLS  go to state 122
+
+
+State 158
+
+  118 SWITCH_BODY: SWITCH_BODY_START_WITH_DEFAULT . SWITCH_BODY_END
+  124 SWITCH_BODY_START_WITH_DEFAULT: SWITCH_BODY_START_WITH_DEFAULT . CASE
+
+    t_case      shift, and go to state 224
+    t_close_br  shift, and go to state 226
+
+    CASE             go to state 230
+    SWITCH_BODY_END  go to state 231
+
+
+State 159
+
+  115 SWITCH: t_switch EXPR . SWITCH_BODY
+  160 EXPR: EXPR . t_sign VALUE
+
+    t_open_br  shift, and go to state 68
+    t_sign     shift, and go to state 217
+
+    SWITCH_BODY                     go to state 232
+    SWITCH_BODY_START               go to state 156
+    ABSORB_EMPTYNESS                go to state 157
+    SWITCH_BODY_START_WITH_DEFAULT  go to state 158
+
+
+State 160
+
+  114 SWITCH: t_switch INIT_STATE . t_semicolon EXPR SWITCH_BODY
+
+    t_semicolon  shift, and go to state 233
+
+
+State 161
+
+  200 STRUCT_START: t_type t_id . t_struct_const
+  201             | t_type t_id . t_struct_const t_enter
+
+    t_struct_const  shift, and go to state 35
+
+
+State 162
+
+  173 FOR: t_for INIT_STATE . t_semicolon CONDITION t_semicolon POST_STATE BODY_FOR_LOOP
+
+    t_semicolon  shift, and go to state 234
+
+
+State 163
+
+  174 FOR: t_for CONDITION . BODY_FOR_LOOP
+
+    t_open_br  shift, and go to state 68
+
+    ABSORB_EMPTYNESS     go to state 220
+    BODY_FOR_LOOP        go to state 235
+    BODY_FOR_LOOP_START  go to state 222
+
+
+State 164
+
+  112 GOTO: t_goto t_id .
+
+    $default  reduce using rule 112 (GOTO)
+
+
+State 165
+
+   86 FUNC_CALL_START: t_id . t_open_paren
+   91 SHIFT_AC: t_id .
+   93 METHOD: t_id . t_dot t_id
+  104 VALUE: t_id .
+
+    t_open_paren  shift, and go to state 175
+    t_dot         shift, and go to state 177
+
+    t_shift_const  reduce using rule 91 (SHIFT_AC)
+    t_open_paren   [reduce using rule 104 (VALUE)]
+    $default       reduce using rule 104 (VALUE)
+
+
+State 166
+
+  108 VALUE: FUNC_CALL .
+
+    $default  reduce using rule 108 (VALUE)
+
+
+State 167
+
+   87 FUNC_CALL_START: METHOD . t_open_paren
+   94 METHOD: METHOD . t_dot t_id
+  111 VALUE: METHOD .
+
+    t_open_paren  shift, and go to state 195
+    t_dot         shift, and go to state 196
+
+    t_open_paren  [reduce using rule 111 (VALUE)]
+    $default      reduce using rule 111 (VALUE)
+
+
+State 168
+
+  110 VALUE: POINTER .
+
+    $default  reduce using rule 110 (VALUE)
+
+
+State 169
+
+  156 RETURN: t_return PARAM .
+  157 PARAM: PARAM . t_comma EXPR
+
+    t_comma  shift, and go to state 236
+
+    $default  reduce using rule 156 (RETURN)
+
+
+State 170
+
+  158 PARAM: EXPR .
+  160 EXPR: EXPR . t_sign VALUE
+
+    t_sign  shift, and go to state 217
+
+    $default  reduce using rule 158 (PARAM)
+
+
+State 171
+
+   78 ASSIGNMENT: t_vtype . t_equality
+
+    t_equality  shift, and go to state 237
+
+
+State 172
+
+   82 SHORT_ASSIGN: t_short_dec .
+
+    $default  reduce using rule 82 (SHORT_ASSIGN)
+
+
+State 173
+
+   80 ASSIGNMENT: t_comma . t_id ASSIGNMENT EXPR t_comma
+   81           | t_comma . t_id ASSIGNMENT BOOLEAN t_comma
+   83 SHORT_ASSIGN: t_comma . t_id SHORT_ASSIGN EXPR t_comma
+   84             | t_comma . t_id SHORT_ASSIGN BOOLEAN t_comma
+
+    t_id  shift, and go to state 238
+
+
+State 174
+
+   79 ASSIGNMENT: t_equality .
+
+    $default  reduce using rule 79 (ASSIGNMENT)
+
+
+State 175
+
+   86 FUNC_CALL_START: t_id t_open_paren .
+
+    $default  reduce using rule 86 (FUNC_CALL_START)
+
+
+State 176
+
+  180 ARRAY_INDEX: t_open_sq . t_int_const t_close_sq
+  181            | t_open_sq . t_id t_close_sq
+  182            | t_open_sq . t_string t_close_sq
+  183            | t_open_sq . t_close_sq
+  195 SLICE: t_id t_open_sq . VALUE t_colon VALUE t_close_sq
+  196      | t_id t_open_sq . t_colon VALUE t_close_sq
+  197      | t_id t_open_sq . VALUE t_colon t_close_sq
+
+    t_int_const         shift, and go to state 239
+    t_float_const       shift, and go to state 135
+    t_id                shift, and go to state 240
+    t_string            shift, and go to state 241
+    t_close_sq          shift, and go to state 186
+    t_rune              shift, and go to state 139
+    t_blank_identifier  shift, and go to state 140
+    t_colon             shift, and go to state 242
+    t_pointer           shift, and go to state 99
+    t_ampersand         shift, and go to state 100
+
+    FUNC_CALL        go to state 166
+    FUNC_CALL_START  go to state 106
+    SHIFT            go to state 146
+    SHIFT_AC         go to state 147
+    METHOD           go to state 167
+    POINTER          go to state 168
+    VALUE            go to state 243
+
+
+State 177
+
+   93 METHOD: t_id t_dot . t_id
+
+    t_id  shift, and go to state 244
+
+
+State 178
+
+  113 LABEL: t_id t_colon .
+
+    $default  reduce using rule 113 (LABEL)
+
+
+State 179
+
+  163 SHORT_EXPR: t_id t_short_expr . t_id
+
+    t_id  shift, and go to state 245
+
+
+State 180
+
+   56 VAR: t_id ASSIGNMENT . EXPR
+   65    | t_id ASSIGNMENT . SLICE
+
+    t_int_const         shift, and go to state 134
+    t_float_const       shift, and go to state 135
+    t_id                shift, and go to state 246
+    t_string            shift, and go to state 137
+    t_open_paren        shift, and go to state 138
+    t_rune              shift, and go to state 139
+    t_blank_identifier  shift, and go to state 140
+    t_pointer           shift, and go to state 99
+    t_ampersand         shift, and go to state 100
+
+    FUNC_CALL        go to state 166
+    FUNC_CALL_START  go to state 106
+    SHIFT            go to state 146
+    SHIFT_AC         go to state 147
+    METHOD           go to state 167
+    POINTER          go to state 168
+    VALUE            go to state 150
+    EXPR             go to state 247
+    EXPR_START       go to state 154
+    SLICE            go to state 248
+
+
+State 181
+
+   55 VAR: t_id SHORT_ASSIGN . EXPR
+   57    | t_id SHORT_ASSIGN . MULTI_AR t_vtype PLENTY
+   59    | t_id SHORT_ASSIGN . BOOLEAN
+   62    | t_id SHORT_ASSIGN . MAKE
+   64    | t_id SHORT_ASSIGN . SLICE
+   68    | t_id SHORT_ASSIGN . t_make t_open_paren MAPS t_close_paren
+   71    | t_id SHORT_ASSIGN . t_id ST_EMBEDDED
+
+    t_int_const         shift, and go to state 134
+    t_float_const       shift, and go to state 135
+    t_id                shift, and go to state 249
+    t_string            shift, and go to state 137
+    t_open_paren        shift, and go to state 138
+    t_open_sq           shift, and go to state 98
+    t_rune              shift, and go to state 139
+    t_blank_identifier  shift, and go to state 140
+    t_make              shift, and go to state 250
+    t_pointer           shift, and go to state 99
+    t_ampersand         shift, and go to state 100
+
+    BOOLEAN          go to state 251
+    FUNC_CALL        go to state 166
+    FUNC_CALL_START  go to state 106
+    SHIFT            go to state 146
+    SHIFT_AC         go to state 147
+    METHOD           go to state 167
+    POINTER          go to state 168
+    VALUE            go to state 150
+    EXPR             go to state 252
+    EXPR_START       go to state 154
+    ARRAY_INDEX      go to state 118
+    MULTI_AR         go to state 253
+    MAKE             go to state 254
+    SLICE            go to state 255
+
+
+State 182
+
+   60 VAR: t_id MULTI_AR . ASSIGNMENT EXPR
+   63    | t_id MULTI_AR . ASSIGNMENT MAKE
+
+    t_vtype     shift, and go to state 171
+    t_comma     shift, and go to state 194
+    t_equality  shift, and go to state 174
+
+    ASSIGNMENT  go to state 256
+
+
+State 183
+
+  180 ARRAY_INDEX: t_open_sq t_int_const . t_close_sq
+
+    t_close_sq  shift, and go to state 257
+
+
+State 184
+
+  181 ARRAY_INDEX: t_open_sq t_id . t_close_sq
+
+    t_close_sq  shift, and go to state 258
+
+
+State 185
+
+  182 ARRAY_INDEX: t_open_sq t_string . t_close_sq
+
+    t_close_sq  shift, and go to state 259
+
+
+State 186
+
+  183 ARRAY_INDEX: t_open_sq t_close_sq .
+
+    $default  reduce using rule 183 (ARRAY_INDEX)
+
+
+State 187
+
+   96 POINTER: t_pointer t_vtype .
+
+    $default  reduce using rule 96 (POINTER)
+
+
+State 188
+
+   95 POINTER: t_pointer t_id .
+
+    $default  reduce using rule 95 (POINTER)
+
+
+State 189
+
+   97 POINTER: t_ampersand t_id .
+
+    $default  reduce using rule 97 (POINTER)
+
+
+State 190
+
+   37 BODY_START: BODY_START BODY_FILLING END_SYMBOLS .
+
+    $default  reduce using rule 37 (BODY_START)
+
+
+State 191
+
+   85 FUNC_CALL: FUNC_CALL_START t_close_paren .
+
+    $default  reduce using rule 85 (FUNC_CALL)
+
+
+State 192
+
+   88 FUNC_CALL_START: FUNC_CALL_START t_enter .
+
+    $default  reduce using rule 88 (FUNC_CALL_START)
+
+
+State 193
+
+   89 FUNC_CALL_START: FUNC_CALL_START PARAM .
+  157 PARAM: PARAM . t_comma EXPR
+
+    t_comma  shift, and go to state 236
+
+    t_comma   [reduce using rule 89 (FUNC_CALL_START)]
+    $default  reduce using rule 89 (FUNC_CALL_START)
+
+
+State 194
+
+   80 ASSIGNMENT: t_comma . t_id ASSIGNMENT EXPR t_comma
+   81           | t_comma . t_id ASSIGNMENT BOOLEAN t_comma
+
+    t_id  shift, and go to state 260
+
+
+State 195
+
+   87 FUNC_CALL_START: METHOD t_open_paren .
+
+    $default  reduce using rule 87 (FUNC_CALL_START)
+
+
+State 196
+
+   94 METHOD: METHOD t_dot . t_id
+
+    t_id  shift, and go to state 261
+
+
+State 197
+
+   72 VAR: METHOD ASSIGNMENT . VALUE
+
+    t_int_const         shift, and go to state 134
+    t_float_const       shift, and go to state 135
+    t_id                shift, and go to state 165
+    t_string            shift, and go to state 137
+    t_rune              shift, and go to state 139
+    t_blank_identifier  shift, and go to state 140
+    t_pointer           shift, and go to state 99
+    t_ampersand         shift, and go to state 100
+
+    FUNC_CALL        go to state 166
+    FUNC_CALL_START  go to state 106
+    SHIFT            go to state 146
+    SHIFT_AC         go to state 147
+    METHOD           go to state 167
+    POINTER          go to state 168
+    VALUE            go to state 262
+
+
+State 198
+
+   73 VAR: POINTER ASSIGNMENT . EXPR
+
+    t_int_const         shift, and go to state 134
+    t_float_const       shift, and go to state 135
+    t_id                shift, and go to state 165
+    t_string            shift, and go to state 137
+    t_open_paren        shift, and go to state 138
+    t_rune              shift, and go to state 139
+    t_blank_identifier  shift, and go to state 140
+    t_pointer           shift, and go to state 99
+    t_ampersand         shift, and go to state 100
+
+    FUNC_CALL        go to state 166
+    FUNC_CALL_START  go to state 106
+    SHIFT            go to state 146
+    SHIFT_AC         go to state 147
+    METHOD           go to state 167
+    POINTER          go to state 168
+    VALUE            go to state 150
+    EXPR             go to state 263
+    EXPR_START       go to state 154
+
+
+State 199
+
+  152 ELSEIF_SECOND: t_else . t_if CONDITION BODY_FOR_LOOP
+  155 ELSE_THIRD: t_else . BODY_FOR_LOOP
+
+    t_if       shift, and go to state 264
+    t_open_br  shift, and go to state 68
+
+    ABSORB_EMPTYNESS     go to state 220
+    BODY_FOR_LOOP        go to state 265
+    BODY_FOR_LOOP_START  go to state 222
+
+
+State 200
+
+  137 IF: IF_FIRST MULTY_ELSEIF_SECOND . MULTY_ELSE_THIRD
+  138   | IF_FIRST MULTY_ELSEIF_SECOND .
+  151 MULTY_ELSEIF_SECOND: MULTY_ELSEIF_SECOND . ELSEIF_SECOND
+
+    t_else  shift, and go to state 199
+
+    $default  reduce using rule 138 (IF)
+
+    ELSEIF_SECOND     go to state 266
+    MULTY_ELSE_THIRD  go to state 267
+    ELSE_THIRD        go to state 203
+
+
+State 201
+
+  150 MULTY_ELSEIF_SECOND: ELSEIF_SECOND .
+
+    $default  reduce using rule 150 (MULTY_ELSEIF_SECOND)
+
+
+State 202
+
+  139 IF: IF_FIRST MULTY_ELSE_THIRD .
+  154 MULTY_ELSE_THIRD: MULTY_ELSE_THIRD . ELSE_THIRD
+
+    t_else  shift, and go to state 268
+
+    $default  reduce using rule 139 (IF)
+
+    ELSE_THIRD  go to state 269
+
+
+State 203
+
+  153 MULTY_ELSE_THIRD: ELSE_THIRD .
+
+    $default  reduce using rule 153 (MULTY_ELSE_THIRD)
+
+
+State 204
+
+  185 MULTI_AR: ARRAY_INDEX MULTI_AR .
+
+    $default  reduce using rule 185 (MULTI_AR)
+
+
+State 205
+
+  220 INT_BODY: t_open_br END_SYMBOLS t_id t_open_paren t_close_paren .
+
+    $default  reduce using rule 220 (INT_BODY)
+
+
+State 206
+
+   30 FUNC_RETURN_VALUE_FULFILL: t_func t_open_paren TYPE_AND_STRUCT t_close_paren .
+
+    $default  reduce using rule 30 (FUNC_RETURN_VALUE_FULFILL)
+
+
+State 207
+
+   24 FUNC_PARAM_SECOND: FUNC_PARAM_SECOND t_comma FUNC_PARAM_FULFILL_SECOND .
+
+    $default  reduce using rule 24 (FUNC_PARAM_SECOND)
+
+
+State 208
+
+   17 FUNC_SECOND_PART: t_open_paren FUNC_PARAM_SECOND t_close_paren BODY .
+
+    $default  reduce using rule 17 (FUNC_SECOND_PART)
+
+
+State 209
+
+  198 MAPS: t_map . t_open_sq t_vtype t_close_sq t_vtype
+
+    t_open_sq  shift, and go to state 270
+
+
+State 210
+
+   69 VAR: t_var t_id t_id . ASSIGNMENT t_id ST_EMBEDDED
+
+    t_vtype     shift, and go to state 171
+    t_comma     shift, and go to state 194
+    t_equality  shift, and go to state 174
+
+    ASSIGNMENT  go to state 271
+
+
+State 211
+
+   52 VAR: t_var t_id ASSIGNMENT . EXPR
+   53    | t_var t_id ASSIGNMENT . EXPR t_vtype
+   54    | t_var t_id ASSIGNMENT . BOOLEAN
+   58    | t_var t_id ASSIGNMENT . MULTI_AR t_vtype PLENTY
+   61    | t_var t_id ASSIGNMENT . MAKE
+   66    | t_var t_id ASSIGNMENT . SLICE
+   70    | t_var t_id ASSIGNMENT . t_id ST_EMBEDDED
+
+    t_int_const         shift, and go to state 134
+    t_float_const       shift, and go to state 135
+    t_id                shift, and go to state 272
+    t_string            shift, and go to state 137
+    t_open_paren        shift, and go to state 138
+    t_open_sq           shift, and go to state 98
+    t_rune              shift, and go to state 139
+    t_blank_identifier  shift, and go to state 140
+    t_make              shift, and go to state 273
+    t_pointer           shift, and go to state 99
+    t_ampersand         shift, and go to state 100
+
+    BOOLEAN          go to state 274
+    FUNC_CALL        go to state 166
+    FUNC_CALL_START  go to state 106
+    SHIFT            go to state 146
+    SHIFT_AC         go to state 147
+    METHOD           go to state 167
+    POINTER          go to state 168
+    VALUE            go to state 150
+    EXPR             go to state 275
+    EXPR_START       go to state 154
+    ARRAY_INDEX      go to state 118
+    MULTI_AR         go to state 276
+    MAKE             go to state 277
+    SLICE            go to state 278
+
+
+State 212
+
+   74 VAR: t_var t_id POINTER .
+   75    | t_var t_id POINTER . ASSIGNMENT EXPR
+
+    t_vtype     shift, and go to state 171
+    t_comma     shift, and go to state 194
+    t_equality  shift, and go to state 174
+
+    $default  reduce using rule 74 (VAR)
+
+    ASSIGNMENT  go to state 279
+
+
+State 213
+
+  177 ARRAY_BODY: t_var t_id MULTI_AR . t_vtype
+  178           | t_var t_id MULTI_AR . t_vtype ASSIGNMENT MULTI_AR t_vtype PLENTY
+  179           | t_var t_id MULTI_AR . t_vtype ASSIGNMENT MAKE
+
+    t_vtype  shift, and go to state 280
+
+
+State 214
+
+   67 VAR: t_var t_id MAPS .
+
+    $default  reduce using rule 67 (VAR)
+
+
+State 215
+
+   52 VAR: t_var t_id . ASSIGNMENT EXPR
+   53    | t_var t_id . ASSIGNMENT EXPR t_vtype
+   54    | t_var t_id . ASSIGNMENT BOOLEAN
+   58    | t_var t_id . ASSIGNMENT MULTI_AR t_vtype PLENTY
+   61    | t_var t_id . ASSIGNMENT MAKE
+   66    | t_var t_id . ASSIGNMENT SLICE
+   67    | t_var t_id . MAPS
+   69    | t_var t_id . t_id ASSIGNMENT t_id ST_EMBEDDED
+   70    | t_var t_id . ASSIGNMENT t_id ST_EMBEDDED
+   74    | t_var t_id . POINTER
+   75    | t_var t_id . POINTER ASSIGNMENT EXPR
+
+    t_vtype      shift, and go to state 171
+    t_map        shift, and go to state 209
+    t_id         shift, and go to state 210
+    t_comma      shift, and go to state 194
+    t_equality   shift, and go to state 174
+    t_pointer    shift, and go to state 99
+    t_ampersand  shift, and go to state 100
+
+    ASSIGNMENT  go to state 211
+    POINTER     go to state 212
+    MAPS        go to state 214
+
+
+State 216
+
+   90 SHIFT: SHIFT_AC t_shift_const . SHIFT_AC
+
+    t_int_const  shift, and go to state 281
+    t_id         shift, and go to state 282
+
+    SHIFT_AC  go to state 283
+
+
+State 217
+
+  160 EXPR: EXPR t_sign . VALUE
+
+    t_int_const         shift, and go to state 134
+    t_float_const       shift, and go to state 135
+    t_id                shift, and go to state 165
+    t_string            shift, and go to state 137
+    t_rune              shift, and go to state 139
+    t_blank_identifier  shift, and go to state 140
+    t_pointer           shift, and go to state 99
+    t_ampersand         shift, and go to state 100
+
+    FUNC_CALL        go to state 166
+    FUNC_CALL_START  go to state 106
+    SHIFT            go to state 146
+    SHIFT_AC         go to state 147
+    METHOD           go to state 167
+    POINTER          go to state 168
+    VALUE            go to state 284
+
+
+State 218
+
+   76 BOOLEAN: EXPR t_bool . EXPR
+
+    t_int_const         shift, and go to state 134
+    t_float_const       shift, and go to state 135
+    t_id                shift, and go to state 165
+    t_string            shift, and go to state 137
+    t_open_paren        shift, and go to state 138
+    t_rune              shift, and go to state 139
+    t_blank_identifier  shift, and go to state 140
+    t_pointer           shift, and go to state 99
+    t_ampersand         shift, and go to state 100
+
+    FUNC_CALL        go to state 166
+    FUNC_CALL_START  go to state 106
+    SHIFT            go to state 146
+    SHIFT_AC         go to state 147
+    METHOD           go to state 167
+    POINTER          go to state 168
+    VALUE            go to state 150
+    EXPR             go to state 285
+    EXPR_START       go to state 154
+
+
+State 219
+
+  142 IF_FIRST: t_if INIT_STATE t_semicolon . CONDITION BODY_FOR_LOOP
+
+    t_int_const         shift, and go to state 134
+    t_float_const       shift, and go to state 135
+    t_id                shift, and go to state 165
+    t_string            shift, and go to state 137
+    t_open_paren        shift, and go to state 138
+    t_rune              shift, and go to state 139
+    t_blank_identifier  shift, and go to state 140
+    t_true              shift, and go to state 141
+    t_false             shift, and go to state 142
+    t_pointer           shift, and go to state 99
+    t_ampersand         shift, and go to state 100
+
+    $default  reduce using rule 170 (CONDITION)
+
+    BOOLEAN          go to state 144
+    FUNC_CALL        go to state 166
+    FUNC_CALL_START  go to state 106
+    SHIFT            go to state 146
+    SHIFT_AC         go to state 147
+    METHOD           go to state 167
+    POINTER          go to state 168
+    VALUE            go to state 150
+    EXPR             go to state 151
+    CONDITION        go to state 286
+    EXPR_START       go to state 154
+
+
+State 220
+
+  122 ABSORB_EMPTYNESS: ABSORB_EMPTYNESS . END_SYMBOLS
+  144 BODY_FOR_LOOP_START: ABSORB_EMPTYNESS .
+
+    t_semicolon  shift, and go to state 20
+    t_enter      shift, and go to state 21
+    t_eof        shift, and go to state 22
+
+    $default  reduce using rule 144 (BODY_FOR_LOOP_START)
+
+    END_SYMBOLS  go to state 122
+
+
+State 221
+
+  141 IF_FIRST: t_if CONDITION BODY_FOR_LOOP .
+
+    $default  reduce using rule 141 (IF_FIRST)
+
+
+State 222
+
+  143 BODY_FOR_LOOP: BODY_FOR_LOOP_START . BODY_FOR_LOOP_END
+  145 BODY_FOR_LOOP_START: BODY_FOR_LOOP_START . LOOP_FILLING END_SYMBOLS
+
+    t_defer      shift, and go to state 88
+    t_var        shift, and go to state 89
+    t_if         shift, and go to state 90
+    t_switch     shift, and go to state 91
+    t_type       shift, and go to state 92
+    t_for        shift, and go to state 93
+    t_goto       shift, and go to state 94
+    t_continue   shift, and go to state 287
+    t_break      shift, and go to state 288
+    t_return     shift, and go to state 95
+    t_id         shift, and go to state 96
+    t_close_br   shift, and go to state 289
+    t_open_sq    shift, and go to state 98
+    t_pointer    shift, and go to state 99
+    t_ampersand  shift, and go to state 100
+
+    BODY_FILLING       go to state 290
+    VAR                go to state 103
+    DEFER              go to state 104
+    FUNC_CALL          go to state 105
+    FUNC_CALL_START    go to state 106
+    METHOD             go to state 107
+    POINTER            go to state 108
+    GOTO               go to state 109
+    LABEL              go to state 110
+    SWITCH             go to state 111
+    IF                 go to state 112
+    IF_FIRST           go to state 113
+    BODY_FOR_LOOP_END  go to state 291
+    LOOP_FILLING       go to state 292
+    RETURN             go to state 114
+    SHORT_EXPR         go to state 115
+    FOR                go to state 116
+    ARRAY_BODY         go to state 117
+    ARRAY_INDEX        go to state 118
+    MULTI_AR           go to state 119
+    SLICE              go to state 120
+    STRUCT             go to state 121
+    STRUCT_START       go to state 11
+
+
+State 223
+
+  160 EXPR: EXPR . t_sign VALUE
+  161     | EXPR_START EXPR . EXPR_END
+
+    t_sign         shift, and go to state 217
+    t_close_paren  shift, and go to state 293
+
+    EXPR_END  go to state 294
+
+
+State 224
+
+  125 CASE: t_case . CASE_STATEMENT CASE_BODY
+
+    t_int_const         shift, and go to state 134
+    t_float_const       shift, and go to state 135
+    t_id                shift, and go to state 165
+    t_string            shift, and go to state 137
+    t_open_paren        shift, and go to state 138
+    t_rune              shift, and go to state 139
+    t_blank_identifier  shift, and go to state 140
+    t_pointer           shift, and go to state 99
+    t_ampersand         shift, and go to state 100
+
+    FUNC_CALL        go to state 166
+    FUNC_CALL_START  go to state 106
+    SHIFT            go to state 146
+    SHIFT_AC         go to state 147
+    METHOD           go to state 167
+    POINTER          go to state 168
+    VALUE            go to state 150
+    MULTIPLE_ARG     go to state 295
+    FIRST_PART       go to state 296
+    CASE_STATEMENT   go to state 297
+    EXPR             go to state 298
+    EXPR_START       go to state 154
+
+
+State 225
+
+  126 DEFAULT: t_default . CASE_BODY
+
+    t_colon  shift, and go to state 299
+
+    CASE_BODY  go to state 300
+
+
+State 226
+
+  136 SWITCH_BODY_END: t_close_br .
+
+    $default  reduce using rule 136 (SWITCH_BODY_END)
+
+
+State 227
+
+  120 SWITCH_BODY_START: SWITCH_BODY_START CASE .
+
+    $default  reduce using rule 120 (SWITCH_BODY_START)
+
+
+State 228
+
+  123 SWITCH_BODY_START_WITH_DEFAULT: SWITCH_BODY_START DEFAULT .
+
+    $default  reduce using rule 123 (SWITCH_BODY_START_WITH_DEFAULT)
+
+
+State 229
+
+  117 SWITCH_BODY: SWITCH_BODY_START SWITCH_BODY_END .
+
+    $default  reduce using rule 117 (SWITCH_BODY)
+
+
+State 230
+
+  124 SWITCH_BODY_START_WITH_DEFAULT: SWITCH_BODY_START_WITH_DEFAULT CASE .
+
+    $default  reduce using rule 124 (SWITCH_BODY_START_WITH_DEFAULT)
+
+
+State 231
+
+  118 SWITCH_BODY: SWITCH_BODY_START_WITH_DEFAULT SWITCH_BODY_END .
+
+    $default  reduce using rule 118 (SWITCH_BODY)
+
+
+State 232
+
+  115 SWITCH: t_switch EXPR SWITCH_BODY .
+
+    $default  reduce using rule 115 (SWITCH)
+
+
+State 233
+
+  114 SWITCH: t_switch INIT_STATE t_semicolon . EXPR SWITCH_BODY
+
+    t_int_const         shift, and go to state 134
+    t_float_const       shift, and go to state 135
+    t_id                shift, and go to state 165
+    t_string            shift, and go to state 137
+    t_open_paren        shift, and go to state 138
+    t_rune              shift, and go to state 139
+    t_blank_identifier  shift, and go to state 140
+    t_pointer           shift, and go to state 99
+    t_ampersand         shift, and go to state 100
+
+    FUNC_CALL        go to state 166
+    FUNC_CALL_START  go to state 106
+    SHIFT            go to state 146
+    SHIFT_AC         go to state 147
+    METHOD           go to state 167
+    POINTER          go to state 168
+    VALUE            go to state 150
+    EXPR             go to state 301
+    EXPR_START       go to state 154
+
+
+State 234
+
+  173 FOR: t_for INIT_STATE t_semicolon . CONDITION t_semicolon POST_STATE BODY_FOR_LOOP
+
+    t_int_const         shift, and go to state 134
+    t_float_const       shift, and go to state 135
+    t_id                shift, and go to state 165
+    t_string            shift, and go to state 137
+    t_open_paren        shift, and go to state 138
+    t_rune              shift, and go to state 139
+    t_blank_identifier  shift, and go to state 140
+    t_true              shift, and go to state 141
+    t_false             shift, and go to state 142
+    t_pointer           shift, and go to state 99
+    t_ampersand         shift, and go to state 100
+
+    $default  reduce using rule 170 (CONDITION)
+
+    BOOLEAN          go to state 144
+    FUNC_CALL        go to state 166
+    FUNC_CALL_START  go to state 106
+    SHIFT            go to state 146
+    SHIFT_AC         go to state 147
+    METHOD           go to state 167
+    POINTER          go to state 168
+    VALUE            go to state 150
+    EXPR             go to state 151
+    CONDITION        go to state 302
+    EXPR_START       go to state 154
+
+
+State 235
+
+  174 FOR: t_for CONDITION BODY_FOR_LOOP .
+
+    $default  reduce using rule 174 (FOR)
+
+
+State 236
+
+  157 PARAM: PARAM t_comma . EXPR
+
+    t_int_const         shift, and go to state 134
+    t_float_const       shift, and go to state 135
+    t_id                shift, and go to state 165
+    t_string            shift, and go to state 137
+    t_open_paren        shift, and go to state 138
+    t_rune              shift, and go to state 139
+    t_blank_identifier  shift, and go to state 140
+    t_pointer           shift, and go to state 99
+    t_ampersand         shift, and go to state 100
+
+    FUNC_CALL        go to state 166
+    FUNC_CALL_START  go to state 106
+    SHIFT            go to state 146
+    SHIFT_AC         go to state 147
+    METHOD           go to state 167
+    POINTER          go to state 168
+    VALUE            go to state 150
+    EXPR             go to state 303
+    EXPR_START       go to state 154
+
+
+State 237
+
+   78 ASSIGNMENT: t_vtype t_equality .
+
+    $default  reduce using rule 78 (ASSIGNMENT)
+
+
+State 238
+
+   80 ASSIGNMENT: t_comma t_id . ASSIGNMENT EXPR t_comma
+   81           | t_comma t_id . ASSIGNMENT BOOLEAN t_comma
+   83 SHORT_ASSIGN: t_comma t_id . SHORT_ASSIGN EXPR t_comma
+   84             | t_comma t_id . SHORT_ASSIGN BOOLEAN t_comma
+
+    t_vtype      shift, and go to state 171
+    t_short_dec  shift, and go to state 172
+    t_comma      shift, and go to state 173
+    t_equality   shift, and go to state 174
+
+    ASSIGNMENT    go to state 304
+    SHORT_ASSIGN  go to state 305
+
+
+State 239
+
+   92 SHIFT_AC: t_int_const .
+  102 VALUE: t_int_const .
+  180 ARRAY_INDEX: t_open_sq t_int_const . t_close_sq
+
+    t_close_sq  shift, and go to state 257
+
+    t_colon   reduce using rule 102 (VALUE)
+    $default  reduce using rule 92 (SHIFT_AC)
+
+
+State 240
+
+   86 FUNC_CALL_START: t_id . t_open_paren
+   91 SHIFT_AC: t_id .
+   93 METHOD: t_id . t_dot t_id
+  104 VALUE: t_id .
+  181 ARRAY_INDEX: t_open_sq t_id . t_close_sq
+
+    t_open_paren  shift, and go to state 175
+    t_close_sq    shift, and go to state 258
+    t_dot         shift, and go to state 177
+
+    t_colon   reduce using rule 104 (VALUE)
+    $default  reduce using rule 91 (SHIFT_AC)
+
+
+State 241
+
+  105 VALUE: t_string .
+  182 ARRAY_INDEX: t_open_sq t_string . t_close_sq
+
+    t_close_sq  shift, and go to state 259
+
+    $default  reduce using rule 105 (VALUE)
+
+
+State 242
+
+  196 SLICE: t_id t_open_sq t_colon . VALUE t_close_sq
+
+    t_int_const         shift, and go to state 134
+    t_float_const       shift, and go to state 135
+    t_id                shift, and go to state 165
+    t_string            shift, and go to state 137
+    t_rune              shift, and go to state 139
+    t_blank_identifier  shift, and go to state 140
+    t_pointer           shift, and go to state 99
+    t_ampersand         shift, and go to state 100
+
+    FUNC_CALL        go to state 166
+    FUNC_CALL_START  go to state 106
+    SHIFT            go to state 146
+    SHIFT_AC         go to state 147
+    METHOD           go to state 167
+    POINTER          go to state 168
+    VALUE            go to state 306
+
+
+State 243
+
+  195 SLICE: t_id t_open_sq VALUE . t_colon VALUE t_close_sq
+  197      | t_id t_open_sq VALUE . t_colon t_close_sq
+
+    t_colon  shift, and go to state 307
+
+
+State 244
+
+   93 METHOD: t_id t_dot t_id .
+
+    $default  reduce using rule 93 (METHOD)
+
+
+State 245
+
+  163 SHORT_EXPR: t_id t_short_expr t_id .
+
+    $default  reduce using rule 163 (SHORT_EXPR)
+
+
+State 246
+
+   86 FUNC_CALL_START: t_id . t_open_paren
+   91 SHIFT_AC: t_id .
+   93 METHOD: t_id . t_dot t_id
+  104 VALUE: t_id .
+  195 SLICE: t_id . t_open_sq VALUE t_colon VALUE t_close_sq
+  196      | t_id . t_open_sq t_colon VALUE t_close_sq
+  197      | t_id . t_open_sq VALUE t_colon t_close_sq
+
+    t_open_paren  shift, and go to state 175
+    t_open_sq     shift, and go to state 308
+    t_dot         shift, and go to state 177
+
+    t_shift_const  reduce using rule 91 (SHIFT_AC)
+    $default       reduce using rule 104 (VALUE)
+
+
+State 247
+
+   56 VAR: t_id ASSIGNMENT EXPR .
+  160 EXPR: EXPR . t_sign VALUE
+
+    t_sign  shift, and go to state 217
+
+    $default  reduce using rule 56 (VAR)
+
+
+State 248
+
+   65 VAR: t_id ASSIGNMENT SLICE .
+
+    $default  reduce using rule 65 (VAR)
+
+
+State 249
+
+   71 VAR: t_id SHORT_ASSIGN t_id . ST_EMBEDDED
+   86 FUNC_CALL_START: t_id . t_open_paren
+   91 SHIFT_AC: t_id .
+   93 METHOD: t_id . t_dot t_id
+  104 VALUE: t_id .
+  195 SLICE: t_id . t_open_sq VALUE t_colon VALUE t_close_sq
+  196      | t_id . t_open_sq t_colon VALUE t_close_sq
+  197      | t_id . t_open_sq VALUE t_colon t_close_sq
+
+    t_open_br     shift, and go to state 309
+    t_open_paren  shift, and go to state 175
+    t_open_sq     shift, and go to state 308
+    t_dot         shift, and go to state 177
+
+    t_shift_const  reduce using rule 91 (SHIFT_AC)
+    $default       reduce using rule 104 (VALUE)
+
+    PLENTY_OLD    go to state 310
+    STRUCT_FIELD  go to state 311
+    ST_EMBEDDED   go to state 312
+
+
+State 250
+
+   68 VAR: t_id SHORT_ASSIGN t_make . t_open_paren MAPS t_close_paren
+  193 MAKE: t_make . t_open_paren MULTI_AR t_vtype t_comma VALUE t_close_paren
+  194     | t_make . t_open_paren MULTI_AR t_vtype t_comma VALUE t_comma t_int_const VALUE
+
+    t_open_paren  shift, and go to state 313
+
+
+State 251
+
+   59 VAR: t_id SHORT_ASSIGN BOOLEAN .
+
+    $default  reduce using rule 59 (VAR)
+
+
+State 252
+
+   55 VAR: t_id SHORT_ASSIGN EXPR .
+   76 BOOLEAN: EXPR . t_bool EXPR
+  160 EXPR: EXPR . t_sign VALUE
+
+    t_sign  shift, and go to state 217
+    t_bool  shift, and go to state 218
+
+    $default  reduce using rule 55 (VAR)
+
+
+State 253
+
+   57 VAR: t_id SHORT_ASSIGN MULTI_AR . t_vtype PLENTY
+
+    t_vtype  shift, and go to state 314
+
+
+State 254
+
+   62 VAR: t_id SHORT_ASSIGN MAKE .
+
+    $default  reduce using rule 62 (VAR)
+
+
+State 255
+
+   64 VAR: t_id SHORT_ASSIGN SLICE .
+
+    $default  reduce using rule 64 (VAR)
+
+
+State 256
+
+   60 VAR: t_id MULTI_AR ASSIGNMENT . EXPR
+   63    | t_id MULTI_AR ASSIGNMENT . MAKE
+
+    t_int_const         shift, and go to state 134
+    t_float_const       shift, and go to state 135
+    t_id                shift, and go to state 165
+    t_string            shift, and go to state 137
+    t_open_paren        shift, and go to state 138
+    t_rune              shift, and go to state 139
+    t_blank_identifier  shift, and go to state 140
+    t_make              shift, and go to state 273
+    t_pointer           shift, and go to state 99
+    t_ampersand         shift, and go to state 100
+
+    FUNC_CALL        go to state 166
+    FUNC_CALL_START  go to state 106
+    SHIFT            go to state 146
+    SHIFT_AC         go to state 147
+    METHOD           go to state 167
+    POINTER          go to state 168
+    VALUE            go to state 150
+    EXPR             go to state 315
+    EXPR_START       go to state 154
+    MAKE             go to state 316
+
+
+State 257
+
+  180 ARRAY_INDEX: t_open_sq t_int_const t_close_sq .
+
+    $default  reduce using rule 180 (ARRAY_INDEX)
+
+
+State 258
+
+  181 ARRAY_INDEX: t_open_sq t_id t_close_sq .
+
+    $default  reduce using rule 181 (ARRAY_INDEX)
+
+
+State 259
+
+  182 ARRAY_INDEX: t_open_sq t_string t_close_sq .
+
+    $default  reduce using rule 182 (ARRAY_INDEX)
+
+
+State 260
+
+   80 ASSIGNMENT: t_comma t_id . ASSIGNMENT EXPR t_comma
+   81           | t_comma t_id . ASSIGNMENT BOOLEAN t_comma
+
+    t_vtype     shift, and go to state 171
+    t_comma     shift, and go to state 194
+    t_equality  shift, and go to state 174
+
+    ASSIGNMENT  go to state 304
+
+
+State 261
+
+   94 METHOD: METHOD t_dot t_id .
+
+    $default  reduce using rule 94 (METHOD)
+
+
+State 262
+
+   72 VAR: METHOD ASSIGNMENT VALUE .
+
+    $default  reduce using rule 72 (VAR)
+
+
+State 263
+
+   73 VAR: POINTER ASSIGNMENT EXPR .
+  160 EXPR: EXPR . t_sign VALUE
+
+    t_sign  shift, and go to state 217
+
+    $default  reduce using rule 73 (VAR)
+
+
+State 264
+
+  152 ELSEIF_SECOND: t_else t_if . CONDITION BODY_FOR_LOOP
+
+    t_int_const         shift, and go to state 134
+    t_float_const       shift, and go to state 135
+    t_id                shift, and go to state 165
+    t_string            shift, and go to state 137
+    t_open_paren        shift, and go to state 138
+    t_rune              shift, and go to state 139
+    t_blank_identifier  shift, and go to state 140
+    t_true              shift, and go to state 141
+    t_false             shift, and go to state 142
+    t_pointer           shift, and go to state 99
+    t_ampersand         shift, and go to state 100
+
+    $default  reduce using rule 170 (CONDITION)
+
+    BOOLEAN          go to state 144
+    FUNC_CALL        go to state 166
+    FUNC_CALL_START  go to state 106
+    SHIFT            go to state 146
+    SHIFT_AC         go to state 147
+    METHOD           go to state 167
+    POINTER          go to state 168
+    VALUE            go to state 150
+    EXPR             go to state 151
+    CONDITION        go to state 317
+    EXPR_START       go to state 154
+
+
+State 265
+
+  155 ELSE_THIRD: t_else BODY_FOR_LOOP .
+
+    $default  reduce using rule 155 (ELSE_THIRD)
+
+
+State 266
+
+  151 MULTY_ELSEIF_SECOND: MULTY_ELSEIF_SECOND ELSEIF_SECOND .
+
+    $default  reduce using rule 151 (MULTY_ELSEIF_SECOND)
+
+
+State 267
+
+  137 IF: IF_FIRST MULTY_ELSEIF_SECOND MULTY_ELSE_THIRD .
+  154 MULTY_ELSE_THIRD: MULTY_ELSE_THIRD . ELSE_THIRD
+
+    t_else  shift, and go to state 268
+
+    $default  reduce using rule 137 (IF)
+
+    ELSE_THIRD  go to state 269
+
+
+State 268
+
+  155 ELSE_THIRD: t_else . BODY_FOR_LOOP
+
+    t_open_br  shift, and go to state 68
+
+    ABSORB_EMPTYNESS     go to state 220
+    BODY_FOR_LOOP        go to state 265
+    BODY_FOR_LOOP_START  go to state 222
+
+
+State 269
+
+  154 MULTY_ELSE_THIRD: MULTY_ELSE_THIRD ELSE_THIRD .
+
+    $default  reduce using rule 154 (MULTY_ELSE_THIRD)
+
+
+State 270
+
+  198 MAPS: t_map t_open_sq . t_vtype t_close_sq t_vtype
+
+    t_vtype  shift, and go to state 318
+
+
+State 271
+
+   69 VAR: t_var t_id t_id ASSIGNMENT . t_id ST_EMBEDDED
+
+    t_id  shift, and go to state 319
+
+
+State 272
+
+   70 VAR: t_var t_id ASSIGNMENT t_id . ST_EMBEDDED
+   86 FUNC_CALL_START: t_id . t_open_paren
+   91 SHIFT_AC: t_id .
+   93 METHOD: t_id . t_dot t_id
+  104 VALUE: t_id .
+  195 SLICE: t_id . t_open_sq VALUE t_colon VALUE t_close_sq
+  196      | t_id . t_open_sq t_colon VALUE t_close_sq
+  197      | t_id . t_open_sq VALUE t_colon t_close_sq
+
+    t_open_br     shift, and go to state 309
+    t_open_paren  shift, and go to state 175
+    t_open_sq     shift, and go to state 308
+    t_dot         shift, and go to state 177
+
+    t_shift_const  reduce using rule 91 (SHIFT_AC)
+    $default       reduce using rule 104 (VALUE)
+
+    PLENTY_OLD    go to state 310
+    STRUCT_FIELD  go to state 311
+    ST_EMBEDDED   go to state 320
+
+
+State 273
+
+  193 MAKE: t_make . t_open_paren MULTI_AR t_vtype t_comma VALUE t_close_paren
+  194     | t_make . t_open_paren MULTI_AR t_vtype t_comma VALUE t_comma t_int_const VALUE
+
+    t_open_paren  shift, and go to state 321
+
+
+State 274
+
+   54 VAR: t_var t_id ASSIGNMENT BOOLEAN .
+
+    $default  reduce using rule 54 (VAR)
+
+
+State 275
+
+   52 VAR: t_var t_id ASSIGNMENT EXPR .
+   53    | t_var t_id ASSIGNMENT EXPR . t_vtype
+   76 BOOLEAN: EXPR . t_bool EXPR
+  160 EXPR: EXPR . t_sign VALUE
+
+    t_vtype  shift, and go to state 322
+    t_sign   shift, and go to state 217
+    t_bool   shift, and go to state 218
+
+    $default  reduce using rule 52 (VAR)
+
+
+State 276
+
+   58 VAR: t_var t_id ASSIGNMENT MULTI_AR . t_vtype PLENTY
+
+    t_vtype  shift, and go to state 323
+
+
+State 277
+
+   61 VAR: t_var t_id ASSIGNMENT MAKE .
+
+    $default  reduce using rule 61 (VAR)
+
+
+State 278
+
+   66 VAR: t_var t_id ASSIGNMENT SLICE .
+
+    $default  reduce using rule 66 (VAR)
+
+
+State 279
+
+   75 VAR: t_var t_id POINTER ASSIGNMENT . EXPR
+
+    t_int_const         shift, and go to state 134
+    t_float_const       shift, and go to state 135
+    t_id                shift, and go to state 165
+    t_string            shift, and go to state 137
+    t_open_paren        shift, and go to state 138
+    t_rune              shift, and go to state 139
+    t_blank_identifier  shift, and go to state 140
+    t_pointer           shift, and go to state 99
+    t_ampersand         shift, and go to state 100
+
+    FUNC_CALL        go to state 166
+    FUNC_CALL_START  go to state 106
+    SHIFT            go to state 146
+    SHIFT_AC         go to state 147
+    METHOD           go to state 167
+    POINTER          go to state 168
+    VALUE            go to state 150
+    EXPR             go to state 324
+    EXPR_START       go to state 154
+
+
+State 280
+
+  177 ARRAY_BODY: t_var t_id MULTI_AR t_vtype .
+  178           | t_var t_id MULTI_AR t_vtype . ASSIGNMENT MULTI_AR t_vtype PLENTY
+  179           | t_var t_id MULTI_AR t_vtype . ASSIGNMENT MAKE
+
+    t_vtype     shift, and go to state 171
+    t_comma     shift, and go to state 194
+    t_equality  shift, and go to state 174
+
+    $default  reduce using rule 177 (ARRAY_BODY)
+
+    ASSIGNMENT  go to state 325
+
+
+State 281
+
+   92 SHIFT_AC: t_int_const .
+
+    $default  reduce using rule 92 (SHIFT_AC)
+
+
+State 282
+
+   91 SHIFT_AC: t_id .
+
+    $default  reduce using rule 91 (SHIFT_AC)
+
+
+State 283
+
+   90 SHIFT: SHIFT_AC t_shift_const SHIFT_AC .
+
+    $default  reduce using rule 90 (SHIFT)
+
+
+State 284
+
+  160 EXPR: EXPR t_sign VALUE .
+
+    $default  reduce using rule 160 (EXPR)
+
+
+State 285
+
+   76 BOOLEAN: EXPR t_bool EXPR .
+  160 EXPR: EXPR . t_sign VALUE
+
+    t_sign  shift, and go to state 217
+
+    $default  reduce using rule 76 (BOOLEAN)
+
+
+State 286
+
+  142 IF_FIRST: t_if INIT_STATE t_semicolon CONDITION . BODY_FOR_LOOP
+
+    t_open_br  shift, and go to state 68
+
+    ABSORB_EMPTYNESS     go to state 220
+    BODY_FOR_LOOP        go to state 326
+    BODY_FOR_LOOP_START  go to state 222
+
+
+State 287
+
+  149 LOOP_FILLING: t_continue .
+
+    $default  reduce using rule 149 (LOOP_FILLING)
+
+
+State 288
+
+  148 LOOP_FILLING: t_break .
+
+    $default  reduce using rule 148 (LOOP_FILLING)
+
+
+State 289
+
+  146 BODY_FOR_LOOP_END: t_close_br .
+
+    $default  reduce using rule 146 (BODY_FOR_LOOP_END)
+
+
+State 290
+
+  147 LOOP_FILLING: BODY_FILLING .
+
+    $default  reduce using rule 147 (LOOP_FILLING)
+
+
+State 291
+
+  143 BODY_FOR_LOOP: BODY_FOR_LOOP_START BODY_FOR_LOOP_END .
+
+    $default  reduce using rule 143 (BODY_FOR_LOOP)
+
+
+State 292
+
+  145 BODY_FOR_LOOP_START: BODY_FOR_LOOP_START LOOP_FILLING . END_SYMBOLS
+
+    t_semicolon  shift, and go to state 20
+    t_enter      shift, and go to state 21
+    t_eof        shift, and go to state 22
+
+    END_SYMBOLS  go to state 327
+
+
+State 293
+
+  176 EXPR_END: t_close_paren .
+
+    $default  reduce using rule 176 (EXPR_END)
+
+
+State 294
+
+  161 EXPR: EXPR_START EXPR EXPR_END .
+
+    $default  reduce using rule 161 (EXPR)
+
+
+State 295
+
+  131 CASE_STATEMENT: MULTIPLE_ARG .
+
+    $default  reduce using rule 131 (CASE_STATEMENT)
+
+
+State 296
+
+  127 MULTIPLE_ARG: FIRST_PART . SECOND_PART
+  129 FIRST_PART: FIRST_PART . EXPR t_comma
+
+    t_int_const         shift, and go to state 134
+    t_float_const       shift, and go to state 135
+    t_id                shift, and go to state 165
+    t_string            shift, and go to state 137
+    t_open_paren        shift, and go to state 138
+    t_rune              shift, and go to state 139
+    t_blank_identifier  shift, and go to state 140
+    t_pointer           shift, and go to state 99
+    t_ampersand         shift, and go to state 100
+
+    FUNC_CALL        go to state 166
+    FUNC_CALL_START  go to state 106
+    SHIFT            go to state 146
+    SHIFT_AC         go to state 147
+    METHOD           go to state 167
+    POINTER          go to state 168
+    VALUE            go to state 150
+    SECOND_PART      go to state 328
+    EXPR             go to state 329
+    EXPR_START       go to state 154
+
+
+State 297
+
+  125 CASE: t_case CASE_STATEMENT . CASE_BODY
+
+    t_colon  shift, and go to state 299
+
+    CASE_BODY  go to state 330
+
+
+State 298
+
+  128 FIRST_PART: EXPR . t_comma
+  132 CASE_STATEMENT: EXPR .
+  160 EXPR: EXPR . t_sign VALUE
+
+    t_sign   shift, and go to state 217
+    t_comma  shift, and go to state 331
+
+    $default  reduce using rule 132 (CASE_STATEMENT)
+
+
+State 299
+
+  133 CASE_BODY: t_colon .
+
+    $default  reduce using rule 133 (CASE_BODY)
+
+
+State 300
+
+  126 DEFAULT: t_default CASE_BODY .
+  134 CASE_BODY: CASE_BODY . LOOP_FILLING END_SYMBOLS
+  135          | CASE_BODY . END_SYMBOLS
+
+    t_defer      shift, and go to state 88
+    t_var        shift, and go to state 89
+    t_if         shift, and go to state 90
+    t_switch     shift, and go to state 91
+    t_type       shift, and go to state 92
+    t_for        shift, and go to state 93
+    t_goto       shift, and go to state 94
+    t_continue   shift, and go to state 287
+    t_break      shift, and go to state 288
+    t_return     shift, and go to state 95
+    t_id         shift, and go to state 96
+    t_open_sq    shift, and go to state 98
+    t_semicolon  shift, and go to state 20
+    t_enter      shift, and go to state 21
+    t_eof        shift, and go to state 22
+    t_pointer    shift, and go to state 99
+    t_ampersand  shift, and go to state 100
+
+    $default  reduce using rule 126 (DEFAULT)
+
+    BODY_FILLING     go to state 290
+    VAR              go to state 103
+    DEFER            go to state 104
+    FUNC_CALL        go to state 105
+    FUNC_CALL_START  go to state 106
+    METHOD           go to state 107
+    POINTER          go to state 108
+    GOTO             go to state 109
+    LABEL            go to state 110
+    SWITCH           go to state 111
+    IF               go to state 112
+    IF_FIRST         go to state 113
+    LOOP_FILLING     go to state 332
+    RETURN           go to state 114
+    SHORT_EXPR       go to state 115
+    FOR              go to state 116
+    ARRAY_BODY       go to state 117
+    ARRAY_INDEX      go to state 118
+    MULTI_AR         go to state 119
+    SLICE            go to state 120
+    STRUCT           go to state 121
+    STRUCT_START     go to state 11
+    END_SYMBOLS      go to state 333
+
+
+State 301
+
+  114 SWITCH: t_switch INIT_STATE t_semicolon EXPR . SWITCH_BODY
+  160 EXPR: EXPR . t_sign VALUE
+
+    t_open_br  shift, and go to state 68
+    t_sign     shift, and go to state 217
+
+    SWITCH_BODY                     go to state 334
+    SWITCH_BODY_START               go to state 156
+    ABSORB_EMPTYNESS                go to state 157
+    SWITCH_BODY_START_WITH_DEFAULT  go to state 158
+
+
+State 302
+
+  173 FOR: t_for INIT_STATE t_semicolon CONDITION . t_semicolon POST_STATE BODY_FOR_LOOP
+
+    t_semicolon  shift, and go to state 335
+
+
+State 303
+
+  157 PARAM: PARAM t_comma EXPR .
+  160 EXPR: EXPR . t_sign VALUE
+
+    t_sign  shift, and go to state 217
+
+    $default  reduce using rule 157 (PARAM)
+
+
+State 304
+
+   80 ASSIGNMENT: t_comma t_id ASSIGNMENT . EXPR t_comma
+   81           | t_comma t_id ASSIGNMENT . BOOLEAN t_comma
+
+    t_int_const         shift, and go to state 134
+    t_float_const       shift, and go to state 135
+    t_id                shift, and go to state 165
+    t_string            shift, and go to state 137
+    t_open_paren        shift, and go to state 138
+    t_rune              shift, and go to state 139
+    t_blank_identifier  shift, and go to state 140
+    t_pointer           shift, and go to state 99
+    t_ampersand         shift, and go to state 100
+
+    BOOLEAN          go to state 336
+    FUNC_CALL        go to state 166
+    FUNC_CALL_START  go to state 106
+    SHIFT            go to state 146
+    SHIFT_AC         go to state 147
+    METHOD           go to state 167
+    POINTER          go to state 168
+    VALUE            go to state 150
+    EXPR             go to state 337
+    EXPR_START       go to state 154
+
+
+State 305
+
+   83 SHORT_ASSIGN: t_comma t_id SHORT_ASSIGN . EXPR t_comma
+   84             | t_comma t_id SHORT_ASSIGN . BOOLEAN t_comma
+
+    t_int_const         shift, and go to state 134
+    t_float_const       shift, and go to state 135
+    t_id                shift, and go to state 165
+    t_string            shift, and go to state 137
+    t_open_paren        shift, and go to state 138
+    t_rune              shift, and go to state 139
+    t_blank_identifier  shift, and go to state 140
+    t_pointer           shift, and go to state 99
+    t_ampersand         shift, and go to state 100
+
+    BOOLEAN          go to state 338
+    FUNC_CALL        go to state 166
+    FUNC_CALL_START  go to state 106
+    SHIFT            go to state 146
+    SHIFT_AC         go to state 147
+    METHOD           go to state 167
+    POINTER          go to state 168
+    VALUE            go to state 150
+    EXPR             go to state 339
+    EXPR_START       go to state 154
+
+
+State 306
+
+  196 SLICE: t_id t_open_sq t_colon VALUE . t_close_sq
+
+    t_close_sq  shift, and go to state 340
+
+
+State 307
+
+  195 SLICE: t_id t_open_sq VALUE t_colon . VALUE t_close_sq
+  197      | t_id t_open_sq VALUE t_colon . t_close_sq
+
+    t_int_const         shift, and go to state 134
+    t_float_const       shift, and go to state 135
+    t_id                shift, and go to state 165
+    t_string            shift, and go to state 137
+    t_close_sq          shift, and go to state 341
+    t_rune              shift, and go to state 139
+    t_blank_identifier  shift, and go to state 140
+    t_pointer           shift, and go to state 99
+    t_ampersand         shift, and go to state 100
+
+    FUNC_CALL        go to state 166
+    FUNC_CALL_START  go to state 106
+    SHIFT            go to state 146
+    SHIFT_AC         go to state 147
+    METHOD           go to state 167
+    POINTER          go to state 168
+    VALUE            go to state 342
+
+
+State 308
+
+  195 SLICE: t_id t_open_sq . VALUE t_colon VALUE t_close_sq
+  196      | t_id t_open_sq . t_colon VALUE t_close_sq
+  197      | t_id t_open_sq . VALUE t_colon t_close_sq
+
+    t_int_const         shift, and go to state 134
+    t_float_const       shift, and go to state 135
+    t_id                shift, and go to state 165
+    t_string            shift, and go to state 137
+    t_rune              shift, and go to state 139
+    t_blank_identifier  shift, and go to state 140
+    t_colon             shift, and go to state 242
+    t_pointer           shift, and go to state 99
+    t_ampersand         shift, and go to state 100
+
+    FUNC_CALL        go to state 166
+    FUNC_CALL_START  go to state 106
+    SHIFT            go to state 146
+    SHIFT_AC         go to state 147
+    METHOD           go to state 167
+    POINTER          go to state 168
+    VALUE            go to state 243
+
+
+State 309
+
+  188 PLENTY_OLD: t_open_br . ENUM t_close_br
+  189           | t_open_br . t_close_br
+  190           | t_open_br . PLENTY t_close_br
+  211 STRUCT_FIELD: t_open_br . END_SYMBOLS STRUCT_ENUM t_close_br
+  212             | t_open_br . END_SYMBOLS STRUCT_ENUM t_comma END_SYMBOLS t_close_br t_comma END_SYMBOLS
+
+    t_int_const         shift, and go to state 134
+    t_float_const       shift, and go to state 135
+    t_id                shift, and go to state 165
+    t_string            shift, and go to state 137
+    t_open_br           shift, and go to state 343
+    t_close_br          shift, and go to state 344
+    t_rune              shift, and go to state 139
+    t_semicolon         shift, and go to state 20
+    t_blank_identifier  shift, and go to state 140
+    t_enter             shift, and go to state 21
+    t_eof               shift, and go to state 22
+    t_pointer           shift, and go to state 99
+    t_ampersand         shift, and go to state 100
+
+    FUNC_CALL        go to state 166
+    FUNC_CALL_START  go to state 106
+    SHIFT            go to state 146
+    SHIFT_AC         go to state 147
+    METHOD           go to state 167
+    POINTER          go to state 168
+    VALUE            go to state 345
+    PLENTY           go to state 346
+    PLENTY_OLD       go to state 347
+    ENUM             go to state 348
+    END_SYMBOLS      go to state 349
+
+
+State 310
+
+  213 STRUCT_FIELD: PLENTY_OLD .
+
+    $default  reduce using rule 213 (STRUCT_FIELD)
+
+
+State 311
+
+  214 ST_EMBEDDED: STRUCT_FIELD .
+  215            | STRUCT_FIELD . t_comma ST_EMBEDDED
+
+    t_comma  shift, and go to state 350
+
+    $default  reduce using rule 214 (ST_EMBEDDED)
+
+
+State 312
+
+   71 VAR: t_id SHORT_ASSIGN t_id ST_EMBEDDED .
+
+    $default  reduce using rule 71 (VAR)
+
+
+State 313
+
+   68 VAR: t_id SHORT_ASSIGN t_make t_open_paren . MAPS t_close_paren
+  193 MAKE: t_make t_open_paren . MULTI_AR t_vtype t_comma VALUE t_close_paren
+  194     | t_make t_open_paren . MULTI_AR t_vtype t_comma VALUE t_comma t_int_const VALUE
+
+    t_map      shift, and go to state 209
+    t_open_sq  shift, and go to state 98
+
+    ARRAY_INDEX  go to state 118
+    MULTI_AR     go to state 351
+    MAPS         go to state 352
+
+
+State 314
+
+   57 VAR: t_id SHORT_ASSIGN MULTI_AR t_vtype . PLENTY
+
+    t_open_br  shift, and go to state 343
+
+    PLENTY      go to state 353
+    PLENTY_OLD  go to state 347
+
+
+State 315
+
+   60 VAR: t_id MULTI_AR ASSIGNMENT EXPR .
+  160 EXPR: EXPR . t_sign VALUE
+
+    t_sign  shift, and go to state 217
+
+    $default  reduce using rule 60 (VAR)
+
+
+State 316
+
+   63 VAR: t_id MULTI_AR ASSIGNMENT MAKE .
+
+    $default  reduce using rule 63 (VAR)
+
+
+State 317
+
+  152 ELSEIF_SECOND: t_else t_if CONDITION . BODY_FOR_LOOP
+
+    t_open_br  shift, and go to state 68
+
+    ABSORB_EMPTYNESS     go to state 220
+    BODY_FOR_LOOP        go to state 354
+    BODY_FOR_LOOP_START  go to state 222
+
+
+State 318
+
+  198 MAPS: t_map t_open_sq t_vtype . t_close_sq t_vtype
+
+    t_close_sq  shift, and go to state 355
+
+
+State 319
+
+   69 VAR: t_var t_id t_id ASSIGNMENT t_id . ST_EMBEDDED
+
+    t_open_br  shift, and go to state 309
+
+    PLENTY_OLD    go to state 310
+    STRUCT_FIELD  go to state 311
+    ST_EMBEDDED   go to state 356
+
+
+State 320
+
+   70 VAR: t_var t_id ASSIGNMENT t_id ST_EMBEDDED .
+
+    $default  reduce using rule 70 (VAR)
+
+
+State 321
+
+  193 MAKE: t_make t_open_paren . MULTI_AR t_vtype t_comma VALUE t_close_paren
+  194     | t_make t_open_paren . MULTI_AR t_vtype t_comma VALUE t_comma t_int_const VALUE
+
+    t_open_sq  shift, and go to state 98
+
+    ARRAY_INDEX  go to state 118
+    MULTI_AR     go to state 351
+
+
+State 322
+
+   53 VAR: t_var t_id ASSIGNMENT EXPR t_vtype .
+
+    $default  reduce using rule 53 (VAR)
+
+
+State 323
+
+   58 VAR: t_var t_id ASSIGNMENT MULTI_AR t_vtype . PLENTY
+
+    t_open_br  shift, and go to state 343
+
+    PLENTY      go to state 357
+    PLENTY_OLD  go to state 347
+
+
+State 324
+
+   75 VAR: t_var t_id POINTER ASSIGNMENT EXPR .
+  160 EXPR: EXPR . t_sign VALUE
+
+    t_sign  shift, and go to state 217
+
+    $default  reduce using rule 75 (VAR)
+
+
+State 325
+
+  178 ARRAY_BODY: t_var t_id MULTI_AR t_vtype ASSIGNMENT . MULTI_AR t_vtype PLENTY
+  179           | t_var t_id MULTI_AR t_vtype ASSIGNMENT . MAKE
+
+    t_open_sq  shift, and go to state 98
+    t_make     shift, and go to state 273
+
+    ARRAY_INDEX  go to state 118
+    MULTI_AR     go to state 358
+    MAKE         go to state 359
+
+
+State 326
+
+  142 IF_FIRST: t_if INIT_STATE t_semicolon CONDITION BODY_FOR_LOOP .
+
+    $default  reduce using rule 142 (IF_FIRST)
+
+
+State 327
+
+  145 BODY_FOR_LOOP_START: BODY_FOR_LOOP_START LOOP_FILLING END_SYMBOLS .
+
+    $default  reduce using rule 145 (BODY_FOR_LOOP_START)
+
+
+State 328
+
+  127 MULTIPLE_ARG: FIRST_PART SECOND_PART .
+
+    $default  reduce using rule 127 (MULTIPLE_ARG)
+
+
+State 329
+
+  129 FIRST_PART: FIRST_PART EXPR . t_comma
+  130 SECOND_PART: EXPR .
+  160 EXPR: EXPR . t_sign VALUE
+
+    t_sign   shift, and go to state 217
+    t_comma  shift, and go to state 360
+
+    $default  reduce using rule 130 (SECOND_PART)
+
+
+State 330
+
+  125 CASE: t_case CASE_STATEMENT CASE_BODY .
+  134 CASE_BODY: CASE_BODY . LOOP_FILLING END_SYMBOLS
+  135          | CASE_BODY . END_SYMBOLS
+
+    t_defer      shift, and go to state 88
+    t_var        shift, and go to state 89
+    t_if         shift, and go to state 90
+    t_switch     shift, and go to state 91
+    t_type       shift, and go to state 92
+    t_for        shift, and go to state 93
+    t_goto       shift, and go to state 94
+    t_continue   shift, and go to state 287
+    t_break      shift, and go to state 288
+    t_return     shift, and go to state 95
+    t_id         shift, and go to state 96
+    t_open_sq    shift, and go to state 98
+    t_semicolon  shift, and go to state 20
+    t_enter      shift, and go to state 21
+    t_eof        shift, and go to state 22
+    t_pointer    shift, and go to state 99
+    t_ampersand  shift, and go to state 100
+
+    $default  reduce using rule 125 (CASE)
+
+    BODY_FILLING     go to state 290
+    VAR              go to state 103
+    DEFER            go to state 104
+    FUNC_CALL        go to state 105
+    FUNC_CALL_START  go to state 106
+    METHOD           go to state 107
+    POINTER          go to state 108
+    GOTO             go to state 109
+    LABEL            go to state 110
+    SWITCH           go to state 111
+    IF               go to state 112
+    IF_FIRST         go to state 113
+    LOOP_FILLING     go to state 332
+    RETURN           go to state 114
+    SHORT_EXPR       go to state 115
+    FOR              go to state 116
+    ARRAY_BODY       go to state 117
+    ARRAY_INDEX      go to state 118
+    MULTI_AR         go to state 119
+    SLICE            go to state 120
+    STRUCT           go to state 121
+    STRUCT_START     go to state 11
+    END_SYMBOLS      go to state 333
+
+
+State 331
+
+  128 FIRST_PART: EXPR t_comma .
+
+    $default  reduce using rule 128 (FIRST_PART)
+
+
+State 332
+
+  134 CASE_BODY: CASE_BODY LOOP_FILLING . END_SYMBOLS
+
+    t_semicolon  shift, and go to state 20
+    t_enter      shift, and go to state 21
+    t_eof        shift, and go to state 22
+
+    END_SYMBOLS  go to state 361
+
+
+State 333
+
+  135 CASE_BODY: CASE_BODY END_SYMBOLS .
+
+    $default  reduce using rule 135 (CASE_BODY)
+
+
+State 334
+
+  114 SWITCH: t_switch INIT_STATE t_semicolon EXPR SWITCH_BODY .
+
+    $default  reduce using rule 114 (SWITCH)
+
+
+State 335
+
+  173 FOR: t_for INIT_STATE t_semicolon CONDITION t_semicolon . POST_STATE BODY_FOR_LOOP
+
+    t_int_const         shift, and go to state 134
+    t_float_const       shift, and go to state 135
+    t_id                shift, and go to state 362
+    t_string            shift, and go to state 137
+    t_open_paren        shift, and go to state 138
+    t_rune              shift, and go to state 139
+    t_blank_identifier  shift, and go to state 140
+    t_pointer           shift, and go to state 99
+    t_ampersand         shift, and go to state 100
+
+    FUNC_CALL        go to state 166
+    FUNC_CALL_START  go to state 106
+    SHIFT            go to state 146
+    SHIFT_AC         go to state 147
+    METHOD           go to state 167
+    POINTER          go to state 168
+    VALUE            go to state 150
+    EXPR             go to state 363
+    POST_STATE       go to state 364
+    EXPR_START       go to state 154
+
+
+State 336
+
+   81 ASSIGNMENT: t_comma t_id ASSIGNMENT BOOLEAN . t_comma
+
+    t_comma  shift, and go to state 365
+
+
+State 337
+
+   76 BOOLEAN: EXPR . t_bool EXPR
+   80 ASSIGNMENT: t_comma t_id ASSIGNMENT EXPR . t_comma
+  160 EXPR: EXPR . t_sign VALUE
+
+    t_sign   shift, and go to state 217
+    t_comma  shift, and go to state 366
+    t_bool   shift, and go to state 218
+
+
+State 338
+
+   84 SHORT_ASSIGN: t_comma t_id SHORT_ASSIGN BOOLEAN . t_comma
+
+    t_comma  shift, and go to state 367
+
+
+State 339
+
+   76 BOOLEAN: EXPR . t_bool EXPR
+   83 SHORT_ASSIGN: t_comma t_id SHORT_ASSIGN EXPR . t_comma
+  160 EXPR: EXPR . t_sign VALUE
+
+    t_sign   shift, and go to state 217
+    t_comma  shift, and go to state 368
+    t_bool   shift, and go to state 218
+
+
+State 340
+
+  196 SLICE: t_id t_open_sq t_colon VALUE t_close_sq .
+
+    $default  reduce using rule 196 (SLICE)
+
+
+State 341
+
+  197 SLICE: t_id t_open_sq VALUE t_colon t_close_sq .
+
+    $default  reduce using rule 197 (SLICE)
+
+
+State 342
+
+  195 SLICE: t_id t_open_sq VALUE t_colon VALUE . t_close_sq
+
+    t_close_sq  shift, and go to state 369
+
+
+State 343
+
+  188 PLENTY_OLD: t_open_br . ENUM t_close_br
+  189           | t_open_br . t_close_br
+  190           | t_open_br . PLENTY t_close_br
+
+    t_int_const         shift, and go to state 134
+    t_float_const       shift, and go to state 135
+    t_id                shift, and go to state 165
+    t_string            shift, and go to state 137
+    t_open_br           shift, and go to state 343
+    t_close_br          shift, and go to state 344
+    t_rune              shift, and go to state 139
+    t_blank_identifier  shift, and go to state 140
+    t_pointer           shift, and go to state 99
+    t_ampersand         shift, and go to state 100
+
+    FUNC_CALL        go to state 166
+    FUNC_CALL_START  go to state 106
+    SHIFT            go to state 146
+    SHIFT_AC         go to state 147
+    METHOD           go to state 167
+    POINTER          go to state 168
+    VALUE            go to state 345
+    PLENTY           go to state 346
+    PLENTY_OLD       go to state 347
+    ENUM             go to state 348
+
+
+State 344
+
+  189 PLENTY_OLD: t_open_br t_close_br .
+
+    $default  reduce using rule 189 (PLENTY_OLD)
+
+
+State 345
+
+  191 ENUM: VALUE .
+
+    $default  reduce using rule 191 (ENUM)
+
+
+State 346
+
+  190 PLENTY_OLD: t_open_br PLENTY . t_close_br
+
+    t_close_br  shift, and go to state 370
+
+
+State 347
+
+  186 PLENTY: PLENTY_OLD .
+  187       | PLENTY_OLD . t_comma PLENTY
+
+    t_comma  shift, and go to state 371
+
+    $default  reduce using rule 186 (PLENTY)
+
+
+State 348
+
+  188 PLENTY_OLD: t_open_br ENUM . t_close_br
+  192 ENUM: ENUM . t_comma VALUE
+
+    t_close_br  shift, and go to state 372
+    t_comma     shift, and go to state 373
+
+
+State 349
+
+  211 STRUCT_FIELD: t_open_br END_SYMBOLS . STRUCT_ENUM t_close_br
+  212             | t_open_br END_SYMBOLS . STRUCT_ENUM t_comma END_SYMBOLS t_close_br t_comma END_SYMBOLS
+
+    t_id  shift, and go to state 374
+
+    STRUCT_ENUM  go to state 375
+
+
+State 350
+
+  215 ST_EMBEDDED: STRUCT_FIELD t_comma . ST_EMBEDDED
+
+    t_open_br  shift, and go to state 309
+
+    PLENTY_OLD    go to state 310
+    STRUCT_FIELD  go to state 311
+    ST_EMBEDDED   go to state 376
+
+
+State 351
+
+  193 MAKE: t_make t_open_paren MULTI_AR . t_vtype t_comma VALUE t_close_paren
+  194     | t_make t_open_paren MULTI_AR . t_vtype t_comma VALUE t_comma t_int_const VALUE
+
+    t_vtype  shift, and go to state 377
+
+
+State 352
+
+   68 VAR: t_id SHORT_ASSIGN t_make t_open_paren MAPS . t_close_paren
+
+    t_close_paren  shift, and go to state 378
+
+
+State 353
+
+   57 VAR: t_id SHORT_ASSIGN MULTI_AR t_vtype PLENTY .
+
+    $default  reduce using rule 57 (VAR)
+
+
+State 354
+
+  152 ELSEIF_SECOND: t_else t_if CONDITION BODY_FOR_LOOP .
+
+    $default  reduce using rule 152 (ELSEIF_SECOND)
+
+
+State 355
+
+  198 MAPS: t_map t_open_sq t_vtype t_close_sq . t_vtype
+
+    t_vtype  shift, and go to state 379
+
+
+State 356
+
+   69 VAR: t_var t_id t_id ASSIGNMENT t_id ST_EMBEDDED .
+
+    $default  reduce using rule 69 (VAR)
+
+
+State 357
+
+   58 VAR: t_var t_id ASSIGNMENT MULTI_AR t_vtype PLENTY .
+
+    $default  reduce using rule 58 (VAR)
+
+
+State 358
+
+  178 ARRAY_BODY: t_var t_id MULTI_AR t_vtype ASSIGNMENT MULTI_AR . t_vtype PLENTY
+
+    t_vtype  shift, and go to state 380
+
+
+State 359
+
+  179 ARRAY_BODY: t_var t_id MULTI_AR t_vtype ASSIGNMENT MAKE .
+
+    $default  reduce using rule 179 (ARRAY_BODY)
+
+
+State 360
+
+  129 FIRST_PART: FIRST_PART EXPR t_comma .
+
+    $default  reduce using rule 129 (FIRST_PART)
+
+
+State 361
+
+  134 CASE_BODY: CASE_BODY LOOP_FILLING END_SYMBOLS .
+
+    $default  reduce using rule 134 (CASE_BODY)
+
+
+State 362
+
+   86 FUNC_CALL_START: t_id . t_open_paren
+   91 SHIFT_AC: t_id .
+   93 METHOD: t_id . t_dot t_id
+  104 VALUE: t_id .
+  172 POST_STATE: t_id . t_inc_const
+
+    t_inc_const   shift, and go to state 381
+    t_open_paren  shift, and go to state 175
+    t_dot         shift, and go to state 177
+
+    t_shift_const  reduce using rule 91 (SHIFT_AC)
+    $default       reduce using rule 104 (VALUE)
+
+
+State 363
+
+  160 EXPR: EXPR . t_sign VALUE
+  171 POST_STATE: EXPR .
+
+    t_sign  shift, and go to state 217
+
+    $default  reduce using rule 171 (POST_STATE)
+
+
+State 364
+
+  173 FOR: t_for INIT_STATE t_semicolon CONDITION t_semicolon POST_STATE . BODY_FOR_LOOP
+
+    t_open_br  shift, and go to state 68
+
+    ABSORB_EMPTYNESS     go to state 220
+    BODY_FOR_LOOP        go to state 382
+    BODY_FOR_LOOP_START  go to state 222
+
+
+State 365
+
+   81 ASSIGNMENT: t_comma t_id ASSIGNMENT BOOLEAN t_comma .
+
+    $default  reduce using rule 81 (ASSIGNMENT)
+
+
+State 366
+
+   80 ASSIGNMENT: t_comma t_id ASSIGNMENT EXPR t_comma .
+
+    $default  reduce using rule 80 (ASSIGNMENT)
+
+
+State 367
+
+   84 SHORT_ASSIGN: t_comma t_id SHORT_ASSIGN BOOLEAN t_comma .
+
+    $default  reduce using rule 84 (SHORT_ASSIGN)
+
+
+State 368
+
+   83 SHORT_ASSIGN: t_comma t_id SHORT_ASSIGN EXPR t_comma .
+
+    $default  reduce using rule 83 (SHORT_ASSIGN)
+
+
+State 369
+
+  195 SLICE: t_id t_open_sq VALUE t_colon VALUE t_close_sq .
+
+    $default  reduce using rule 195 (SLICE)
+
+
+State 370
+
+  190 PLENTY_OLD: t_open_br PLENTY t_close_br .
+
+    $default  reduce using rule 190 (PLENTY_OLD)
+
+
+State 371
+
+  187 PLENTY: PLENTY_OLD t_comma . PLENTY
+
+    t_open_br  shift, and go to state 343
+
+    PLENTY      go to state 383
+    PLENTY_OLD  go to state 347
+
+
+State 372
+
+  188 PLENTY_OLD: t_open_br ENUM t_close_br .
+
+    $default  reduce using rule 188 (PLENTY_OLD)
+
+
+State 373
+
+  192 ENUM: ENUM t_comma . VALUE
+
+    t_int_const         shift, and go to state 134
+    t_float_const       shift, and go to state 135
+    t_id                shift, and go to state 165
+    t_string            shift, and go to state 137
+    t_rune              shift, and go to state 139
+    t_blank_identifier  shift, and go to state 140
+    t_pointer           shift, and go to state 99
+    t_ampersand         shift, and go to state 100
+
+    FUNC_CALL        go to state 166
+    FUNC_CALL_START  go to state 106
+    SHIFT            go to state 146
+    SHIFT_AC         go to state 147
+    METHOD           go to state 167
+    POINTER          go to state 168
+    VALUE            go to state 384
+
+
+State 374
+
+  207 STRUCT_ENUM: t_id . t_colon VALUE
+  209            | t_id . t_colon t_id STRUCT_FIELD
+
+    t_colon  shift, and go to state 385
+
+
+State 375
+
+  208 STRUCT_ENUM: STRUCT_ENUM . t_comma END_SYMBOLS t_id t_colon VALUE
+  210            | STRUCT_ENUM . t_comma END_SYMBOLS t_id t_colon t_id STRUCT_FIELD
+  211 STRUCT_FIELD: t_open_br END_SYMBOLS STRUCT_ENUM . t_close_br
+  212             | t_open_br END_SYMBOLS STRUCT_ENUM . t_comma END_SYMBOLS t_close_br t_comma END_SYMBOLS
+
+    t_close_br  shift, and go to state 386
+    t_comma     shift, and go to state 387
+
+
+State 376
+
+  215 ST_EMBEDDED: STRUCT_FIELD t_comma ST_EMBEDDED .
+
+    $default  reduce using rule 215 (ST_EMBEDDED)
+
+
+State 377
+
+  193 MAKE: t_make t_open_paren MULTI_AR t_vtype . t_comma VALUE t_close_paren
+  194     | t_make t_open_paren MULTI_AR t_vtype . t_comma VALUE t_comma t_int_const VALUE
+
+    t_comma  shift, and go to state 388
+
+
+State 378
+
+   68 VAR: t_id SHORT_ASSIGN t_make t_open_paren MAPS t_close_paren .
+
+    $default  reduce using rule 68 (VAR)
+
+
+State 379
+
+  198 MAPS: t_map t_open_sq t_vtype t_close_sq t_vtype .
+
+    $default  reduce using rule 198 (MAPS)
+
+
+State 380
+
+  178 ARRAY_BODY: t_var t_id MULTI_AR t_vtype ASSIGNMENT MULTI_AR t_vtype . PLENTY
+
+    t_open_br  shift, and go to state 343
+
+    PLENTY      go to state 389
+    PLENTY_OLD  go to state 347
+
+
+State 381
+
+  172 POST_STATE: t_id t_inc_const .
+
+    $default  reduce using rule 172 (POST_STATE)
+
+
+State 382
+
+  173 FOR: t_for INIT_STATE t_semicolon CONDITION t_semicolon POST_STATE BODY_FOR_LOOP .
+
+    $default  reduce using rule 173 (FOR)
+
+
+State 383
+
+  187 PLENTY: PLENTY_OLD t_comma PLENTY .
+
+    $default  reduce using rule 187 (PLENTY)
+
+
+State 384
+
+  192 ENUM: ENUM t_comma VALUE .
+
+    $default  reduce using rule 192 (ENUM)
+
+
+State 385
+
+  207 STRUCT_ENUM: t_id t_colon . VALUE
+  209            | t_id t_colon . t_id STRUCT_FIELD
+
+    t_int_const         shift, and go to state 134
+    t_float_const       shift, and go to state 135
+    t_id                shift, and go to state 390
+    t_string            shift, and go to state 137
+    t_rune              shift, and go to state 139
+    t_blank_identifier  shift, and go to state 140
+    t_pointer           shift, and go to state 99
+    t_ampersand         shift, and go to state 100
+
+    FUNC_CALL        go to state 166
+    FUNC_CALL_START  go to state 106
+    SHIFT            go to state 146
+    SHIFT_AC         go to state 147
+    METHOD           go to state 167
+    POINTER          go to state 168
+    VALUE            go to state 391
+
+
+State 386
+
+  211 STRUCT_FIELD: t_open_br END_SYMBOLS STRUCT_ENUM t_close_br .
+
+    $default  reduce using rule 211 (STRUCT_FIELD)
+
+
+State 387
+
+  208 STRUCT_ENUM: STRUCT_ENUM t_comma . END_SYMBOLS t_id t_colon VALUE
+  210            | STRUCT_ENUM t_comma . END_SYMBOLS t_id t_colon t_id STRUCT_FIELD
+  212 STRUCT_FIELD: t_open_br END_SYMBOLS STRUCT_ENUM t_comma . END_SYMBOLS t_close_br t_comma END_SYMBOLS
+
+    t_semicolon  shift, and go to state 20
+    t_enter      shift, and go to state 21
+    t_eof        shift, and go to state 22
+
+    END_SYMBOLS  go to state 392
+
+
+State 388
+
+  193 MAKE: t_make t_open_paren MULTI_AR t_vtype t_comma . VALUE t_close_paren
+  194     | t_make t_open_paren MULTI_AR t_vtype t_comma . VALUE t_comma t_int_const VALUE
+
+    t_int_const         shift, and go to state 134
+    t_float_const       shift, and go to state 135
+    t_id                shift, and go to state 165
+    t_string            shift, and go to state 137
+    t_rune              shift, and go to state 139
+    t_blank_identifier  shift, and go to state 140
+    t_pointer           shift, and go to state 99
+    t_ampersand         shift, and go to state 100
+
+    FUNC_CALL        go to state 166
+    FUNC_CALL_START  go to state 106
+    SHIFT            go to state 146
+    SHIFT_AC         go to state 147
+    METHOD           go to state 167
+    POINTER          go to state 168
+    VALUE            go to state 393
+
+
+State 389
+
+  178 ARRAY_BODY: t_var t_id MULTI_AR t_vtype ASSIGNMENT MULTI_AR t_vtype PLENTY .
+
+    $default  reduce using rule 178 (ARRAY_BODY)
+
+
+State 390
+
+   86 FUNC_CALL_START: t_id . t_open_paren
+   91 SHIFT_AC: t_id .
+   93 METHOD: t_id . t_dot t_id
+  104 VALUE: t_id .
+  209 STRUCT_ENUM: t_id t_colon t_id . STRUCT_FIELD
+
+    t_open_br     shift, and go to state 309
+    t_open_paren  shift, and go to state 175
+    t_dot         shift, and go to state 177
+
+    t_shift_const  reduce using rule 91 (SHIFT_AC)
+    $default       reduce using rule 104 (VALUE)
+
+    PLENTY_OLD    go to state 310
+    STRUCT_FIELD  go to state 394
+
+
+State 391
+
+  207 STRUCT_ENUM: t_id t_colon VALUE .
+
+    $default  reduce using rule 207 (STRUCT_ENUM)
+
+
+State 392
+
+  208 STRUCT_ENUM: STRUCT_ENUM t_comma END_SYMBOLS . t_id t_colon VALUE
+  210            | STRUCT_ENUM t_comma END_SYMBOLS . t_id t_colon t_id STRUCT_FIELD
+  212 STRUCT_FIELD: t_open_br END_SYMBOLS STRUCT_ENUM t_comma END_SYMBOLS . t_close_br t_comma END_SYMBOLS
+
+    t_id        shift, and go to state 395
+    t_close_br  shift, and go to state 396
+
+
+State 393
+
+  193 MAKE: t_make t_open_paren MULTI_AR t_vtype t_comma VALUE . t_close_paren
+  194     | t_make t_open_paren MULTI_AR t_vtype t_comma VALUE . t_comma t_int_const VALUE
+
+    t_comma        shift, and go to state 397
+    t_close_paren  shift, and go to state 398
+
+
+State 394
+
+  209 STRUCT_ENUM: t_id t_colon t_id STRUCT_FIELD .
+
+    $default  reduce using rule 209 (STRUCT_ENUM)
+
+
+State 395
+
+  208 STRUCT_ENUM: STRUCT_ENUM t_comma END_SYMBOLS t_id . t_colon VALUE
+  210            | STRUCT_ENUM t_comma END_SYMBOLS t_id . t_colon t_id STRUCT_FIELD
+
+    t_colon  shift, and go to state 399
+
+
+State 396
+
+  212 STRUCT_FIELD: t_open_br END_SYMBOLS STRUCT_ENUM t_comma END_SYMBOLS t_close_br . t_comma END_SYMBOLS
+
+    t_comma  shift, and go to state 400
+
+
+State 397
+
+  194 MAKE: t_make t_open_paren MULTI_AR t_vtype t_comma VALUE t_comma . t_int_const VALUE
+
+    t_int_const  shift, and go to state 401
+
+
+State 398
+
+  193 MAKE: t_make t_open_paren MULTI_AR t_vtype t_comma VALUE t_close_paren .
+
+    $default  reduce using rule 193 (MAKE)
+
+
+State 399
+
+  208 STRUCT_ENUM: STRUCT_ENUM t_comma END_SYMBOLS t_id t_colon . VALUE
+  210            | STRUCT_ENUM t_comma END_SYMBOLS t_id t_colon . t_id STRUCT_FIELD
+
+    t_int_const         shift, and go to state 134
+    t_float_const       shift, and go to state 135
+    t_id                shift, and go to state 402
+    t_string            shift, and go to state 137
+    t_rune              shift, and go to state 139
+    t_blank_identifier  shift, and go to state 140
+    t_pointer           shift, and go to state 99
+    t_ampersand         shift, and go to state 100
+
+    FUNC_CALL        go to state 166
+    FUNC_CALL_START  go to state 106
+    SHIFT            go to state 146
+    SHIFT_AC         go to state 147
+    METHOD           go to state 167
+    POINTER          go to state 168
+    VALUE            go to state 403
+
+
+State 400
+
+  212 STRUCT_FIELD: t_open_br END_SYMBOLS STRUCT_ENUM t_comma END_SYMBOLS t_close_br t_comma . END_SYMBOLS
+
+    t_semicolon  shift, and go to state 20
+    t_enter      shift, and go to state 21
+    t_eof        shift, and go to state 22
+
+    END_SYMBOLS  go to state 404
+
+
+State 401
+
+  194 MAKE: t_make t_open_paren MULTI_AR t_vtype t_comma VALUE t_comma t_int_const . VALUE
+
+    t_int_const         shift, and go to state 134
+    t_float_const       shift, and go to state 135
+    t_id                shift, and go to state 165
+    t_string            shift, and go to state 137
+    t_rune              shift, and go to state 139
+    t_blank_identifier  shift, and go to state 140
+    t_pointer           shift, and go to state 99
+    t_ampersand         shift, and go to state 100
+
+    FUNC_CALL        go to state 166
+    FUNC_CALL_START  go to state 106
+    SHIFT            go to state 146
+    SHIFT_AC         go to state 147
+    METHOD           go to state 167
+    POINTER          go to state 168
+    VALUE            go to state 405
+
+
+State 402
+
+   86 FUNC_CALL_START: t_id . t_open_paren
+   91 SHIFT_AC: t_id .
+   93 METHOD: t_id . t_dot t_id
+  104 VALUE: t_id .
+  210 STRUCT_ENUM: STRUCT_ENUM t_comma END_SYMBOLS t_id t_colon t_id . STRUCT_FIELD
+
+    t_open_br     shift, and go to state 309
+    t_open_paren  shift, and go to state 175
+    t_dot         shift, and go to state 177
+
+    t_shift_const  reduce using rule 91 (SHIFT_AC)
+    $default       reduce using rule 104 (VALUE)
+
+    PLENTY_OLD    go to state 310
+    STRUCT_FIELD  go to state 406
+
+
+State 403
+
+  208 STRUCT_ENUM: STRUCT_ENUM t_comma END_SYMBOLS t_id t_colon VALUE .
+
+    $default  reduce using rule 208 (STRUCT_ENUM)
+
+
+State 404
+
+  212 STRUCT_FIELD: t_open_br END_SYMBOLS STRUCT_ENUM t_comma END_SYMBOLS t_close_br t_comma END_SYMBOLS .
+
+    $default  reduce using rule 212 (STRUCT_FIELD)
+
+
+State 405
+
+  194 MAKE: t_make t_open_paren MULTI_AR t_vtype t_comma VALUE t_comma t_int_const VALUE .
+
+    $default  reduce using rule 194 (MAKE)
+
+
+State 406
+
+  210 STRUCT_ENUM: STRUCT_ENUM t_comma END_SYMBOLS t_id t_colon t_id STRUCT_FIELD .
+
+    $default  reduce using rule 210 (STRUCT_ENUM)
