@@ -76,6 +76,8 @@ TYPE_AND_STRUCT:
 			t_vtype
 			|t_id
 			;
+
+
 BODY:        BODY_START BODY_END
 	        ;
 
@@ -161,6 +163,7 @@ PARAM_START: t_open_paren
 
 PARAM_END: PARAM_END_FULFILL t_close_paren
 			;
+
 
 PARAM_END_FULFILL:
 			EXPR
