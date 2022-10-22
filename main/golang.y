@@ -9,7 +9,7 @@
 %token t_vtype t_constant t_case t_func t_import t_chan t_defer t_go t_interface t_default t_var t_range t_map t_package t_if t_select t_switch t_fallthrough t_else
 %token t_type t_for t_goto t_continue t_break t_return t_struct_const t_or_const t_and_const t_param_const t_eq_const t_rel_const t_shift_const t_inc_const
 %token t_point_const t_punc t_int_const t_float_const t_char_const t_id t_string t_short_dec t_open_br t_close_br t_sign t_comma t_equality t_open_paren t_close_paren
-%token t_open_sq t_close_sq t_bool t_rune t_semicolon t_blank_identifier t_dot t_colon t_true t_false t_short_expr t_make t_enter t_eof t_pointer t_ampersand t_path_pack
+%token t_open_sq t_close_sq t_bool t_rune t_semicolon t_blank_identifier t_dot t_colon t_true t_false t_short_expr t_make t_enter t_eof t_pointer t_ampersand
 %left '+' '-'
 %left '*' '/'
 %%
@@ -100,7 +100,7 @@ BODY_FILLING:  VAR
 			|  RETURN
 			|  STRUCT
 			|  SLICE
-			| DEFER
+			|  DEFER
 			;
 
 VAR:          t_var t_id ASSIGNMENT EXPR
@@ -120,18 +120,17 @@ VAR:          t_var t_id ASSIGNMENT EXPR
 			| t_var t_id ASSIGNMENT SLICE // SLICE
 			| t_var t_id MAPS // MAP
 			| t_id SHORT_ASSIGN t_make t_open_paren MAPS t_close_paren //MAP
-			| t_var t_id t_id ASSIGNMENT t_id ST_EMBEDDED //STRUCT
-			| t_var t_id ASSIGNMENT t_id ST_EMBEDDED //STRUCT
-			| t_id SHORT_ASSIGN t_id ST_EMBEDDED //STRUCT
+			| t_var t_id t_id ASSIGNMENT ST_EMBEDDED //STRUCT
+			| t_var t_id ASSIGNMENT ST_EMBEDDED //STRUCT
+			| t_id SHORT_ASSIGN ST_EMBEDDED //STRUCT
 			| METHOD ASSIGNMENT VALUE //STRUCT
-			| POINTER ASSIGNMENT EXPR 
+			| POINTER ASSIGNMENT EXPR //Илья посмотри указатели
 			| t_var t_id POINTER 
 			| t_var t_id POINTER ASSIGNMENT EXPR
       		;
       
 BOOLEAN:	  EXPR t_bool EXPR
 			;
-
 
 DEFER:		t_defer FUNC_CALL
 			;
@@ -146,7 +145,7 @@ SHORT_ASSIGN: t_short_dec
 			| t_comma t_id SHORT_ASSIGN BOOLEAN t_comma
 			;
 
-FUNC_CALL:    t_id t_open_paren PARAM t_close_paren
+FUNC_CALL:    t_id t_open_paren PARAM t_close_paren 
 			| METHOD t_open_paren PARAM t_close_paren
 			;
 
@@ -161,14 +160,12 @@ METHOD:		t_id t_dot t_id
            | METHOD t_dot t_id
 		   ;
 
-POINTER:      t_pointer t_id
+POINTER:      t_pointer  
 			| t_pointer t_vtype
 			| t_ampersand t_id
 			;
 
 PARAM_IMPORT: t_string END_SYMBOLS
-            //| t_string '/' t_string END_SYMBOLS {printf("here");}
-			| t_string t_path_pack t_string END_SYMBOLS
 			| t_id t_string END_SYMBOLS
             | PARAM_IMPORT t_string END_SYMBOLS
 			| PARAM_IMPORT t_id t_string END_SYMBOLS
@@ -183,6 +180,7 @@ VALUE:        t_int_const
 			| FUNC_CALL
 			| SHIFT
 			| POINTER
+			| EXPR_START EXPR EXPR_END
 			//| SLICE
 			;
 
@@ -280,9 +278,8 @@ PARAM:  	  PARAM t_comma EXPR
 			| 
      		;
 
-EXPR:         EXPR t_sign VALUE 
-			| EXPR_START EXPR EXPR_END 
-			| VALUE
+EXPR:         VALUE 
+            | EXPR t_sign VALUE 
 			;
 
 SHORT_EXPR:	  t_id t_short_expr t_id
@@ -349,56 +346,78 @@ SLICE:       t_id t_open_sq VALUE t_colon VALUE t_close_sq
 		   | t_id t_open_sq VALUE t_colon t_close_sq
 		   ;
 
-MAPS:         t_map t_open_sq t_vtype t_close_sq t_vtype
+MAPS:        t_map t_open_sq t_vtype t_close_sq t_vtype
            ;
 
-STRUCT:       STRUCT_START STRUCT_BODY END_SYMBOLS STRUCT_END
+STRUCT:      STRUCT_START 
            ;
 
-STRUCT_START: t_type t_id t_struct_const 
-           |  t_type t_id t_struct_const t_enter
-           ;
-
-STRUCT_BODY:  t_open_br
+STRUCT_BODY:  ENUM t_vtype 
+           |  t_id t_id
+		   |  t_id
+		   |  t_id METHOD
+		   |  STRUCT_BODY END_SYMBOLS t_id METHOD
            |  STRUCT_BODY END_SYMBOLS t_id t_vtype 
            |  STRUCT_BODY END_SYMBOLS t_id t_id //embedded struct
 		   |  STRUCT_BODY END_SYMBOLS t_id //short definition
 		   ;
 
-STRUCT_END:   t_close_br
+STRUCT_START: t_type t_id t_struct_const t_open_br STRUCT_END
+           |  t_type t_id t_struct_const t_open_br STRUCT_BODY STRUCT_END
+		   |  t_type t_id t_struct_const t_open_br END_SYMBOLS STRUCT_BODY STRUCT_END
+           |  t_type t_id t_struct_const t_enter
            ;
 
-STRUCT_ENUM: t_id t_colon VALUE 
-           | STRUCT_ENUM t_comma END_SYMBOLS t_id t_colon VALUE 
-		   | t_id t_colon t_id STRUCT_FIELD 
-           | STRUCT_ENUM t_comma END_SYMBOLS t_id t_colon t_id STRUCT_FIELD 
+STRUCT_END:   t_close_br
+           |  t_enter t_close_br
+           ;
+
+STRUCT_FIELD: FIELD_START
+              ;
+
+FIELD_START:  t_id t_open_br END_SYMBOLS FIELD_BODY t_comma END_SYMBOLS FIELD_END 
+           |  t_id t_open_br END_SYMBOLS FIELD_BODY FIELD_END
+           |  t_id t_open_br FIELD_BODY FIELD_END
 		   ;
 
-STRUCT_FIELD: t_open_br END_SYMBOLS STRUCT_ENUM t_close_br 
-           | t_open_br END_SYMBOLS STRUCT_ENUM t_comma END_SYMBOLS t_close_br t_comma END_SYMBOLS
-           | PLENTY_OLD
+FIELD_BODY:   t_id t_colon VALUE t_comma END_SYMBOLS 
+		   |  t_id t_colon FIELD_START t_comma END_SYMBOLS
+		   |  t_id t_colon FIELD_START 
+		   |  t_id t_colon VALUE 
+		   |  t_id t_colon VALUE t_comma END_SYMBOLS FIELD_BODY
+		   |  t_id t_colon FIELD_START t_comma END_SYMBOLS FIELD_BODY
+		   |  t_id t_colon VALUE t_comma FIELD_BODY
+		   |  t_id t_colon FIELD_START t_comma FIELD_BODY
+		   ;
+
+FIELD_END:    t_close_br
            ;
 
 ST_EMBEDDED:  STRUCT_FIELD 
-           |  STRUCT_FIELD t_comma ST_EMBEDDED 
 		   ;
-
-//ACCESS_FIELDS: METHOD {printf("HERE");}
-//           |   ACCESS_FIELDS METHOD  ///// Conflict
-//		   ;
            
 END_SYMBOLS: t_semicolon
 			|t_enter
 			|t_eof
 			;
 
-INTERFACE:     t_type t_id t_interface INT_BODY END_SYMBOLS INT_END
+INTERFACE:    INT_START 
             ;
 
-INT_BODY:      t_open_br END_SYMBOLS t_id t_open_paren t_close_paren
-            //|  t_id t_open_paren t_close_paren t_vtype 
+INT_START:    t_type t_id t_interface t_open_br INT_BODY INT_END
+            | t_type t_id t_interface t_open_br END_SYMBOLS INT_BODY INT_END
+			| t_type t_id t_interface t_enter t_open_br END_SYMBOLS INT_BODY INT_END
+			;
 
-INT_END:       t_close_br
+INT_BODY:     FUNC_CALL 
+            | FUNC_CALL t_vtype
+			| t_id t_open_paren t_vtype t_close_paren
+			| INT_BODY END_SYMBOLS t_id t_open_paren t_vtype t_close_paren
+			| INT_BODY END_SYMBOLS FUNC_CALL t_vtype 
+            | INT_BODY END_SYMBOLS FUNC_CALL 
+
+INT_END:      t_close_br
+            | t_enter t_close_br
             ;
 
 %%

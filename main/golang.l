@@ -56,9 +56,8 @@
 "true"																							 {printf("true "); return t_true;}
 "false"																							 {printf("false "); return t_false;}
 "_"																								 {printf("_ "); return  t_blank_identifier;}
-"*"																								 {printf("* "); return t_pointer;}
+\*[_a-zA-Z][_a-zA-Z0-9]*																		 {printf("pointer "); return t_pointer;}
 "&"																								 {printf("& "); return t_ampersand;}
-"./"																							 {printf("./ "); return t_path_pack;}
 "="|"*"|"+"|"-"|"/"|"?"|":"|"&"|"|"|"^"|"!"|"~"|"%"|"<"|">"		 		 	         			 {printf("sign ");return t_sign;}
 "*="|"/="|"+="|"%="|">>="|"-="|"<<="|"&="|"^="|"|="|"&^"|"&^="									 {printf("punc "); return t_short_expr;}
 [0-9]+																							 {printf("int "); return t_int_const;}

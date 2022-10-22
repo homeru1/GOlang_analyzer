@@ -1,5 +1,0 @@
-func add() int {
-    if err != nil{
-        a:=2
-    }
-}
