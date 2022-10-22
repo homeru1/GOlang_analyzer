@@ -1,5 +1,5 @@
-func add() int {
-    if err != nil{
-        a:=2
-    }
-}
+package main
+
+import "fmt"
+
+type Aircraft struct{ model string}
