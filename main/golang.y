@@ -131,7 +131,7 @@ VAR:          t_var t_id ASSIGNMENT EXPR
 			| t_var t_id POINTER 
 			| t_var t_id POINTER ASSIGNMENT EXPR
       		;
-      
+
 BOOLEAN:	  EXPR t_bool EXPR
 			;
 
