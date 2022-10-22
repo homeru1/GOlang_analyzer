@@ -147,7 +147,7 @@ SHORT_ASSIGN: t_short_dec
 			;
 
 FUNC_CALL:    t_id PARAM
-			| METHOD PARAM
+			//| METHOD PARAM
 			;
 			
 PARAM:  	PARAM_START PARAM_END
