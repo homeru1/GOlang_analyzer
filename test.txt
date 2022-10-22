@@ -1,3 +1,19 @@
+package main
+
+import "fmt"
+
+func vals() func(int) func(int) int{
+    return 3, 7
+}
+
 func main() {
-	a.d.e()
+
+
+    b := vals()
+    fmt.Println(a)
+    fmt.Println(b)
+
+
+    c := vals()
+    fmt.Println(c)
 }
