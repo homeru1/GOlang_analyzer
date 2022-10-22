@@ -76,6 +76,8 @@ TYPE_AND_STRUCT:
 			t_vtype
 			|t_id
 			;
+
+
 BODY:        BODY_START BODY_END
 	        ;
 
@@ -101,6 +103,7 @@ BODY_FILLING:  VAR
 			|  STRUCT
 			|  SLICE
 			|  DEFER
+			|  METHOD
 			;
 
 VAR:          t_var t_id ASSIGNMENT EXPR
@@ -145,8 +148,29 @@ SHORT_ASSIGN: t_short_dec
 			| t_comma t_id SHORT_ASSIGN BOOLEAN t_comma
 			;
 
-FUNC_CALL:    t_id t_open_paren PARAM t_close_paren 
-			| METHOD t_open_paren PARAM t_close_paren
+FUNC_CALL:    t_id PARAM
+			;
+			
+PARAM:  	PARAM_START PARAM_END
+			| t_open_paren t_close_paren
+     		;
+
+PARAM_START: t_open_paren 
+			| PARAM_START PARAM_FULFILL
+			;
+
+PARAM_END: PARAM_END_FULFILL t_close_paren
+			;
+
+
+PARAM_END_FULFILL:
+			EXPR
+			|t_enter
+			;
+
+PARAM_FULFILL:
+			EXPR t_comma
+			|t_enter
 			;
 
 SHIFT:		 SHIFT_AC t_shift_const SHIFT_AC
@@ -156,13 +180,17 @@ SHIFT_AC:	  t_id
 			| t_int_const
 			;
 
-METHOD:		t_id t_dot t_id
-           | METHOD t_dot t_id
+METHOD:		METHOD_FULFILL t_dot METHOD_FULFILL
+           | METHOD t_dot METHOD_FULFILL
 		   ;
+
+METHOD_FULFILL:
+			t_id
+			| FUNC_CALL
+			;
 
 POINTER:      t_pointer  
 			| t_pointer t_vtype
-			| t_ampersand t_id
 			;
 
 PARAM_IMPORT: t_string END_SYMBOLS
@@ -180,8 +208,8 @@ VALUE:        t_int_const
 			| FUNC_CALL
 			| SHIFT
 			| POINTER
+			| METHOD
 			| EXPR_START EXPR EXPR_END
-			//| SLICE
 			;
 
 GOTO:		  t_goto t_id
@@ -200,10 +228,9 @@ SWITCH_BODY:   SWITCH_BODY_START SWITCH_BODY_END
 			;
 
 SWITCH_BODY_START: 
-			t_open_br 
-			| t_open_br END_SYMBOLS
+			t_open_br
+			|SWITCH_BODY_START END_SYMBOLS
 			|SWITCH_BODY_START CASE
-
 			;
 
 SWITCH_BODY_START_WITH_DEFAULT: 
@@ -234,8 +261,7 @@ CASE_STATEMENT:
 			;
 
 CASE_BODY:	t_colon
-			|t_colon t_enter
-			|CASE_BODY BODY_FILLING END_SYMBOLS
+			|CASE_BODY LOOP_FILLING END_SYMBOLS
 			;
 
 
@@ -250,16 +276,37 @@ IF:			IF_FIRST MULTY_ELSEIF_SECOND MULTY_ELSE_THIRD
 			|IF_FIRST
 			;
 
-IF_FIRST:	t_if CONDITION BODY
+IF_FIRST:	t_if CONDITION BODY_FOR_LOOP
+			|t_if INIT_STATE t_semicolon CONDITION BODY_FOR_LOOP
+			;
+
+BODY_FOR_LOOP: BODY_FOR_LOOP_START BODY_FOR_LOOP_END
+			;
+
+BODY_FOR_LOOP_START:
+			t_open_br
+			|t_open_br END_SYMBOLS
+            | BODY_FOR_LOOP_START LOOP_FILLING END_SYMBOLS
+			;
+
+
+BODY_FOR_LOOP_END:     t_close_br
+            ;
+
+
+LOOP_FILLING:  
+			 BODY_FILLING
+			|t_break
+			|t_continue
 			;
 
 MULTY_ELSEIF_SECOND:
-			MULTY_ELSEIF_SECOND ELSEIF_SECOND
-			|ELSEIF_SECOND
+			 ELSEIF_SECOND
+			|MULTY_ELSEIF_SECOND ELSEIF_SECOND
 			;
 
 ELSEIF_SECOND:
-			t_else t_if CONDITION BODY
+			t_else t_if CONDITION BODY_FOR_LOOP
 			;
 
 MULTY_ELSE_THIRD:
@@ -267,16 +314,21 @@ MULTY_ELSE_THIRD:
 			|MULTY_ELSE_THIRD ELSE_THIRD
 			;
 
-ELSE_THIRD: t_else BODY
+ELSE_THIRD: t_else BODY_FOR_LOOP
 			;
 
-RETURN:		t_return PARAM
+RETURN:		t_return EXPR
+			|t_return EXPR MANY_RETURN_START MANY_RETURN_START_END
       ;
       
-PARAM:  	  PARAM t_comma EXPR
-			| EXPR
-			| 
-     		;
+
+MANY_RETURN_START:
+		t_comma
+		|MANY_RETURN_START EXPR t_comma
+		;
+
+MANY_RETURN_START_END:
+		EXPR
 
 EXPR:         VALUE 
             | EXPR t_sign VALUE 
@@ -300,8 +352,8 @@ POST_STATE:  EXPR
 			| t_id t_inc_const
 			;
 
-FOR:		  t_for INIT_STATE t_semicolon CONDITION t_semicolon POST_STATE BODY
-			| t_for CONDITION BODY
+FOR:		  t_for INIT_STATE t_semicolon CONDITION t_semicolon POST_STATE BODY_FOR_LOOP
+			| t_for CONDITION BODY_FOR_LOOP
 			;
 
 EXPR_START:   t_open_paren
