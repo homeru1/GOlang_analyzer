@@ -100,6 +100,7 @@ BODY_FILLING:  VAR
 			|  STRUCT
 			|  SLICE
 			|  DEFER
+			|  METHOD
 			;
 
 VAR:          t_var t_id ASSIGNMENT EXPR
@@ -145,11 +146,30 @@ SHORT_ASSIGN: t_short_dec
 			| t_comma t_id SHORT_ASSIGN BOOLEAN t_comma
 			;
 
-FUNC_CALL:    t_id t_open_paren PARAM t_close_paren
-			| METHOD t_open_paren PARAM t_close_paren
+FUNC_CALL:    t_id PARAM
+			| METHOD PARAM
 			;
-FUNC_CALL_START:
 			
+PARAM:  	PARAM_START PARAM_END
+			| t_open_paren t_close_paren
+     		;
+
+PARAM_START: t_open_paren 
+			| PARAM_START PARAM_FULFILL
+			;
+
+PARAM_END: PARAM_END_FULFILL t_close_paren
+			;
+
+PARAM_END_FULFILL:
+			EXPR
+			|t_enter
+			;
+
+PARAM_FULFILL:
+			EXPR t_comma
+			|t_enter
+			;
 
 SHIFT:		 SHIFT_AC t_shift_const SHIFT_AC
 			;
@@ -158,9 +178,14 @@ SHIFT_AC:	  t_id
 			| t_int_const
 			;
 
-METHOD:		t_id t_dot t_id
-           | METHOD t_dot t_id
+METHOD:		METHOD_FULFILL t_dot METHOD_FULFILL
+           | METHOD t_dot METHOD_FULFILL
 		   ;
+
+METHOD_FULFILL:
+			t_id
+			| FUNC_CALL
+			;
 
 POINTER:      t_pointer t_id
 			| t_pointer t_vtype
@@ -293,13 +318,18 @@ MULTY_ELSE_THIRD:
 ELSE_THIRD: t_else BODY_FOR_LOOP
 			;
 
-RETURN:		t_return PARAM
+RETURN:		t_return EXPR
+			|t_return EXPR MANY_RETURN_START MANY_RETURN_START_END
       ;
       
-PARAM:  	  PARAM t_comma EXPR
-			| EXPR
-			|
-     		;
+
+MANY_RETURN_START:
+		t_comma
+		|MANY_RETURN_START EXPR t_comma
+		;
+
+MANY_RETURN_START_END:
+		EXPR
 
 EXPR:         EXPR t_sign VALUE 
 			| EXPR_START EXPR EXPR_END 
