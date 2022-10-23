@@ -127,6 +127,7 @@ BODY_FILLING:  VAR
 			|  SLICE
 			|  DEFER
 			|  METHOD
+			|  INTERFACE
 			;
 
 VAR:          t_var t_id ASSIGNMENT EXPR
@@ -226,6 +227,7 @@ PARAM_IMPORT: t_string END_SYMBOLS
 VALUE:        t_int_const
             | t_float_const
 			| t_id
+			| t_sign t_id
 			| t_string
       		| t_rune
 			| t_blank_identifier
