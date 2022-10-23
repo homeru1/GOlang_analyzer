@@ -1,5 +1,9 @@
+package main
+
+import "fmt"
+
 func main() {
-    if ((a>0)&(b>0))|((a>0)&(b>0)){
-        
+    type describer interface{
+        describe() string
     }
 }
