@@ -23,7 +23,6 @@ GLOBAL:       PACKAGE
 			| FUNC
 			| STRUCT
 			| INTERFACE
-			| STRUCT_METHOD
 			;
 
 PACKAGE:     t_package t_id
@@ -44,6 +43,7 @@ FUNC_PARAM:	FUNC_PARAM_FULFILL
 
 FUNC_SECOND_PART:
 			BODY
+			| TYPE_AND_STRUCT BODY
 			| FUNC_RETURN_VALUE TYPE_AND_STRUCT BODY
 			| FUNC_PARAM_SECOND BODY
 			;
@@ -98,6 +98,10 @@ STRUCT_METHOD_SECOND_PART:
 			t_id FUNC_PARAM_SECOND BODY
 			|t_id FUNC_PARAM_SECOND TYPE_AND_STRUCT BODY
 			|t_id FUNC_PARAM_SECOND FUNC_PARAM_SECOND BODY
+			;
+
+SHORT_FUNC:
+			t_func t_open_paren FUNC_PARAM t_close_paren FUNC_SECOND_PART
 			;
 
 
@@ -231,6 +235,7 @@ VALUE:        t_int_const
 			| t_string
       		| t_rune
 			| t_blank_identifier
+			| SHORT_FUNC PARAM
 			| FUNC_CALL
 			| SHIFT
 			| POINTER
