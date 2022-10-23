@@ -116,6 +116,7 @@ BODY_FILLING:  VAR
 			|  SLICE
 			|  DEFER
 			|  METHOD
+			|  INTERFACE
 			;
 
 VAR:          t_var t_id ASSIGNMENT EXPR
