@@ -23,6 +23,7 @@ GLOBAL:       PACKAGE
 			| FUNC
 			| STRUCT
 			| INTERFACE
+			| STRUCT_METHOD
 			;
 
 PACKAGE:     t_package t_id
@@ -87,6 +88,16 @@ FUNC_RETURN_VALUE_FULFILL:
 TYPE_AND_STRUCT:
 			t_vtype
 			|t_id
+			;
+
+
+STRUCT_METHOD:
+			t_func t_open_paren t_id TYPE_AND_STRUCT t_close_paren STRUCT_METHOD_SECOND_PART
+
+STRUCT_METHOD_SECOND_PART:
+			t_id FUNC_PARAM_SECOND BODY
+			|t_id FUNC_PARAM_SECOND TYPE_AND_STRUCT BODY
+			|t_id FUNC_PARAM_SECOND FUNC_PARAM_SECOND BODY
 			;
 
 
@@ -331,7 +342,8 @@ MULTY_ELSE_THIRD:
 ELSE_THIRD: t_else BODY_FOR_LOOP
 			;
 
-RETURN:		t_return EXPR
+RETURN:		t_return
+			|t_return EXPR
 			|t_return EXPR MANY_RETURN_START MANY_RETURN_START_END
       ;
       
