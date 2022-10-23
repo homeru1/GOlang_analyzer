@@ -204,7 +204,6 @@ METHOD_FULFILL:
 			;
 
 POINTER:      t_pointer  
-			//| t_pointer t_vtype
 			;
 
 PARAM_IMPORT: t_string END_SYMBOLS
@@ -440,7 +439,7 @@ STRUCT_END:   t_close_br
            ;
 
 
-FIELD: 		t_id FIELD_BODY  {printf("qwe");}
+FIELD: 		t_id FIELD_BODY
 			;
 
 FIELD_BODY: FIELD_START FIELD_END
@@ -465,7 +464,7 @@ FIELD_END_FULFILL:
 			|t_enter
 			;
 
-ST_EMBEDDED:  FIELD {printf("qwe");}
+ST_EMBEDDED:  FIELD
 		   ;
            
 END_SYMBOLS: t_semicolon

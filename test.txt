@@ -1,11 +1,5 @@
 func main() {
-ross := Employee {
-    firstName: "ross",
-    lastName:  "Bing",
-    fullTime: Employee {
-    firstName: "ross",
-    lastName:  "Bing",
-    fullTime:  025,
-},
-}
+    if ((a>0)&(b>0))|((a>0)&(b>0)){
+        
+    }
 }
