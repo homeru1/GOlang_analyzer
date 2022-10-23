@@ -37,9 +37,7 @@
 "make"																						     {printf("make "); return t_make;}
 "{"																								 {printf("{ "); return t_open_br;}
 "}"																								 {printf("} "); return t_close_br;}
-"||" 																							 {printf("|| "); return t_or_const;}
 ":=" 																							 {printf(":= "); return t_short_dec;}
-"&&"																							 {printf("&& "); return t_and_const;}
 "..."																							 {printf("... "); return t_param_const;}																						 {printf("eq_const "); return t_eq_const;}																					 {printf("rel_const "); return t_rel_const;}
 ">>"|"<<"																						 {printf("shift_const "); return t_shift_const;}
 "++"|"--"																						 {printf("inc_const "); return t_inc_const;}
@@ -48,7 +46,7 @@
 "("																						 		 {printf("( "); return t_open_paren;}
 ")"																						 		 {printf(") "); return t_close_paren;}
 "="																						 		 {printf("= "); return t_equality;}
-"=="|">"|"<"|"<="|">="|"!="																		 {printf("bool ");return t_bool;}
+"=="|">"|"<"|"<="|">="|"!="|"&&"|"||" 															 {printf("bool ");return t_bool;}
 "["																								 {printf("[ "); return t_open_sq;}
 "]"																								 {printf("] "); return t_close_sq;}
 ";"																								 {printf("; "); return t_semicolon;}
