@@ -37,8 +37,8 @@ IMPORT:       t_import t_string
 FUNC:        t_func t_id t_open_paren FUNC_PARAM t_close_paren FUNC_SECOND_PART
 			;
 
-FUNC_PARAM:	FUNC_PARAM_FULFILL
-			|FUNC_PARAM t_comma FUNC_PARAM_FULFILL
+FUNC_PARAM:	FUNC_PARAM_FULFILL 
+			|FUNC_PARAM t_comma FUNC_PARAM_FULFILL 
 			;	
 
 FUNC_SECOND_PART:
@@ -60,8 +60,10 @@ FUNC_PARAM_SECOND_END:
 			;
 
 FUNC_PARAM_FULFILL:
-			t_id TYPE_AND_STRUCT
-			| t_id
+			t_id TYPE_AND_STRUCT 
+			| t_id 
+			| t_id INTERFACE
+			| t_id t_param_const INTERFACE // [...]
 			|
 			;
 
@@ -86,7 +88,8 @@ FUNC_RETURN_VALUE_FULFILL:
 			;
 TYPE_AND_STRUCT:
 			t_vtype
-			|t_id
+			| t_param_const t_vtype //[...]
+			|t_id 
 			;
 
 
@@ -141,7 +144,7 @@ VAR:          t_var t_id ASSIGNMENT EXPR
 			| t_var t_id ASSIGNMENT ST_EMBEDDED //STRUCT
 			| t_id SHORT_ASSIGN ST_EMBEDDED //STRUCT
 			| METHOD ASSIGNMENT VALUE //STRUCT
-			| POINTER ASSIGNMENT EXPR //Илья посмотри указатели
+			| POINTER ASSIGNMENT EXPR 
 			| t_var t_id POINTER 
 			| t_var t_id POINTER ASSIGNMENT EXPR
       		;
@@ -181,11 +184,12 @@ PARAM_END: PARAM_END_FULFILL t_close_paren
 
 PARAM_END_FULFILL:
 			EXPR
+			| EXPR t_param_const // [...]
 			|t_enter
 			;
 
 PARAM_FULFILL:
-			EXPR t_comma
+			EXPR t_comma 
 			|t_enter
 			;
 
@@ -217,7 +221,6 @@ PARAM_IMPORT: t_string END_SYMBOLS
 VALUE:        t_int_const
             | t_float_const
 			| t_id
-			| t_sign t_id
 			| t_string
       		| t_rune
 			| t_blank_identifier
@@ -392,6 +395,7 @@ ARRAY_INDEX:  t_open_sq t_int_const t_close_sq
 
 MULTI_AR:     ARRAY_INDEX
 			| ARRAY_INDEX MULTI_AR
+			| t_open_sq t_param_const t_close_sq // [...]
             ;
 
 PLENTY:       PLENTY_OLD 
@@ -481,6 +485,8 @@ INTERFACE:    INT_START
 INT_START:    t_type t_id t_interface t_open_br INT_BODY INT_END
             | t_type t_id t_interface t_open_br END_SYMBOLS INT_BODY INT_END
 			| t_type t_id t_interface t_enter t_open_br END_SYMBOLS INT_BODY INT_END
+			//| t_type t_id t_interface t_open_br INT_END
+			| t_interface t_open_br INT_END
 			;
 
 INT_BODY:     FUNC_CALL 
