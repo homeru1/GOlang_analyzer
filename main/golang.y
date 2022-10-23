@@ -23,6 +23,7 @@ GLOBAL:       PACKAGE
 			| FUNC
 			| STRUCT
 			| INTERFACE
+			| STRUCT_METHOD
 			;
 
 PACKAGE:     t_package t_id
@@ -113,11 +114,11 @@ BODY_END:     t_close_br
 
 BODY_START:   t_open_br
             | BODY_START BODY_FILLING END_SYMBOLS
+			| BODY_START VAR
 			| BODY_START END_SYMBOLS
 			;
 
-BODY_FILLING:  VAR 
-			|  FOR
+BODY_FILLING:   FOR
 			|  SWITCH
 			|  GOTO
 			|  LABEL
@@ -134,11 +135,12 @@ BODY_FILLING:  VAR
 			|  INTERFACE
 			;
 
-VAR:          t_var t_id ASSIGNMENT EXPR
-			| t_var t_id ASSIGNMENT EXPR t_vtype
-			| t_var t_id ASSIGNMENT BOOLEAN
-			| t_id SHORT_ASSIGN EXPR
-			| t_id ASSIGNMENT EXPR
+VAR:        //  t_var t_id ASSIGNMENT EXPR
+			//| t_var t_id ASSIGNMENT EXPR t_vtype
+			//| t_var t_id ASSIGNMENT BOOLEAN
+			  MANY_IDS MANY_VALUES
+			|t_var MANY_IDS MANY_VALUES
+			/*| t_id ASSIGNMENT EXPR
 			| t_id SHORT_ASSIGN MULTI_AR t_vtype PLENTY 
 			| t_var t_id ASSIGNMENT MULTI_AR t_vtype PLENTY  
 			| t_id SHORT_ASSIGN BOOLEAN
@@ -157,25 +159,60 @@ VAR:          t_var t_id ASSIGNMENT EXPR
 			| METHOD ASSIGNMENT VALUE //STRUCT
 			| POINTER ASSIGNMENT EXPR //Илья посмотри указатели
 			| t_var t_id POINTER 
-			| t_var t_id POINTER ASSIGNMENT EXPR
+			| t_var t_id POINTER ASSIGNMENT EXPR*/
       		;
+
+FULFILL_FOR_VAR:
+			 EXPR
+		   | BOOLEAN
+		   | MULTI_AR t_vtype PLENTY_OLD 
+		   ;
 
 BOOLEAN:	  VALUE t_bool VALUE
 			| BOOLEAN t_bool VALUE
 			;
 
 
-DEFER:		t_defer FUNC_CALL
+DEFER:		  t_defer FUNC_CALL
 			;
 
 ASSIGNMENT:   t_vtype t_equality
 			| t_equality
-			| t_comma t_id ASSIGNMENT EXPR t_comma
-			| t_comma t_id ASSIGNMENT BOOLEAN t_comma
-
+			;
 SHORT_ASSIGN: t_short_dec
-			| t_comma t_id SHORT_ASSIGN EXPR t_comma
-			| t_comma t_id SHORT_ASSIGN BOOLEAN t_comma
+			;
+
+MANY_IDS:	 MANY_IDS_START MANY_IDS_END
+			;
+
+MANY_IDS_START:
+			  t_id t_comma
+			| MANY_IDS_START MANY_IDS_FULFILL
+			;
+
+MANY_IDS_FULFILL:
+			  t_id t_comma
+			| t_enter
+			;
+
+MANY_IDS_END: t_id SHORT_ASSIGN
+			| t_id ASSIGNMENT
+			;
+
+MANY_VALUES:  MANY_VALUES_START MANY_VALUES_END
+			;
+MANY_VALUES_START:
+			  MANY_VALUES_START_FULFILL
+			| MANY_VALUES_START MANY_VALUES_START_FULFILL
+			;
+
+MANY_VALUES_START_FULFILL:
+			  FULFILL_FOR_VAR t_comma
+			| t_enter
+			;
+
+MANY_VALUES_END:
+			  EXPR END_SYMBOLS
 			;
 
 FUNC_CALL:    t_id PARAM
