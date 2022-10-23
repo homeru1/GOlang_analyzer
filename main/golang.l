@@ -58,8 +58,8 @@
 "&"																								 {printf("& "); return t_ampersand;}
 "="|"*"|"+"|"-"|"/"|"?"|":"|"&"|"|"|"^"|"!"|"~"|"%"|"<"|">"		 		 	         			 {printf("sign ");return t_sign;}
 "*="|"/="|"+="|"%="|">>="|"-="|"<<="|"&="|"^="|"|="|"&^"|"&^="									 {printf("punc "); return t_short_expr;}
-[0-9]+																							 {printf("int "); return t_int_const;}
-[0-9]+"."[0-9]+																					 {printf("float "); return t_float_const;}
+[-]?[0-9]+																						 {printf("int "); return t_int_const;}
+[-]?[0-9]+"."[0-9]+																				 {printf("float "); return t_float_const;}
 "."																								 {printf(". "); return  t_dot;}	
 "'"."'"																							 {printf("\' ");return t_char_const;}
 [_a-zA-Z][_a-zA-Z0-9]*			 																 {printf("id ");return t_id;}
