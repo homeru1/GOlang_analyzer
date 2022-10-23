@@ -124,6 +124,7 @@ VAR:          t_var t_id ASSIGNMENT EXPR
 			| t_var t_id ASSIGNMENT BOOLEAN
 			| t_id SHORT_ASSIGN EXPR
 			| t_id ASSIGNMENT EXPR
+			| t_var t_id t_id ASSIGNMENT VALUE
 			| t_id SHORT_ASSIGN MULTI_AR t_vtype PLENTY 
 			| t_var t_id ASSIGNMENT MULTI_AR t_vtype PLENTY  
 			| t_id SHORT_ASSIGN BOOLEAN
