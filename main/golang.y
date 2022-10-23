@@ -9,7 +9,7 @@
 %token t_vtype t_constant t_case t_func t_import t_chan t_defer t_go t_interface t_default t_var t_range t_map t_package t_if t_select t_switch t_fallthrough t_else
 %token t_type t_for t_goto t_continue t_break t_return t_struct_const t_or_const t_and_const t_param_const t_eq_const t_rel_const t_shift_const t_inc_const
 %token t_point_const t_punc t_int_const t_float_const t_char_const t_id t_string t_short_dec t_open_br t_close_br t_sign t_comma t_equality t_open_paren t_close_paren
-%token t_open_sq t_close_sq t_bool t_rune t_semicolon t_blank_identifier t_dot t_colon t_true t_false t_short_expr t_make t_enter t_eof t_pointer t_ampersand
+%token t_open_sq t_close_sq t_bool t_rune t_semicolon t_blank_identifier t_dot t_colon t_true t_false t_short_expr t_make t_enter t_eof t_pointer t_ampersand t_hex t_ten_pow
 %left '+' '-'
 %left '*' '/'
 %%
@@ -23,6 +23,7 @@ GLOBAL:       PACKAGE
 			| FUNC
 			| STRUCT
 			| INTERFACE
+			| VAR
 			;
 
 PACKAGE:     t_package t_id
@@ -64,6 +65,7 @@ FUNC_PARAM_FULFILL:
 			| t_id 
 			| t_id INTERFACE
 			| t_id t_param_const INTERFACE // [...]
+			| t_id MULTI_AR t_vtype
 			|
 			;
 
@@ -128,6 +130,7 @@ VAR:          t_var t_id ASSIGNMENT EXPR
 			| t_id SHORT_ASSIGN EXPR
 			| t_id ASSIGNMENT EXPR
 			| t_var t_id t_id ASSIGNMENT VALUE
+			| t_var t_id t_vtype
 			| t_id SHORT_ASSIGN MULTI_AR t_vtype PLENTY 
 			| t_var t_id ASSIGNMENT MULTI_AR t_vtype PLENTY  
 			| t_id SHORT_ASSIGN BOOLEAN
@@ -138,8 +141,10 @@ VAR:          t_var t_id ASSIGNMENT EXPR
 			| t_id SHORT_ASSIGN SLICE // SLICE
 			| t_id ASSIGNMENT SLICE // SLICE
 			| t_var t_id ASSIGNMENT SLICE // SLICE
+			| t_var t_id MULTI_AR t_vtype ASSIGNMENT SLICE // SLICE
 			| t_var t_id MAPS // MAP
 			| t_id SHORT_ASSIGN t_make t_open_paren MAPS t_close_paren //MAP
+			| t_id SHORT_ASSIGN MAPS // MAP
 			| t_var t_id t_id ASSIGNMENT ST_EMBEDDED //STRUCT
 			| t_var t_id ASSIGNMENT ST_EMBEDDED //STRUCT
 			| t_id SHORT_ASSIGN ST_EMBEDDED //STRUCT
@@ -147,6 +152,10 @@ VAR:          t_var t_id ASSIGNMENT EXPR
 			| POINTER ASSIGNMENT EXPR 
 			| t_var t_id POINTER 
 			| t_var t_id POINTER ASSIGNMENT EXPR
+			| AMPERSAND ASSIGNMENT EXPR 
+			| t_var t_id AMPERSAND 
+			| t_var t_id AMPERSAND ASSIGNMENT EXPR
+			| AMPERSAND SHORT_ASSIGN EXPR
       		;
 
 BOOLEAN:	  VALUE t_bool VALUE
@@ -212,6 +221,9 @@ METHOD_FULFILL:
 POINTER:      t_pointer  
 			;
 
+AMPERSAND:    t_ampersand
+            ;
+
 PARAM_IMPORT: t_string END_SYMBOLS
 			| t_id t_string END_SYMBOLS
             | PARAM_IMPORT t_string END_SYMBOLS
@@ -230,6 +242,11 @@ VALUE:        t_int_const
 			| METHOD
 			| EXPR_START EXPR EXPR_END
 			| EXPR_START BOOLEAN EXPR_END
+			| AMPERSAND
+			| t_hex 
+			| t_ten_pow
+			| t_true
+			| t_false
 			;
 
 GOTO:		  t_goto t_id
@@ -374,6 +391,13 @@ POST_STATE:  EXPR
 
 FOR:		  t_for INIT_STATE t_semicolon CONDITION t_semicolon POST_STATE BODY_FOR_LOOP
 			| t_for CONDITION BODY_FOR_LOOP
+			| t_for RANGE_BLANK SHORT_ASSIGN t_range VALUE BODY_FOR_LOOP
+			| t_for t_id t_comma t_id SHORT_ASSIGN t_range VALUE BODY_FOR_LOOP
+			| t_for t_id SHORT_ASSIGN t_range VALUE BODY_FOR_LOOP
+			;
+
+RANGE_BLANK:  t_blank_identifier t_comma t_id
+			| t_id t_comma t_blank_identifier
 			;
 
 EXPR_START:   t_open_paren
@@ -411,7 +435,7 @@ ENUM:         VALUE
 		    ;
 
 MAKE:         t_make t_open_paren MULTI_AR t_vtype t_comma VALUE t_close_paren
-            | t_make t_open_paren MULTI_AR t_vtype t_comma VALUE t_comma t_int_const VALUE
+            | t_make t_open_paren MULTI_AR t_vtype t_comma VALUE t_comma VALUE t_close_paren
 			;
 
 SLICE:       t_id t_open_sq VALUE t_colon VALUE t_close_sq
@@ -420,6 +444,8 @@ SLICE:       t_id t_open_sq VALUE t_colon VALUE t_close_sq
 		   ;
 
 MAPS:        t_map t_open_sq t_vtype t_close_sq t_vtype
+           | t_map t_open_sq t_vtype t_close_sq t_vtype FIELD_BODY
+		   | t_map t_open_sq t_vtype t_close_sq t_id 
            ;
 
 STRUCT:      STRUCT_START 
@@ -485,7 +511,6 @@ INTERFACE:    INT_START
 INT_START:    t_type t_id t_interface t_open_br INT_BODY INT_END
             | t_type t_id t_interface t_open_br END_SYMBOLS INT_BODY INT_END
 			| t_type t_id t_interface t_enter t_open_br END_SYMBOLS INT_BODY INT_END
-			//| t_type t_id t_interface t_open_br INT_END
 			| t_interface t_open_br INT_END
 			;
 

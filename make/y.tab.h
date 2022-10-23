@@ -109,7 +109,9 @@ extern int yydebug;
      t_enter = 318,
      t_eof = 319,
      t_pointer = 320,
-     t_ampersand = 321
+     t_ampersand = 321,
+     t_hex = 322,
+     t_ten_pow = 323
    };
 #endif
 /* Tokens.  */
@@ -177,6 +179,8 @@ extern int yydebug;
 #define t_eof 319
 #define t_pointer 320
 #define t_ampersand 321
+#define t_hex 322
+#define t_ten_pow 323
 
 
 
