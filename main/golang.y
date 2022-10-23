@@ -114,7 +114,7 @@ BODY_END:     t_close_br
 
 BODY_START:   t_open_br
             | BODY_START BODY_FILLING END_SYMBOLS
-			| BODY_START VAR
+			| BODY_START VAR 
 			| BODY_START END_SYMBOLS
 			;
 
@@ -126,7 +126,7 @@ BODY_FILLING:   FOR
 			|  MULTI_AR
 			|  FUNC_CALL
 			|  SHORT_EXPR
-			|  ARRAY_BODY
+			//|  ARRAY_BODY
 			|  RETURN
 			|  STRUCT
 			|  SLICE
@@ -135,38 +135,41 @@ BODY_FILLING:   FOR
 			|  INTERFACE
 			;
 
-VAR:        //  t_var t_id ASSIGNMENT EXPR
-			//| t_var t_id ASSIGNMENT EXPR t_vtype
-			//| t_var t_id ASSIGNMENT BOOLEAN
-			  MANY_IDS MANY_VALUES
-			|t_var MANY_IDS MANY_VALUES
-			/*| t_id ASSIGNMENT EXPR
-			| t_id SHORT_ASSIGN MULTI_AR t_vtype PLENTY 
-			| t_var t_id ASSIGNMENT MULTI_AR t_vtype PLENTY  
-			| t_id SHORT_ASSIGN BOOLEAN
-			| t_id MULTI_AR ASSIGNMENT EXPR
-			| t_var t_id ASSIGNMENT MAKE // MAKE
-			| t_id SHORT_ASSIGN MAKE // MAKE
-			| t_id MULTI_AR ASSIGNMENT MAKE // MAKE
-			| t_id SHORT_ASSIGN SLICE // SLICE
-			| t_id ASSIGNMENT SLICE // SLICE
-			| t_var t_id ASSIGNMENT SLICE // SLICE
-			| t_var t_id MAPS // MAP
-			| t_id SHORT_ASSIGN t_make t_open_paren MAPS t_close_paren //MAP
-			| t_var t_id t_id ASSIGNMENT ST_EMBEDDED //STRUCT
-			| t_var t_id ASSIGNMENT ST_EMBEDDED //STRUCT
-			| t_id SHORT_ASSIGN ST_EMBEDDED //STRUCT
-			| METHOD ASSIGNMENT VALUE //STRUCT
-			| POINTER ASSIGNMENT EXPR //Илья посмотри указатели
-			| t_var t_id POINTER 
-			| t_var t_id POINTER ASSIGNMENT EXPR*/
+VAR:         MANY_IDS SHORT_ASSIGN MANY_VALUES
+			|MANY_IDS SHORT_ASSIGN FULFILL_FOR_VAL END_SYMBOLS 
+			|t_var MANY_IDS ASSIGNMENT MANY_VALUES
+			|t_var MANY_IDS TYPE_AND_STRUCT END_SYMBOLS
+			|t_var MANY_IDS ASSIGNMENT FULFILL_FOR_VAL END_SYMBOLS
+			|t_var t_id MAPS END_SYMBOLS 
+			//|t_var t_id t_id ASSIGNMENT ST_EMBEDDED END_SYMBOLS {printf(" 1 ");}
+			|FULFILL_FOR_IDS SHORT_ASSIGN FULFILL_FOR_VAL SPEC
+			|t_var FULFILL_FOR_IDS TYPE_AND_STRUCT END_SYMBOLS
+			|t_var FULFILL_FOR_IDS ASSIGNMENT FULFILL_FOR_VAL END_SYMBOLS
       		;
 
-FULFILL_FOR_VAR:
-			 EXPR
+SPEC: END_SYMBOLS
+	|
+	;
+
+FULFILL_FOR_VAL:
+			 EXPR 
 		   | BOOLEAN
-		   | MULTI_AR t_vtype PLENTY_OLD 
+		   | MULTI_AR t_vtype PLENTY_OLD
+		   | MAKE
+		   | SLICE
+		   | t_make t_open_paren MAPS t_close_paren
+		   | ST_EMBEDDED
 		   ;
+
+FULFILL_FOR_IDS:
+			  t_id
+			| t_id MULTI_AR
+			| METHOD
+			| POINTER
+			| t_id POINTER
+			//|MAPS
+			;
+
 
 BOOLEAN:	  VALUE t_bool VALUE
 			| BOOLEAN t_bool VALUE
@@ -176,7 +179,7 @@ BOOLEAN:	  VALUE t_bool VALUE
 DEFER:		  t_defer FUNC_CALL
 			;
 
-ASSIGNMENT:   t_vtype t_equality
+ASSIGNMENT:   TYPE_AND_STRUCT t_equality
 			| t_equality
 			;
 SHORT_ASSIGN: t_short_dec
@@ -186,39 +189,41 @@ MANY_IDS:	 MANY_IDS_START MANY_IDS_END
 			;
 
 MANY_IDS_START:
-			  t_id t_comma
+			  FULFILL_FOR_IDS t_comma
 			| MANY_IDS_START MANY_IDS_FULFILL
 			;
 
 MANY_IDS_FULFILL:
-			  t_id t_comma
+			  FULFILL_FOR_IDS t_comma
 			| t_enter
 			;
 
-MANY_IDS_END: t_id SHORT_ASSIGN
-			| t_id ASSIGNMENT
+MANY_IDS_END: FULFILL_FOR_IDS //TMP
 			;
+
+//TMP: SHORT_ASSIGN|ASSIGNMENT|TYPE_AND_STRUCT
 
 MANY_VALUES:  MANY_VALUES_START MANY_VALUES_END
 			;
+
+MANY_VALUES_START_FULFILL:
+			  FULFILL_FOR_VAL t_comma
+			| t_enter
+			;
+
 MANY_VALUES_START:
 			  MANY_VALUES_START_FULFILL
 			| MANY_VALUES_START MANY_VALUES_START_FULFILL
 			;
 
-MANY_VALUES_START_FULFILL:
-			  FULFILL_FOR_VAR t_comma
-			| t_enter
-			;
-
 MANY_VALUES_END:
-			  EXPR END_SYMBOLS
+			  FULFILL_FOR_VAL END_SYMBOLS
 			;
 
 FUNC_CALL:    t_id PARAM
 			;
-			
-PARAM:  	PARAM_START PARAM_END
+	
+PARAM:  	PARAM_START PARAM_END 
 			| t_open_paren t_close_paren
      		;
 
@@ -231,12 +236,12 @@ PARAM_END: PARAM_END_FULFILL t_close_paren
 
 
 PARAM_END_FULFILL:
-			EXPR
+			FULFILL_FOR_IDS
 			|t_enter
 			;
 
 PARAM_FULFILL:
-			EXPR t_comma
+			FULFILL_FOR_IDS t_comma
 			|t_enter
 			;
 
@@ -365,6 +370,7 @@ BODY_FOR_LOOP_END:     t_close_br
 
 LOOP_FILLING:  
 			 BODY_FILLING
+			//| METHOD
 			|t_break
 			|t_continue
 			;
@@ -431,11 +437,6 @@ EXPR_START:   t_open_paren
 			;
 EXPR_END:     t_close_paren
             ;
-
-ARRAY_BODY: t_var t_id MULTI_AR t_vtype 
-			| t_var t_id MULTI_AR t_vtype ASSIGNMENT MULTI_AR t_vtype PLENTY
-			| t_var t_id MULTI_AR t_vtype ASSIGNMENT MAKE
-            ;
               
 ARRAY_INDEX:  t_open_sq t_int_const t_close_sq
             | t_open_sq t_id t_close_sq
@@ -443,11 +444,11 @@ ARRAY_INDEX:  t_open_sq t_int_const t_close_sq
             | t_open_sq t_close_sq
             ;
 
-MULTI_AR:     ARRAY_INDEX
-			| ARRAY_INDEX MULTI_AR
+MULTI_AR:     ARRAY_INDEX 
+			| ARRAY_INDEX MULTI_AR 
             ;
 
-PLENTY:       PLENTY_OLD 
+PLENTY:       PLENTY_OLD
             | PLENTY_OLD t_comma PLENTY 
 
 PLENTY_OLD:   t_open_br ENUM t_close_br
@@ -499,6 +500,7 @@ FIELD: 		t_id FIELD_BODY
 			;
 
 FIELD_BODY: FIELD_START FIELD_END
+			|t_open_br t_close_br
 			;
 
 FIELD_START: t_open_br
