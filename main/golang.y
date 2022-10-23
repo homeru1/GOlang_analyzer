@@ -37,15 +37,27 @@ IMPORT:       t_import t_string
 FUNC:        t_func t_id t_open_paren FUNC_PARAM t_close_paren FUNC_SECOND_PART
 			;
 
-FUNC_SECOND_PART:
-			BODY
-			| FUNC_RETURN_VALUE BODY
-			| t_open_paren FUNC_PARAM_SECOND t_close_paren BODY
-			;
-
 FUNC_PARAM:	FUNC_PARAM_FULFILL
 			|FUNC_PARAM t_comma FUNC_PARAM_FULFILL
 			;	
+
+FUNC_SECOND_PART:
+			BODY
+			| FUNC_RETURN_VALUE TYPE_AND_STRUCT BODY
+			| FUNC_PARAM_SECOND BODY
+			;
+
+FUNC_PARAM_SECOND: FUNC_PARAM_SECOND_START FUNC_PARAM_SECOND_END
+			|t_open_paren t_close_paren
+			;
+
+FUNC_PARAM_SECOND_START: t_open_paren
+			| FUNC_PARAM_SECOND_START FUNC_PARAM_FULFILL_SECOND
+			;
+
+FUNC_PARAM_SECOND_END:
+			FUNC_PARAM_FULFILL_SECOND_END t_close_paren
+			;
 
 FUNC_PARAM_FULFILL:
 			t_id TYPE_AND_STRUCT
@@ -53,23 +65,23 @@ FUNC_PARAM_FULFILL:
 			|
 			;
 
-FUNC_PARAM_SECOND:
-			 FUNC_PARAM_FULFILL_SECOND
-			|FUNC_PARAM_SECOND t_comma FUNC_PARAM_FULFILL_SECOND
+FUNC_PARAM_FULFILL_SECOND:
+			t_id TYPE_AND_STRUCT t_comma
+			| TYPE_AND_STRUCT t_comma
+			| t_enter
 			;
 
-FUNC_PARAM_FULFILL_SECOND:
+FUNC_PARAM_FULFILL_SECOND_END:
 			t_id TYPE_AND_STRUCT
 			| TYPE_AND_STRUCT
+			| t_enter
 			;
-
 FUNC_RETURN_VALUE:
 			 FUNC_RETURN_VALUE_FULFILL
 			|FUNC_RETURN_VALUE FUNC_RETURN_VALUE_FULFILL
 			;
 FUNC_RETURN_VALUE_FULFILL:
-			 TYPE_AND_STRUCT
-			|t_func t_open_paren TYPE_AND_STRUCT t_close_paren
+			t_func t_open_paren TYPE_AND_STRUCT t_close_paren
 			|t_func t_open_paren t_close_paren
 			;
 TYPE_AND_STRUCT:
@@ -132,8 +144,10 @@ VAR:          t_var t_id ASSIGNMENT EXPR
 			| t_var t_id POINTER ASSIGNMENT EXPR
       		;
 
-BOOLEAN:	  EXPR t_bool EXPR
+BOOLEAN:	  VALUE t_bool VALUE
+			| BOOLEAN t_bool VALUE
 			;
+
 
 DEFER:		t_defer FUNC_CALL
 			;
@@ -190,7 +204,7 @@ METHOD_FULFILL:
 			;
 
 POINTER:      t_pointer  
-			| t_pointer t_vtype
+			//| t_pointer t_vtype
 			;
 
 PARAM_IMPORT: t_string END_SYMBOLS
@@ -210,6 +224,7 @@ VALUE:        t_int_const
 			| POINTER
 			| METHOD
 			| EXPR_START EXPR EXPR_END
+			| EXPR_START BOOLEAN EXPR_END
 			;
 
 GOTO:		  t_goto t_id
@@ -370,7 +385,7 @@ ARRAY_BODY: t_var t_id MULTI_AR t_vtype
 ARRAY_INDEX:  t_open_sq t_int_const t_close_sq
             | t_open_sq t_id t_close_sq
 			| t_open_sq t_string t_close_sq
-            | t_open_sq t_close_sq //Also need for slices
+            | t_open_sq t_close_sq
             ;
 
 MULTI_AR:     ARRAY_INDEX
@@ -424,28 +439,33 @@ STRUCT_END:   t_close_br
            |  t_enter t_close_br
            ;
 
-STRUCT_FIELD: FIELD_START
-              ;
 
-FIELD_START:  t_id t_open_br END_SYMBOLS FIELD_BODY t_comma END_SYMBOLS FIELD_END 
-           |  t_id t_open_br END_SYMBOLS FIELD_BODY FIELD_END
-           |  t_id t_open_br FIELD_BODY FIELD_END
-		   ;
+FIELD: 		t_id FIELD_BODY  {printf("qwe");}
+			;
 
-FIELD_BODY:   t_id t_colon VALUE t_comma END_SYMBOLS 
-		   |  t_id t_colon FIELD_START t_comma END_SYMBOLS
-		   |  t_id t_colon FIELD_START 
-		   |  t_id t_colon VALUE 
-		   |  t_id t_colon VALUE t_comma END_SYMBOLS FIELD_BODY
-		   |  t_id t_colon FIELD_START t_comma END_SYMBOLS FIELD_BODY
-		   |  t_id t_colon VALUE t_comma FIELD_BODY
-		   |  t_id t_colon FIELD_START t_comma FIELD_BODY
-		   ;
+FIELD_BODY: FIELD_START FIELD_END
+			;
 
-FIELD_END:    t_close_br
-           ;
+FIELD_START: t_open_br
+			|FIELD_START FIELD_FULFILL
+			;
 
-ST_EMBEDDED:  STRUCT_FIELD 
+FIELD_FULFILL:
+			VALUE t_colon VALUE t_comma
+			|VALUE t_colon FIELD t_comma
+			|t_enter
+			;
+
+FIELD_END:  FIELD_END_FULFILL t_close_br
+			;
+
+	
+FIELD_END_FULFILL:
+			VALUE t_colon VALUE
+			|t_enter
+			;
+
+ST_EMBEDDED:  FIELD {printf("qwe");}
 		   ;
            
 END_SYMBOLS: t_semicolon
