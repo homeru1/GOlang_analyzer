@@ -5,6 +5,7 @@
 	int yyparse();
 	int success = 1;
 	extern FILE *yyin;
+	#define YYDEBUG 1
 %}
 %token t_vtype t_constant t_case t_func t_import t_chan t_defer t_go t_interface t_default t_var t_range t_map t_package t_if t_select t_switch t_fallthrough t_else
 %token t_type t_for t_goto t_continue t_break t_return t_struct_const t_or_const t_and_const t_param_const t_eq_const t_rel_const t_shift_const t_inc_const
@@ -110,11 +111,11 @@ BODY:        BODY_START BODY_END
 	        ;
 
 BODY_END:     t_close_br
+			| BODY_FILLING t_close_br
             ;
 
 BODY_START:   t_open_br
             | BODY_START BODY_FILLING END_SYMBOLS
-			| BODY_START VAR 
 			| BODY_START END_SYMBOLS
 			;
 
@@ -123,9 +124,10 @@ BODY_FILLING:   FOR
 			|  GOTO
 			|  LABEL
 			|  IF
-			|  MULTI_AR
+			//|  MULTI_AR
 			|  FUNC_CALL
 			|  SHORT_EXPR
+			| VAR
 			//|  ARRAY_BODY
 			|  RETURN
 			|  STRUCT
@@ -135,20 +137,26 @@ BODY_FILLING:   FOR
 			|  INTERFACE
 			;
 
-VAR:         MANY_IDS SHORT_ASSIGN MANY_VALUES
-			|MANY_IDS SHORT_ASSIGN FULFILL_FOR_VAL END_SYMBOLS 
-			|t_var MANY_IDS ASSIGNMENT MANY_VALUES
-			|t_var MANY_IDS TYPE_AND_STRUCT END_SYMBOLS
-			|t_var MANY_IDS ASSIGNMENT FULFILL_FOR_VAL END_SYMBOLS
-			|t_var t_id MAPS END_SYMBOLS 
-			//|t_var t_id t_id ASSIGNMENT ST_EMBEDDED END_SYMBOLS {printf(" 1 ");}
-			|FULFILL_FOR_IDS SHORT_ASSIGN FULFILL_FOR_VAL SPEC
-			|t_var FULFILL_FOR_IDS TYPE_AND_STRUCT END_SYMBOLS
-			|t_var FULFILL_FOR_IDS ASSIGNMENT FULFILL_FOR_VAL END_SYMBOLS
+VAR:         IDS SHORT_ASSIGN VALUES
+			|t_var IDS TYPE_AND_STRUCT
+			|t_var IDS ASSIGNMENT VALUES
+			/* MANY_IDS SHORT_ASSIGN MANY_VALUES 
+			|MANY_IDS SHORT_ASSIGN FULFILL_FOR_VAL  
+			|FULFILL_FOR_IDS SHORT_ASSIGN FULFILL_FOR_VAL 
+			|t_var MANY_IDS ASSIGNMENT MANY_VALUES 
+			|t_var MANY_IDS TYPE_AND_STRUCT  
+			|t_var FULFILL_FOR_IDS TYPE_AND_STRUCT 
+			|t_var MANY_IDS ASSIGNMENT FULFILL_FOR_VAL 
+			|t_var FULFILL_FOR_IDS ASSIGNMENT FULFILL_FOR_VAL*/
+			|t_var t_id MAPS  
       		;
 
-SPEC: END_SYMBOLS
-	|
+IDS: FULFILL_FOR_IDS
+	|FULFILL_FOR_IDS MANY_IDS
+	;
+VALUES:
+	 FULFILL_FOR_VAL	
+	| FULFILL_FOR_VAL MANY_VALUES
 	;
 
 FULFILL_FOR_VAL:
@@ -165,8 +173,8 @@ FULFILL_FOR_IDS:
 			  t_id
 			| t_id MULTI_AR
 			| METHOD
-			| POINTER
-			| t_id POINTER
+			| t_pointer
+			//| t_id POINTER
 			//|MAPS
 			;
 
@@ -181,7 +189,10 @@ DEFER:		  t_defer FUNC_CALL
 
 ASSIGNMENT:   TYPE_AND_STRUCT t_equality
 			| t_equality
+			|ASSIGNMENT t_enter
 			;
+
+;
 SHORT_ASSIGN: t_short_dec
 			;
 
@@ -189,7 +200,7 @@ MANY_IDS:	 MANY_IDS_START MANY_IDS_END
 			;
 
 MANY_IDS_START:
-			  FULFILL_FOR_IDS t_comma
+			  t_comma
 			| MANY_IDS_START MANY_IDS_FULFILL
 			;
 
@@ -206,18 +217,17 @@ MANY_IDS_END: FULFILL_FOR_IDS //TMP
 MANY_VALUES:  MANY_VALUES_START MANY_VALUES_END
 			;
 
-MANY_VALUES_START_FULFILL:
-			  FULFILL_FOR_VAL t_comma
+MANY_VALUES_START:
+			  t_comma
+			|MANY_VALUES_START FULFILL_FOR_VALS
+			;
+FULFILL_FOR_VALS:
+			FULFILL_FOR_VAL t_comma
 			| t_enter
 			;
 
-MANY_VALUES_START:
-			  MANY_VALUES_START_FULFILL
-			| MANY_VALUES_START MANY_VALUES_START_FULFILL
-			;
-
 MANY_VALUES_END:
-			  FULFILL_FOR_VAL END_SYMBOLS
+			  FULFILL_FOR_VAL
 			;
 
 FUNC_CALL:    t_id PARAM
@@ -261,8 +271,8 @@ METHOD_FULFILL:
 			| FUNC_CALL
 			;
 
-POINTER:      t_pointer  
-			;
+//POINTER:      t_pointer  
+//			;
 
 PARAM_IMPORT: t_string END_SYMBOLS
 			| t_id t_string END_SYMBOLS
@@ -280,7 +290,7 @@ VALUE:        t_int_const
 			| SHORT_FUNC PARAM
 			| FUNC_CALL
 			| SHIFT
-			| POINTER
+			| t_pointer
 			| METHOD
 			| EXPR_START EXPR EXPR_END
 			| EXPR_START BOOLEAN EXPR_END
@@ -370,7 +380,6 @@ BODY_FOR_LOOP_END:     t_close_br
 
 LOOP_FILLING:  
 			 BODY_FILLING
-			//| METHOD
 			|t_break
 			|t_continue
 			;
@@ -392,20 +401,13 @@ MULTY_ELSE_THIRD:
 ELSE_THIRD: t_else BODY_FOR_LOOP
 			;
 
-RETURN:		t_return
-			|t_return EXPR
-			|t_return EXPR MANY_RETURN_START MANY_RETURN_START_END
+RETURN:		t_return RETURN_FULFILL
       ;
       
-
-MANY_RETURN_START:
-		t_comma
-		|MANY_RETURN_START EXPR t_comma
-		;
-
-MANY_RETURN_START_END:
-		EXPR
-
+RETURN_FULFILL:
+	VALUES
+	|
+	;
 EXPR:         VALUE 
             | EXPR t_sign VALUE 
 			;
@@ -445,7 +447,7 @@ ARRAY_INDEX:  t_open_sq t_int_const t_close_sq
             ;
 
 MULTI_AR:     ARRAY_INDEX 
-			| ARRAY_INDEX MULTI_AR 
+			| MULTI_AR ARRAY_INDEX  
             ;
 
 PLENTY:       PLENTY_OLD
@@ -561,7 +563,7 @@ int main(int argc, char **argv)
 		return (1);
 		}
 	}
-	
+	yydebug = 1;
     yyparse();
     if(success)
     	printf("\nParsing Successful\n");
