@@ -5,6 +5,7 @@
 	int yyparse();
 	int success = 1;
 	extern FILE *yyin;
+	#define YYDEBUG 1
 %}
 %token t_vtype t_constant t_case t_func t_import t_chan t_defer t_go t_interface t_default t_var t_range t_map t_package t_if t_select t_switch t_fallthrough t_else
 %token t_type t_for t_goto t_continue t_break t_return t_struct_const t_or_const t_and_const t_param_const t_eq_const t_rel_const t_shift_const t_inc_const
@@ -115,6 +116,7 @@ BODY:        BODY_START BODY_END
 	        ;
 
 BODY_END:     t_close_br
+			| BODY_FILLING t_close_br
             ;
 
 BODY_START:   t_open_br
@@ -122,16 +124,16 @@ BODY_START:   t_open_br
 			| BODY_START END_SYMBOLS
 			;
 
-BODY_FILLING:  VAR 
-			|  FOR
+BODY_FILLING:   FOR
 			|  SWITCH
 			|  GOTO
 			|  LABEL
 			|  IF
-			|  MULTI_AR
+			//|  MULTI_AR
 			|  FUNC_CALL
 			|  SHORT_EXPR
-			|  ARRAY_BODY
+			| VAR
+			//|  ARRAY_BODY
 			|  RETURN
 			|  STRUCT
 			|  SLICE
@@ -140,7 +142,13 @@ BODY_FILLING:  VAR
 			|  INTERFACE
 			;
 
-VAR:          t_var t_id ASSIGNMENT EXPR
+VAR:         IDS SHORT_ASSIGN VALUES
+			|t_var IDS TYPE_AND_STRUCT
+			|t_var IDS ASSIGNMENT VALUES
+			|t_var t_id MAPS  
+      
+      
+      /* t_var t_id ASSIGNMENT EXPR
 			| t_var t_id ASSIGNMENT EXPR t_vtype
 			| t_var t_id ASSIGNMENT BOOLEAN
 			| t_id SHORT_ASSIGN EXPR
@@ -171,31 +179,92 @@ VAR:          t_var t_id ASSIGNMENT EXPR
 			| AMPERSAND ASSIGNMENT EXPR 
 			| t_var t_id AMPERSAND 
 			| t_var t_id AMPERSAND ASSIGNMENT EXPR
-			| AMPERSAND SHORT_ASSIGN EXPR
+			| AMPERSAND SHORT_ASSIGN EXPR*/
       		;
+
+IDS: FULFILL_FOR_IDS
+	|FULFILL_FOR_IDS MANY_IDS
+	;
+VALUES:
+	 FULFILL_FOR_VAL	
+	| FULFILL_FOR_VAL MANY_VALUES
+	;
+
+FULFILL_FOR_VAL:
+			 EXPR 
+		   | BOOLEAN
+		   | MULTI_AR t_vtype PLENTY_OLD
+		   | MAKE
+		   | SLICE
+		   | t_make t_open_paren MAPS t_close_paren
+		   | ST_EMBEDDED
+		   ;
+
+FULFILL_FOR_IDS:
+			  t_id
+			| t_id MULTI_AR
+			| METHOD
+			| t_pointer
+			//| t_id POINTER
+			//|MAPS
+			;
+
 
 BOOLEAN:	  VALUE t_bool VALUE
 			| BOOLEAN t_bool VALUE
 			;
 
 
-DEFER:		t_defer FUNC_CALL
+DEFER:		  t_defer FUNC_CALL
 			;
 
-ASSIGNMENT:   t_vtype t_equality
+ASSIGNMENT:   TYPE_AND_STRUCT t_equality
 			| t_equality
-			| t_comma t_id ASSIGNMENT EXPR t_comma
-			| t_comma t_id ASSIGNMENT BOOLEAN t_comma
+			|ASSIGNMENT t_enter
+			;
 
+;
 SHORT_ASSIGN: t_short_dec
-			| t_comma t_id SHORT_ASSIGN EXPR t_comma
-			| t_comma t_id SHORT_ASSIGN BOOLEAN t_comma
+			;
+
+MANY_IDS:	 MANY_IDS_START MANY_IDS_END
+			;
+
+MANY_IDS_START:
+			  t_comma
+			| MANY_IDS_START MANY_IDS_FULFILL
+			;
+
+MANY_IDS_FULFILL:
+			  FULFILL_FOR_IDS t_comma
+			| t_enter
+			;
+
+MANY_IDS_END: FULFILL_FOR_IDS //TMP
+			;
+
+//TMP: SHORT_ASSIGN|ASSIGNMENT|TYPE_AND_STRUCT
+
+MANY_VALUES:  MANY_VALUES_START MANY_VALUES_END
+			;
+
+MANY_VALUES_START:
+			  t_comma
+			|MANY_VALUES_START FULFILL_FOR_VALS
+			;
+FULFILL_FOR_VALS:
+			FULFILL_FOR_VAL t_comma
+			| t_enter
+			;
+
+MANY_VALUES_END:
+			  FULFILL_FOR_VAL
 			;
 
 FUNC_CALL:    t_id PARAM
 			;
-			
-PARAM:  	PARAM_START PARAM_END
+	
+PARAM:  	PARAM_START PARAM_END 
 			| t_open_paren t_close_paren
      		;
 
@@ -208,13 +277,13 @@ PARAM_END: PARAM_END_FULFILL t_close_paren
 
 
 PARAM_END_FULFILL:
-			EXPR
-			| EXPR t_param_const // [...]
+			FULFILL_FOR_IDS
+			| EXPR t_param_const // [...] 
 			|t_enter
 			;
 
 PARAM_FULFILL:
-			EXPR t_comma 
+			FULFILL_FOR_IDS t_comma
 			|t_enter
 			;
 
@@ -234,8 +303,8 @@ METHOD_FULFILL:
 			| FUNC_CALL
 			;
 
-POINTER:      t_pointer  
-			;
+//POINTER:      t_pointer  
+//			;
 
 AMPERSAND:    t_ampersand
             ;
@@ -256,7 +325,7 @@ VALUE:        t_int_const
 			| SHORT_FUNC PARAM
 			| FUNC_CALL
 			| SHIFT
-			| POINTER
+			| t_pointer
 			| METHOD
 			| EXPR_START EXPR EXPR_END
 			| EXPR_START BOOLEAN EXPR_END
@@ -372,20 +441,13 @@ MULTY_ELSE_THIRD:
 ELSE_THIRD: t_else BODY_FOR_LOOP
 			;
 
-RETURN:		t_return
-			|t_return EXPR
-			|t_return EXPR MANY_RETURN_START MANY_RETURN_START_END
+RETURN:		t_return RETURN_FULFILL
       ;
       
-
-MANY_RETURN_START:
-		t_comma
-		|MANY_RETURN_START EXPR t_comma
-		;
-
-MANY_RETURN_START_END:
-		EXPR
-
+RETURN_FULFILL:
+	VALUES
+	|
+	;
 EXPR:         VALUE 
             | EXPR t_sign VALUE 
 			;
@@ -424,11 +486,6 @@ EXPR_START:   t_open_paren
 			;
 EXPR_END:     t_close_paren
             ;
-
-ARRAY_BODY: t_var t_id MULTI_AR t_vtype 
-			| t_var t_id MULTI_AR t_vtype ASSIGNMENT MULTI_AR t_vtype PLENTY
-			| t_var t_id MULTI_AR t_vtype ASSIGNMENT MAKE
-            ;
               
 ARRAY_INDEX:  t_open_sq t_int_const t_close_sq
             | t_open_sq t_id t_close_sq
@@ -441,7 +498,7 @@ MULTI_AR:     ARRAY_INDEX
 			| t_open_sq t_param_const t_close_sq // [...]
             ;
 
-PLENTY:       PLENTY_OLD 
+PLENTY:       PLENTY_OLD
             | PLENTY_OLD t_comma PLENTY 
 
 PLENTY_OLD:   t_open_br ENUM t_close_br
@@ -495,6 +552,7 @@ FIELD: 		t_id FIELD_BODY
 			;
 
 FIELD_BODY: FIELD_START FIELD_END
+			|t_open_br t_close_br
 			;
 
 FIELD_START: t_open_br
@@ -556,7 +614,7 @@ int main(int argc, char **argv)
 		return (1);
 		}
 	}
-	
+	yydebug = 1;
     yyparse();
     if(success)
     	printf("\nParsing Successful\n");
