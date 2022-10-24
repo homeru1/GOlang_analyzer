@@ -140,6 +140,7 @@ BODY_FILLING:   FOR
 			|  DEFER
 			|  METHOD
 			|  INTERFACE
+			|  PLENTY
 			;
 
 VAR:         IDS SHORT_ASSIGN VALUES
@@ -193,11 +194,12 @@ VALUES:
 FULFILL_FOR_VAL:
 			 EXPR 
 		   | BOOLEAN
-		   | MULTI_AR t_vtype PLENTY_OLD
+		   | MULTI_AR t_vtype PLENTY
 		   | MAKE
 		   | SLICE
 		   | t_make t_open_paren MAPS t_close_paren
 		   | ST_EMBEDDED
+		   //| t_id PLENTY
 		   ;
 
 FULFILL_FOR_IDS:
@@ -205,7 +207,8 @@ FULFILL_FOR_IDS:
 			| t_id MULTI_AR
 			| METHOD
 			| t_pointer
-			//| t_id POINTER
+			| t_id POINTER
+			//| t_id PLENTY_OLD //?
 			//|MAPS
 			;
 
@@ -303,8 +306,8 @@ METHOD_FULFILL:
 			| FUNC_CALL
 			;
 
-//POINTER:      t_pointer  
-//			;
+POINTER:      t_pointer  
+			;
 
 AMPERSAND:    t_ampersand
             ;
@@ -498,16 +501,21 @@ MULTI_AR:     ARRAY_INDEX
 			| t_open_sq t_param_const t_close_sq // [...]
             ;
 
-PLENTY:       PLENTY_OLD
-            | PLENTY_OLD t_comma PLENTY 
+PLENTY:       PLENTY_BODY 
+            | PLENTY_BODY t_comma PLENTY 
+			|  PLENTY_BODY t_comma END_SYMBOLS PLENTY
 
-PLENTY_OLD:   t_open_br ENUM t_close_br
-            | t_open_br t_close_br 
-			| t_open_br PLENTY t_close_br 
-            ;
+PLENTY_BODY:  t_open_br ENUM t_close_br
+            | t_open_br PLENTY t_close_br 
+			| t_open_br END_SYMBOLS ENUM t_close_br
+			| t_open_br END_SYMBOLS PLENTY t_close_br
+			| t_open_br END_SYMBOLS ENUM t_comma END_SYMBOLS t_close_br
+			| t_open_br END_SYMBOLS PLENTY t_comma END_SYMBOLS t_close_br
+			//| t_open_br t_close_br 
 
 ENUM:         VALUE
             | ENUM t_comma VALUE
+			| ENUM t_comma END_SYMBOLS VALUE
 		    ;
 
 MAKE:         t_make t_open_paren MULTI_AR t_vtype t_comma VALUE t_close_paren
@@ -614,7 +622,7 @@ int main(int argc, char **argv)
 		return (1);
 		}
 	}
-	yydebug = 1;
+	yydebug = 0;
     yyparse();
     if(success)
     	printf("\nParsing Successful\n");

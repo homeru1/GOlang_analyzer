@@ -1,4 +1,6 @@
 func main() {
-
-  a:=[1][2] int {{1,2,3},{1,2,3}}
-   }
+	v := Vertex{1, 2}
+	p := &v
+	p.X = 1e9
+	fmt.Println(v)
+}
