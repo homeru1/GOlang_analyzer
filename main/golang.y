@@ -303,8 +303,8 @@ METHOD_FULFILL:
 			| FUNC_CALL
 			;
 
-//POINTER:      t_pointer  
-//			;
+POINTER:      t_pointer  
+			;
 
 AMPERSAND:    t_ampersand
             ;
