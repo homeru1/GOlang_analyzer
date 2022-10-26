@@ -614,7 +614,7 @@ int main(int argc, char **argv)
 		return (1);
 		}
 	}
-	yydebug = 1;
+	yydebug = 0;
     yyparse();
     if(success)
     	printf("\nParsing Successful\n");
