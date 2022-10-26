@@ -10,7 +10,7 @@
 %token t_vtype t_constant t_case t_func t_import t_chan t_defer t_go t_interface t_default t_var t_range t_map t_package t_if t_select t_switch t_fallthrough t_else
 %token t_type t_for t_goto t_continue t_break t_return t_struct_const t_or_const t_and_const t_param_const t_eq_const t_rel_const t_shift_const t_inc_const
 %token t_point_const t_punc t_int_const t_float_const t_char_const t_id t_string t_short_dec t_open_br t_close_br t_sign t_comma t_equality t_open_paren t_close_paren
-%token t_open_sq t_close_sq t_bool t_rune t_semicolon t_blank_identifier t_dot t_colon t_true t_false t_short_expr t_make t_enter t_eof t_pointer t_ampersand t_hex t_ten_pow
+%token t_open_sq t_close_sq t_bool t_rune t_semicolon t_blank_identifier t_dot t_colon t_true t_false t_short_expr t_make t_enter t_eof t_pointer t_ampersand t_hex t_ten_pow t_not
 %left '+' '-'
 %left '*' '/'
 %%
@@ -69,6 +69,7 @@ FUNC_PARAM_FULFILL:
 			| t_id INTERFACE
 			| t_id t_param_const INTERFACE // [...]
 			| t_id MULTI_AR t_vtype
+			| t_id METHOD //
 			|
 			;
 
@@ -94,7 +95,9 @@ FUNC_RETURN_VALUE_FULFILL:
 TYPE_AND_STRUCT:
 			t_vtype
 			| t_param_const t_vtype //[...]
-			|t_id 
+			|t_id
+		    | MULTI_AR t_vtype
+			| METHOD
 			;
 
 
@@ -140,13 +143,15 @@ BODY_FILLING:   FOR
 			|  DEFER
 			|  METHOD
 			|  INTERFACE
-			|  PLENTY
+			|  PLENTY_BODY
 			;
 
 VAR:         IDS SHORT_ASSIGN VALUES
 			|t_var IDS TYPE_AND_STRUCT
 			|t_var IDS ASSIGNMENT VALUES
-			|t_var t_id MAPS  
+			|t_var t_id MAPS
+			|IDS ASSIGNMENT VALUES  
+			|t_var FULFILL_FOR_VAL //
       
       
       /* t_var t_id ASSIGNMENT EXPR
@@ -194,12 +199,14 @@ VALUES:
 FULFILL_FOR_VAL:
 			 EXPR 
 		   | BOOLEAN
-		   | MULTI_AR t_vtype PLENTY
+		   | MULTI_AR t_vtype PLENTY_BODY
 		   | MAKE
 		   | SLICE
 		   | t_make t_open_paren MAPS t_close_paren
 		   | ST_EMBEDDED
-		   //| t_id PLENTY
+		   | MAPS
+		   | t_id METHOD
+		   //| t_id PLENTY_BODY
 		   ;
 
 FULFILL_FOR_IDS:
@@ -208,17 +215,21 @@ FULFILL_FOR_IDS:
 			| METHOD
 			| t_pointer
 			| t_id POINTER
+			| t_string//
 			//| t_id PLENTY_OLD //?
-			//|MAPS
+			|MAPS
+			| t_blank_identifier
 			;
 
 
 BOOLEAN:	  VALUE t_bool VALUE
 			| BOOLEAN t_bool VALUE
+			| t_not t_id
 			;
 
 
 DEFER:		  t_defer FUNC_CALL
+            | t_defer METHOD
 			;
 
 ASSIGNMENT:   TYPE_AND_STRUCT t_equality
@@ -264,7 +275,7 @@ MANY_VALUES_END:
 			  FULFILL_FOR_VAL
 			;
 
-FUNC_CALL:    t_id PARAM
+FUNC_CALL:    t_id PARAM 
 			;
 	
 PARAM:  	PARAM_START PARAM_END 
@@ -280,13 +291,13 @@ PARAM_END: PARAM_END_FULFILL t_close_paren
 
 
 PARAM_END_FULFILL:
-			FULFILL_FOR_IDS
+			FULFILL_FOR_VAL
 			| EXPR t_param_const // [...] 
 			|t_enter
 			;
 
 PARAM_FULFILL:
-			FULFILL_FOR_IDS t_comma
+			FULFILL_FOR_VAL t_comma
 			|t_enter
 			;
 
@@ -297,13 +308,23 @@ SHIFT_AC:	  t_id
 			| t_int_const
 			;
 
-METHOD:		METHOD_FULFILL t_dot METHOD_FULFILL
+METHOD:		METHOD_START t_dot METHOD_FULFILL
            | METHOD t_dot METHOD_FULFILL
 		   ;
 
-METHOD_FULFILL:
-			t_id
-			| FUNC_CALL
+METHOD_START: t_id
+            | AMPERSAND
+			| POINTER
+			| t_id MULTI_AR
+			;
+
+METHOD_FULFILL:t_id
+            | FUNC_CALL
+			| POINTER
+			| AMPERSAND
+			| t_id MULTI_AR
+			| SLICE
+			| t_open_paren t_type t_close_paren
 			;
 
 POINTER:      t_pointer  
@@ -316,6 +337,7 @@ PARAM_IMPORT: t_string END_SYMBOLS
 			| t_id t_string END_SYMBOLS
             | PARAM_IMPORT t_string END_SYMBOLS
 			| PARAM_IMPORT t_id t_string END_SYMBOLS
+			| PARAM_IMPORT t_enter
 			;  
 
 VALUE:        t_int_const
@@ -337,6 +359,7 @@ VALUE:        t_int_const
 			| t_ten_pow
 			| t_true
 			| t_false
+			| t_id MULTI_AR
 			;
 
 GOTO:		  t_goto t_id
@@ -477,7 +500,7 @@ FOR:		  t_for INIT_STATE t_semicolon CONDITION t_semicolon POST_STATE BODY_FOR_L
 			| t_for CONDITION BODY_FOR_LOOP
 			| t_for RANGE_BLANK SHORT_ASSIGN t_range VALUE BODY_FOR_LOOP
 			| t_for t_id t_comma t_id SHORT_ASSIGN t_range VALUE BODY_FOR_LOOP
-			| t_for t_id SHORT_ASSIGN t_range VALUE BODY_FOR_LOOP
+			| t_for t_id SHORT_ASSIGN t_range FUNC_CALL BODY_FOR_LOOP
 			;
 
 RANGE_BLANK:  t_blank_identifier t_comma t_id
@@ -557,6 +580,7 @@ STRUCT_END:   t_close_br
 
 
 FIELD: 		t_id FIELD_BODY
+            | METHOD FIELD_BODY
 			;
 
 FIELD_BODY: FIELD_START FIELD_END
@@ -570,6 +594,9 @@ FIELD_START: t_open_br
 FIELD_FULFILL:
 			VALUE t_colon VALUE t_comma
 			|VALUE t_colon FIELD t_comma
+			| VALUE t_colon MULTI_AR t_vtype PLENTY_BODY t_comma
+			| VALUE t_colon MAPS t_comma
+			| VALUE t_colon MULTI_AR t_vtype PARAM t_comma
 			|t_enter
 			;
 
