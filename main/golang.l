@@ -54,6 +54,7 @@
 "true"																							 {printf("true "); return t_true;}
 "false"																							 {printf("false "); return t_false;}
 "_"																								 {printf("_ "); return  t_blank_identifier;}
+"!"																								 {printf("! "); return  t_not;}
 1e[0-9]+																						 {printf("10^ "); return t_ten_pow;}
 \*[_a-zA-Z][_a-zA-Z0-9]*																		 {printf("pointer "); return t_pointer;}
 \&[_a-zA-Z][_a-zA-Z0-9]*																		 {printf("ampersand "); return t_ampersand;}
