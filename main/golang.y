@@ -95,9 +95,9 @@ FUNC_RETURN_VALUE_FULFILL:
 TYPE_AND_STRUCT:
 			t_vtype
 			| t_param_const t_vtype //[...]
-			|t_id
-		    | MULTI_AR t_vtype
-			| METHOD
+			| t_id
+		    //| MULTI_AR t_vtype
+			//| METHOD
 			;
 
 
@@ -196,16 +196,17 @@ VALUES:
 	| FULFILL_FOR_VAL MANY_VALUES
 	;
 
-FULFILL_FOR_VAL:
+ FULFILL_FOR_VAL:
 			 EXPR 
 		   | BOOLEAN
 		   | MULTI_AR t_vtype PLENTY_BODY
 		   | MAKE
-		   | SLICE
+		   //| SLICE
 		   | t_make t_open_paren MAPS t_close_paren
-		   | ST_EMBEDDED
+		   | FIELD
 		   | MAPS
-		   | t_id METHOD
+		   | t_id PLENTY_BODY // 1 shift reduce
+		  // | t_id METHOD
 		   //| t_id PLENTY_BODY
 		   ;
 
@@ -213,17 +214,16 @@ FULFILL_FOR_IDS:
 			  t_id
 			| t_id MULTI_AR
 			| METHOD
-			| t_pointer
+			| POINTER
 			| t_id POINTER
-			| t_string//
 			//| t_id PLENTY_OLD //?
 			|MAPS
 			| t_blank_identifier
 			;
 
 
-BOOLEAN:	  VALUE t_bool VALUE
-			| BOOLEAN t_bool VALUE
+BOOLEAN:	  EXPR t_bool EXPR
+			| BOOLEAN t_bool EXPR
 			| t_not t_id
 			;
 
@@ -293,11 +293,17 @@ PARAM_END: PARAM_END_FULFILL t_close_paren
 PARAM_END_FULFILL:
 			FULFILL_FOR_VAL
 			| EXPR t_param_const // [...] 
+			| t_id METHOD
+			|METHOD
+			//|t_id PLENTY_BODY 1 reduce/reduce
 			|t_enter
+			|MAPS //1 reduce/reduce
 			;
 
 PARAM_FULFILL:
 			FULFILL_FOR_VAL t_comma
+			|METHOD t_comma
+			|t_id PLENTY_BODY t_comma
 			|t_enter
 			;
 
@@ -342,24 +348,25 @@ PARAM_IMPORT: t_string END_SYMBOLS
 
 VALUE:        t_int_const
             | t_float_const
+			| t_sign t_int_const
 			| t_id
 			| t_sign t_id
 			| t_string
       		| t_rune
-			| t_blank_identifier
+			//| t_blank_identifier
 			| SHORT_FUNC PARAM
 			| FUNC_CALL
 			| SHIFT
-			| t_pointer
-			| METHOD
-			| EXPR_START EXPR EXPR_END
+			| POINTER // 1 redce/reduce
+			//| METHOD
+			//| EXPR_START EXPR EXPR_END
 			| EXPR_START BOOLEAN EXPR_END
 			| AMPERSAND
 			| t_hex 
 			| t_ten_pow
 			| t_true
 			| t_false
-			| t_id MULTI_AR
+			//| t_id MULTI_AR
 			;
 
 GOTO:		  t_goto t_id
@@ -408,10 +415,12 @@ SECOND_PART: EXPR
 CASE_STATEMENT:
 			MULTIPLE_ARG
 			|EXPR
+			|BOOLEAN
 			;
 
 CASE_BODY:	t_colon
 			|CASE_BODY LOOP_FILLING END_SYMBOLS
+			|CASE_BODY END_SYMBOLS
 			;
 
 
@@ -476,6 +485,9 @@ RETURN_FULFILL:
 	;
 EXPR:         VALUE 
             | EXPR t_sign VALUE 
+			|EXPR_START EXPR EXPR_END
+			|VALUE t_sign VALUE
+			//|EXPR_START EXPR EXPR_END EXPR
 			;
 
 SHORT_EXPR:	  t_id t_short_expr t_id
@@ -592,11 +604,12 @@ FIELD_START: t_open_br
 			;
 
 FIELD_FULFILL:
-			VALUE t_colon VALUE t_comma
-			|VALUE t_colon FIELD t_comma
+			  FULFILL_FOR_IDS t_colon FULFILL_FOR_VAL t_comma
+			/*| VALUE t_colon FIELD t_comma
 			| VALUE t_colon MULTI_AR t_vtype PLENTY_BODY t_comma
 			| VALUE t_colon MAPS t_comma
-			| VALUE t_colon MULTI_AR t_vtype PARAM t_comma
+			| VALUE t_colon MULTI_AR t_vtype PARAM t_comma*/
+			|VALUE t_colon VALUE t_comma
 			|t_enter
 			;
 
@@ -609,8 +622,6 @@ FIELD_END_FULFILL:
 			|t_enter
 			;
 
-ST_EMBEDDED:  FIELD
-		   ;
            
 END_SYMBOLS: t_semicolon
 			|t_enter

@@ -116,3 +116,4 @@ tests:
 	../golang.exe ../tests/test98.txt
 	../golang.exe ../tests/test99.txt
 	../golang.exe ../tests/test100.txt
+	

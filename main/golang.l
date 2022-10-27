@@ -7,6 +7,9 @@
 	extern int yyerror(const char *);
 %}
 %%
+
+
+[//].*    { printf("Commets found ");}					
 "string"|"int"|"float32"|"bool"|"rune"|"int8"|"int16"|"int64"|"uint8"|"uint16"|"uint32" 		 {printf("vtype ");return t_vtype;}	
 "uint64"|"uint"|"byte"|"uintptr"|"float64"|"complex64"|"complex128"|"uintptr"				     {printf("vtype ");return t_vtype;}	
 "func"																							 {printf("func "); return t_func;}
@@ -18,6 +21,7 @@
 "interface"																						 {printf("interface "); return t_interface;}			
 "default"																						 {printf("default "); return t_default;}
 "import"                                                                                         {printf("import "); return t_import;}
+\'[a-zA-z0-9]\'																				     {printf("rune ");return t_rune;}
 "var"                                                                                            {printf("var "); return t_var;}
 "range"                                                                                          {printf("range "); return t_range;}
 "map"                                                                                            {printf("map "); return t_map;}
@@ -60,17 +64,15 @@
 \&[_a-zA-Z][_a-zA-Z0-9]*																		 {printf("ampersand "); return t_ampersand;}
 "="|"*"|"+"|"-"|"/"|"?"|":"|"&"|"|"|"^"|"!"|"~"|"%"|"<"|">"		 		 	         			 {printf("sign ");return t_sign;}
 "*="|"/="|"+="|"%="|">>="|"-="|"<<="|"&="|"^="|"|="|"&^"|"&^="									 {printf("punc "); return t_short_expr;}
-[-]?[0-9]+																						 {printf("int "); return t_int_const;}
-[-]?[0-9]+"."[0-9]+																				 {printf("float "); return t_float_const;}
+[0-9]+																						 {printf("int "); return t_int_const;} //deleted
+[0-9]+"."[0-9]+																				 {printf("float "); return t_float_const;} // deleted
 0[xX][0-9a-fA-F]+																				 {printf("hex "); return t_hex;}
 "."																								 {printf(". "); return  t_dot;}	
 "'"."'"																							 {printf("\' ");return t_char_const;}
 [_a-zA-Z][_a-zA-Z0-9]*			 																 {printf("id ");return t_id;}
-"\'[a-zA-z]\'"																				     {printf("rune ");return t_rune;}
 \"(\\.|[^\"])*\"																				 {printf("String ");return t_string;}
 \n																					 			 {printf("\\n ");return t_enter;}
 <<EOF>> 																						 {printf("eof "); static int once = 0; return (once = !once) ? t_eof : 0; }
-"//"(\\.|[^\n])*[\n]																						;
 [/][*]([^*]|[*]*[^*/])*[*]+[/]                                                                              ;
 [ \t]																										;
 %%
