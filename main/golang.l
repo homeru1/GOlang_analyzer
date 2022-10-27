@@ -64,8 +64,8 @@
 \&[_a-zA-Z][_a-zA-Z0-9]*																		 {printf("ampersand "); return t_ampersand;}
 "="|"*"|"+"|"-"|"/"|"?"|":"|"&"|"|"|"^"|"!"|"~"|"%"|"<"|">"		 		 	         			 {printf("sign ");return t_sign;}
 "*="|"/="|"+="|"%="|">>="|"-="|"<<="|"&="|"^="|"|="|"&^"|"&^="									 {printf("punc "); return t_short_expr;}
-[0-9]+																						 {printf("int "); return t_int_const;} //deleted
-[0-9]+"."[0-9]+																				 {printf("float "); return t_float_const;} // deleted
+[0-9]+																						 	 {printf("int "); return t_int_const;} //deleted
+[0-9]+"."[0-9]+																				 	 {printf("float "); return t_float_const;} // deleted
 0[xX][0-9a-fA-F]+																				 {printf("hex "); return t_hex;}
 "."																								 {printf(". "); return  t_dot;}	
 [_a-zA-Z][_a-zA-Z0-9]*			 																 {printf("id ");return t_id;}

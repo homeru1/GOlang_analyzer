@@ -1,4 +1,3 @@
 func main() {
-	fmt.Println("First Name:", (*emp8).firstName)
-	fmt.Println("Age:", (*emp8).age)
+    x := &(y.y(123))
 }

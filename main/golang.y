@@ -544,7 +544,7 @@ SIGNED_VALUE:
 	t_sign VALUE
 	;
 
-SHORT_EXPR:	  t_id t_short_expr t_id
+SHORT_EXPR:	  VALUE t_short_expr VALUE
 			;
 
 INIT_STATE:  VAR
