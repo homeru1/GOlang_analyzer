@@ -13,8 +13,9 @@
 %token t_open_sq t_close_sq t_bool t_rune t_semicolon t_blank_identifier t_dot t_colon t_true t_false t_short_expr t_make t_enter t_eof t_star t_ampersand t_hex t_ten_pow t_not
 
 
-%left t_sign
 %left t_star
+%right t_sign
+%right t_dot
 
 %%
 START:        START GLOBAL END_SYMBOLS
@@ -161,10 +162,12 @@ BODY_FILLING:   FOR
 			|  BIG_VAR
 			;
 
-			|t_var IDS TYPE_AND_STRUCT
 VAR:         IDS SHORT_ASSIGN VALUES
+			|t_var IDS TYPE_AND_STRUCT
+			|t_var IDS METHOD
 			|t_var IDS ASSIGNMENT VALUES
 			|t_var t_id MAPS
+			|t_var t_id SHORT_STRUCT
 			|IDS ASSIGNMENT VALUES  
 			//|t_var IDS FULFILL_FOR_VAL//
 			;
@@ -444,9 +447,14 @@ SECOND_PART: EXPR
 
 CASE_STATEMENT:
 			MULTIPLE_ARG
-			|EXPR
+			|t_vtype
+			|SECOND_PART
+			|BOOLEAN
+			|t_rune
+			/*|EXPR
 			|BOOLEAN
 			|t_vtype
+			| t_rune*/
 			;
 
 CASE_BODY:	t_colon
@@ -487,6 +495,7 @@ BODY_FOR_LOOP_END:     t_close_br
 LOOP_FILLING:  
 			 BODY_FILLING
 			|t_break
+			|t_break t_id
 			|t_continue
 			;
 
@@ -518,6 +527,7 @@ RETURN_FULFILL:
 EXPR:         VALUE 
             | EXPR SIGNED_VALUE
 			| EXPR POINTER
+			//| EXPR t_point_const EXPR
 			| t_id POINTER
 			| t_open_paren EXPR t_close_paren
 			| VALUE POINTER
@@ -542,12 +552,17 @@ INIT_STATE:  VAR
 			|
 			;
 
-CONDITION:	BOOLEAN
+CONDITION:	CONDITION_FULFILL
+			| t_not CONDITION_FULFILL
+			|
+			;
+
+CONDITION_FULFILL:
+			BOOLEAN
 			|t_true
 			|t_false
 			|METHOD
 			|FUNC_CALL
-			|
 			;
 
 POST_STATE:  EXPR
@@ -607,11 +622,18 @@ STRUCT_BODY:  ENUM t_vtype
            |  t_id t_id
 		   |  t_id
 		   |  t_id METHOD
-		   |  STRUCT_BODY END_SYMBOLS t_id METHOD
-           |  STRUCT_BODY END_SYMBOLS t_id t_vtype 
-           |  STRUCT_BODY END_SYMBOLS t_id t_id //embedded struct
-		   |  STRUCT_BODY END_SYMBOLS t_id //short definition
-		   ;
+		   |  t_id MULTI_AR t_vtype
+		   |  t_id MAPS
+		   |  t_id t_star METHOD
+		   |  END_SYMBOLS
+		   |  STRUCT_BODY t_id t_star METHOD
+		   |  STRUCT_BODY t_id METHOD
+		   |  STRUCT_BODY t_id MAPS
+           |  STRUCT_BODY t_id t_vtype 
+           |  STRUCT_BODY t_id t_id //embedded struct
+		   |  STRUCT_BODY t_id //short definition
+		   |  STRUCT_BODY t_id MULTI_AR t_vtype
+		   |  STRUCT_BODY END_SYMBOLS
 
 STRUCT_START:  t_struct_const t_open_br STRUCT_END
            |   t_struct_const t_open_br STRUCT_BODY STRUCT_END
