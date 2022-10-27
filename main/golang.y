@@ -10,14 +10,22 @@
 %token t_vtype t_constant t_case t_func t_import t_chan t_defer t_go t_interface t_default t_var t_range t_map t_package t_if t_select t_switch t_fallthrough t_else
 %token t_type t_for t_goto t_continue t_break t_return t_struct_const t_or_const t_and_const t_param_const t_eq_const t_rel_const t_shift_const t_inc_const
 %token t_point_const t_punc t_int_const t_float_const t_char_const t_id t_string t_short_dec t_open_br t_close_br t_sign t_comma t_equality t_open_paren t_close_paren
-%token t_open_sq t_close_sq t_bool t_rune t_semicolon t_blank_identifier t_dot t_colon t_true t_false t_short_expr t_make t_enter t_eof t_pointer t_ampersand t_hex t_ten_pow t_not
-%left '+' '-'
-%left '*' '/'
+%token t_open_sq t_close_sq t_bool t_rune t_semicolon t_blank_identifier t_dot t_colon t_true t_false t_short_expr t_make t_enter t_eof t_star t_ampersand t_hex t_ten_pow t_not
+
+
+%left t_sign
+%left t_star
+
 %%
 START:        START GLOBAL END_SYMBOLS
-            | GLOBAL END_SYMBOLS
+            | TMP GLOBAL END_SYMBOLS
+			|GLOBAL END_SYMBOLS
 			| START END_SYMBOLS
 	        ;
+
+TMP: t_enter
+	|TMP TMP 
+	;
 
 GLOBAL:       PACKAGE
             | IMPORT 
@@ -26,6 +34,7 @@ GLOBAL:       PACKAGE
 			| INTERFACE
 			| VAR
 			|STRUCT_METHOD
+			|BIG_VAR
 			;
 
 PACKAGE:     t_package t_id
@@ -47,6 +56,7 @@ FUNC_PARAM:	FUNC_PARAM_FULFILL
 FUNC_SECOND_PART:
 			BODY
 			| TYPE_AND_STRUCT BODY
+			| MULTI_AR TYPE_AND_STRUCT BODY
 			| FUNC_RETURN_VALUE TYPE_AND_STRUCT BODY
 			| FUNC_PARAM_SECOND BODY
 			;
@@ -65,7 +75,7 @@ FUNC_PARAM_SECOND_END:
 
 FUNC_PARAM_FULFILL:
 			t_id TYPE_AND_STRUCT 
-			| t_id 
+			|TYPE_AND_STRUCT
 			| t_id INTERFACE
 			| t_id t_param_const INTERFACE // [...]
 			| t_id MULTI_AR t_vtype
@@ -76,12 +86,14 @@ FUNC_PARAM_FULFILL:
 FUNC_PARAM_FULFILL_SECOND:
 			t_id TYPE_AND_STRUCT t_comma
 			| TYPE_AND_STRUCT t_comma
+			| t_id METHOD t_comma
 			| t_enter
 			;
 
 FUNC_PARAM_FULFILL_SECOND_END:
 			t_id TYPE_AND_STRUCT
 			| TYPE_AND_STRUCT
+			|t_id METHOD
 			| t_enter
 			;
 FUNC_RETURN_VALUE:
@@ -89,20 +101,22 @@ FUNC_RETURN_VALUE:
 			|FUNC_RETURN_VALUE FUNC_RETURN_VALUE_FULFILL
 			;
 FUNC_RETURN_VALUE_FULFILL:
-			t_func t_open_paren TYPE_AND_STRUCT t_close_paren
-			|t_func t_open_paren t_close_paren
+			t_func t_open_paren FUNC_PARAM t_close_paren
+			|t_id t_open_paren FUNC_PARAM t_close_paren
 			;
 TYPE_AND_STRUCT:
 			t_vtype
 			| t_param_const t_vtype //[...]
 			| t_id
+			| POINTER
+			//|INTERFACE
 		    //| MULTI_AR t_vtype
 			//| METHOD
 			;
 
 
 STRUCT_METHOD:
-			t_func t_open_paren t_id TYPE_AND_STRUCT t_close_paren STRUCT_METHOD_SECOND_PART
+			t_func t_open_paren t_id TYPE_AND_STRUCT t_close_paren STRUCT_METHOD_SECOND_PART 
 
 STRUCT_METHOD_SECOND_PART:
 			t_id FUNC_PARAM_SECOND BODY
@@ -143,17 +157,32 @@ BODY_FILLING:   FOR
 			|  DEFER
 			|  METHOD
 			|  INTERFACE
-			|  PLENTY_BODY
+			|  FIELD_BODY
+			|  BIG_VAR
 			;
 
-VAR:         IDS SHORT_ASSIGN VALUES
 			|t_var IDS TYPE_AND_STRUCT
+VAR:         IDS SHORT_ASSIGN VALUES
 			|t_var IDS ASSIGNMENT VALUES
 			|t_var t_id MAPS
 			|IDS ASSIGNMENT VALUES  
-			|t_var FULFILL_FOR_VAL //
-      
-      
+			//|t_var IDS FULFILL_FOR_VAL//
+			;
+
+BIG_VAR:
+	t_var BIG_VAR_START BIG_VAR_END
+		;
+
+BIG_VAR_START:
+	t_open_paren
+	|BIG_VAR_START t_enter
+	|BIG_VAR_START IDS ASSIGNMENT VALUES
+	;
+	
+BIG_VAR_END:
+	t_close_paren
+	|IDS ASSIGNMENT VALUES t_close_paren
+	;
       /* t_var t_id ASSIGNMENT EXPR
 			| t_var t_id ASSIGNMENT EXPR t_vtype
 			| t_var t_id ASSIGNMENT BOOLEAN
@@ -197,28 +226,29 @@ VALUES:
 	;
 
  FULFILL_FOR_VAL:
-			 EXPR 
+			 EXPR
 		   | BOOLEAN
-		   | MULTI_AR t_vtype PLENTY_BODY
+		   | MULTI_AR t_vtype FIELD_BODY
 		   | MAKE
-		   //| SLICE
+		   | SLICE
+		   | MULTI_AR SHORT_STRUCT
 		   | t_make t_open_paren MAPS t_close_paren
 		   | FIELD
 		   | MAPS
-		   | t_id PLENTY_BODY // 1 shift reduce
+		   | AMPERSAND FIELD_BODY
+		   | FIELD_BODY
+		  // | t_id PLENTY_BODY // 1 shift reduce
 		  // | t_id METHOD
 		   //| t_id PLENTY_BODY
 		   ;
 
 FULFILL_FOR_IDS:
-			  t_id
-			| t_id MULTI_AR
-			| METHOD
-			| POINTER
+			 METHOD
 			| t_id POINTER
 			//| t_id PLENTY_OLD //?
 			|MAPS
 			| t_blank_identifier
+			|METHOD_START
 			;
 
 
@@ -234,6 +264,7 @@ DEFER:		  t_defer FUNC_CALL
 
 ASSIGNMENT:   TYPE_AND_STRUCT t_equality
 			| t_equality
+			| INTERFACE t_equality
 			|ASSIGNMENT t_enter
 			;
 
@@ -294,24 +325,20 @@ PARAM_END_FULFILL:
 			FULFILL_FOR_VAL
 			| EXPR t_param_const // [...] 
 			| t_id METHOD
-			|METHOD
-			//|t_id PLENTY_BODY 1 reduce/reduce
+			|t_vtype
 			|t_enter
-			|MAPS //1 reduce/reduce
 			;
 
 PARAM_FULFILL:
 			FULFILL_FOR_VAL t_comma
 			|METHOD t_comma
-			|t_id PLENTY_BODY t_comma
+			|t_id FIELD_BODY t_comma
 			|t_enter
+			|t_vtype t_comma
+			|EXPR t_comma
 			;
 
-SHIFT:		 SHIFT_AC t_shift_const SHIFT_AC
-			;
-
-SHIFT_AC:	  t_id
-			| t_int_const
+SHIFT:		 VALUE t_shift_const VALUE
 			;
 
 METHOD:		METHOD_START t_dot METHOD_FULFILL
@@ -331,9 +358,13 @@ METHOD_FULFILL:t_id
 			| t_id MULTI_AR
 			| SLICE
 			| t_open_paren t_type t_close_paren
+			|PARAM
+			|t_vtype
 			;
 
-POINTER:      t_pointer  
+POINTER:      t_star VALUE
+			//| t_star t_vtype
+			//| t_star t_int_const
 			;
 
 AMPERSAND:    t_ampersand
@@ -346,27 +377,25 @@ PARAM_IMPORT: t_string END_SYMBOLS
 			| PARAM_IMPORT t_enter
 			;  
 
+            
 VALUE:        t_int_const
-            | t_float_const
-			| t_sign t_int_const
-			| t_id
-			| t_sign t_id
+			| t_float_const
+			| SIGNED_VALUE
 			| t_string
       		| t_rune
 			//| t_blank_identifier
 			| SHORT_FUNC PARAM
 			| FUNC_CALL
 			| SHIFT
-			| POINTER // 1 redce/reduce
-			//| METHOD
+			| t_vtype t_open_paren VALUE t_close_paren
+			| METHOD
 			//| EXPR_START EXPR EXPR_END
-			| EXPR_START BOOLEAN EXPR_END
-			| AMPERSAND
+			| t_open_paren BOOLEAN t_close_paren
 			| t_hex 
 			| t_ten_pow
 			| t_true
 			| t_false
-			//| t_id MULTI_AR
+			| METHOD_START
 			;
 
 GOTO:		  t_goto t_id
@@ -377,6 +406,7 @@ LABEL:		  t_id t_colon
 
 SWITCH:		  t_switch INIT_STATE t_semicolon EXPR SWITCH_BODY
 			| t_switch EXPR SWITCH_BODY
+			| t_switch VAR SWITCH_BODY
 			| t_switch SWITCH_BODY
 			;
 
@@ -416,11 +446,12 @@ CASE_STATEMENT:
 			MULTIPLE_ARG
 			|EXPR
 			|BOOLEAN
+			|t_vtype
 			;
 
 CASE_BODY:	t_colon
 			|CASE_BODY LOOP_FILLING END_SYMBOLS
-			|CASE_BODY END_SYMBOLS
+			|CASE_BODY t_enter
 			;
 
 
@@ -444,7 +475,7 @@ BODY_FOR_LOOP: BODY_FOR_LOOP_START BODY_FOR_LOOP_END
 
 BODY_FOR_LOOP_START:
 			t_open_br
-			|t_open_br END_SYMBOLS
+			|BODY_FOR_LOOP_START END_SYMBOLS
             | BODY_FOR_LOOP_START LOOP_FILLING END_SYMBOLS
 			;
 
@@ -477,6 +508,7 @@ ELSE_THIRD: t_else BODY_FOR_LOOP
 			;
 
 RETURN:		t_return RETURN_FULFILL
+			|t_return SHORT_FUNC
       ;
       
 RETURN_FULFILL:
@@ -484,23 +516,37 @@ RETURN_FULFILL:
 	|
 	;
 EXPR:         VALUE 
-            | EXPR t_sign VALUE 
-			|EXPR_START EXPR EXPR_END
-			|VALUE t_sign VALUE
+            | EXPR SIGNED_VALUE
+			| EXPR POINTER
+			| t_id POINTER
+			| t_open_paren EXPR t_close_paren
+			| VALUE POINTER
+			| SIGNED_VALUE SIGNED_VALUE
+			//| t_int_const POINTER
+			//| SIGNED_VALUE POINTER
+			//| t_sign t_id POINTER
+			//| METHOD t_star METHOD
+			//|VALUE t_sign VALUE
 			//|EXPR_START EXPR EXPR_END EXPR
 			;
+
+SIGNED_VALUE:
+	t_sign VALUE
+	;
 
 SHORT_EXPR:	  t_id t_short_expr t_id
 			;
 
 INIT_STATE:  VAR
-			| FUNC_CALL
+			| METHOD
 			|
 			;
 
 CONDITION:	BOOLEAN
 			|t_true
 			|t_false
+			|METHOD
+			|FUNC_CALL
 			|
 			;
 
@@ -510,20 +556,14 @@ POST_STATE:  EXPR
 
 FOR:		  t_for INIT_STATE t_semicolon CONDITION t_semicolon POST_STATE BODY_FOR_LOOP
 			| t_for CONDITION BODY_FOR_LOOP
-			| t_for RANGE_BLANK SHORT_ASSIGN t_range VALUE BODY_FOR_LOOP
-			| t_for t_id t_comma t_id SHORT_ASSIGN t_range VALUE BODY_FOR_LOOP
-			| t_for t_id SHORT_ASSIGN t_range FUNC_CALL BODY_FOR_LOOP
+			| t_for IDS SHORT_ASSIGN t_range VALUE BODY_FOR_LOOP
+			//| t_for t_id t_comma t_id SHORT_ASSIGN t_range VALUE BODY_FOR_LOOP
 			;
 
-RANGE_BLANK:  t_blank_identifier t_comma t_id
-			| t_id t_comma t_blank_identifier
+/*RANGE_BLANK:  FULFILL_FOR_IDS 
+			|FULFILL_FOR_IDS t_comma FULFILL_FOR_IDS*/
+			
 			;
-
-EXPR_START:   t_open_paren
-
-			;
-EXPR_END:     t_close_paren
-            ;
               
 ARRAY_INDEX:  t_open_sq t_int_const t_close_sq
             | t_open_sq t_id t_close_sq
@@ -535,18 +575,6 @@ MULTI_AR:     ARRAY_INDEX
 			| ARRAY_INDEX MULTI_AR
 			| t_open_sq t_param_const t_close_sq // [...]
             ;
-
-PLENTY:       PLENTY_BODY 
-            | PLENTY_BODY t_comma PLENTY 
-			|  PLENTY_BODY t_comma END_SYMBOLS PLENTY
-
-PLENTY_BODY:  t_open_br ENUM t_close_br
-            | t_open_br PLENTY t_close_br 
-			| t_open_br END_SYMBOLS ENUM t_close_br
-			| t_open_br END_SYMBOLS PLENTY t_close_br
-			| t_open_br END_SYMBOLS ENUM t_comma END_SYMBOLS t_close_br
-			| t_open_br END_SYMBOLS PLENTY t_comma END_SYMBOLS t_close_br
-			//| t_open_br t_close_br 
 
 ENUM:         VALUE
             | ENUM t_comma VALUE
@@ -564,10 +592,15 @@ SLICE:       t_id t_open_sq VALUE t_colon VALUE t_close_sq
 
 MAPS:        t_map t_open_sq t_vtype t_close_sq t_vtype
            | t_map t_open_sq t_vtype t_close_sq t_vtype FIELD_BODY
+		   | t_map t_open_sq t_vtype t_close_sq t_id  FIELD_BODY
 		   | t_map t_open_sq t_vtype t_close_sq t_id 
            ;
 
-STRUCT:      STRUCT_START 
+SHORT_STRUCT: STRUCT_START FIELD_BODY
+
+
+STRUCT:      t_type t_id STRUCT_START 
+			|t_type t_id TYPE_AND_STRUCT
            ;
 
 STRUCT_BODY:  ENUM t_vtype 
@@ -580,10 +613,10 @@ STRUCT_BODY:  ENUM t_vtype
 		   |  STRUCT_BODY END_SYMBOLS t_id //short definition
 		   ;
 
-STRUCT_START: t_type t_id t_struct_const t_open_br STRUCT_END
-           |  t_type t_id t_struct_const t_open_br STRUCT_BODY STRUCT_END
-		   |  t_type t_id t_struct_const t_open_br END_SYMBOLS STRUCT_BODY STRUCT_END
-           |  t_type t_id t_struct_const t_enter
+STRUCT_START:  t_struct_const t_open_br STRUCT_END
+           |   t_struct_const t_open_br STRUCT_BODY STRUCT_END
+		   |   t_struct_const t_open_br END_SYMBOLS STRUCT_BODY STRUCT_END
+           |   t_struct_const t_enter
            ;
 
 STRUCT_END:   t_close_br
@@ -592,7 +625,7 @@ STRUCT_END:   t_close_br
 
 
 FIELD: 		t_id FIELD_BODY
-            | METHOD FIELD_BODY
+            //| METHOD FIELD_BODY
 			;
 
 FIELD_BODY: FIELD_START FIELD_END
@@ -600,17 +633,13 @@ FIELD_BODY: FIELD_START FIELD_END
 			;
 
 FIELD_START: t_open_br
+			|FIELD_START t_enter
 			|FIELD_START FIELD_FULFILL
 			;
 
 FIELD_FULFILL:
-			  FULFILL_FOR_IDS t_colon FULFILL_FOR_VAL t_comma
-			/*| VALUE t_colon FIELD t_comma
-			| VALUE t_colon MULTI_AR t_vtype PLENTY_BODY t_comma
-			| VALUE t_colon MAPS t_comma
-			| VALUE t_colon MULTI_AR t_vtype PARAM t_comma*/
-			|VALUE t_colon VALUE t_comma
-			|t_enter
+			  FULFILL_FOR_VAL t_colon FULFILL_FOR_VAL t_comma
+			| FULFILL_FOR_VAL t_comma
 			;
 
 FIELD_END:  FIELD_END_FULFILL t_close_br
@@ -618,7 +647,8 @@ FIELD_END:  FIELD_END_FULFILL t_close_br
 
 	
 FIELD_END_FULFILL:
-			VALUE t_colon VALUE
+			FULFILL_FOR_VAL t_colon FULFILL_FOR_VAL
+			|FULFILL_FOR_VAL
 			|t_enter
 			;
 

@@ -9,7 +9,7 @@
 %%
 
 
-[//].*    { printf("Commets found ");}					
+[//].*    {;}					
 "string"|"int"|"float32"|"bool"|"rune"|"int8"|"int16"|"int64"|"uint8"|"uint16"|"uint32" 		 {printf("vtype ");return t_vtype;}	
 "uint64"|"uint"|"byte"|"uintptr"|"float64"|"complex64"|"complex128"|"uintptr"				     {printf("vtype ");return t_vtype;}	
 "func"																							 {printf("func "); return t_func;}
@@ -60,7 +60,7 @@
 "_"																								 {printf("_ "); return  t_blank_identifier;}
 "!"																								 {printf("! "); return  t_not;}
 1e[0-9]+																						 {printf("10^ "); return t_ten_pow;}
-\*[_a-zA-Z][_a-zA-Z0-9]*																		 {printf("pointer "); return t_pointer;}
+"*"																								 {printf("* "); return t_star;}
 \&[_a-zA-Z][_a-zA-Z0-9]*																		 {printf("ampersand "); return t_ampersand;}
 "="|"*"|"+"|"-"|"/"|"?"|":"|"&"|"|"|"^"|"!"|"~"|"%"|"<"|">"		 		 	         			 {printf("sign ");return t_sign;}
 "*="|"/="|"+="|"%="|">>="|"-="|"<<="|"&="|"^="|"|="|"&^"|"&^="									 {printf("punc "); return t_short_expr;}
