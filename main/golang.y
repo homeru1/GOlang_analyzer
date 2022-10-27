@@ -618,7 +618,7 @@ STRUCT:      t_type t_id STRUCT_START
 			|t_type t_id TYPE_AND_STRUCT
            ;
 
-STRUCT_BODY:  ENUM t_vtype 
+STRUCT_BODY:  IDS t_vtype 
            |  t_id t_id
 		   |  t_id
 		   |  t_id METHOD
@@ -629,9 +629,8 @@ STRUCT_BODY:  ENUM t_vtype
 		   |  STRUCT_BODY t_id t_star METHOD
 		   |  STRUCT_BODY t_id METHOD
 		   |  STRUCT_BODY t_id MAPS
-           |  STRUCT_BODY t_id t_vtype 
+           |  STRUCT_BODY IDS t_vtype 
            |  STRUCT_BODY t_id t_id //embedded struct
-		   |  STRUCT_BODY t_id //short definition
 		   |  STRUCT_BODY t_id MULTI_AR t_vtype
 		   |  STRUCT_BODY END_SYMBOLS
 
