@@ -9,13 +9,12 @@
 %%
 
 
-[//].*    {;}					
+\/\/(.*)                                     {;}				
 "string"|"int"|"float32"|"bool"|"rune"|"int8"|"int16"|"int64"|"uint8"|"uint16"|"uint32" 		 {printf("vtype ");return t_vtype;}	
 "uint64"|"uint"|"byte"|"uintptr"|"float64"|"complex64"|"complex128"|"uintptr"				     {printf("vtype ");return t_vtype;}	
 "func"																							 {printf("func "); return t_func;}
 "const"         																				 {printf("const "); return t_constant;}
 "case"																							 {printf("case "); return t_case;}
-"chan"																							 {printf("chan "); return t_chan;}
 "defer"																							 {printf("defer "); return t_defer;}		
 "go"																							 {printf("go "); return t_go;}	
 "interface"																						 {printf("interface "); return t_interface;}			
@@ -45,7 +44,6 @@
 "..."																							 {printf("... "); return t_param_const;}																						 {printf("eq_const "); return t_eq_const;}																					 {printf("rel_const "); return t_rel_const;}
 ">>"|"<<"																						 {printf("shift_const "); return t_shift_const;}
 "++"|"--"																						 {printf("inc_const "); return t_inc_const;}
-"<-"																							 {printf("<- "); return t_point_const;}
 ","																						 		 {printf(", "); return t_comma;}
 "("																						 		 {printf("( "); return t_open_paren;}
 ")"																						 		 {printf(") "); return t_close_paren;}
@@ -59,9 +57,9 @@
 "false"																							 {printf("false "); return t_false;}
 "_"																								 {printf("_ "); return  t_blank_identifier;}
 "!"																								 {printf("! "); return  t_not;}
-1e[0-9]+																						 {printf("10^ "); return t_ten_pow;}
+[0-9]+e[0-9]+																						 {printf("10^ "); return t_ten_pow;}
 "*"																								 {printf("* "); return t_star;}
-\&[_a-zA-Z][_a-zA-Z0-9]*																		 {printf("ampersand "); return t_ampersand;}
+"&"																		 {printf("ampersand "); return t_ampersand;}
 "="|"*"|"+"|"-"|"/"|"?"|":"|"&"|"|"|"^"|"!"|"~"|"%"|"<"|">"		 		 	         			 {printf("sign ");return t_sign;}
 "*="|"/="|"+="|"%="|">>="|"-="|"<<="|"&="|"^="|"|="|"&^"|"&^="									 {printf("punc "); return t_short_expr;}
 [0-9]+																						 	 {printf("int "); return t_int_const;} //deleted
@@ -69,7 +67,7 @@
 0[xX][0-9a-fA-F]+																				 {printf("hex "); return t_hex;}
 "."																								 {printf(". "); return  t_dot;}	
 [_a-zA-Z][_a-zA-Z0-9]*			 																 {printf("id ");return t_id;}
-\`.+\`																							 {printf("yamalString ");return t_string;}
+\`.+\`																							 {printf("yamalString ");}
 \"(\\.|[^\"])*\"																				 {printf("string ");return t_string;}
 \n																					 			 {printf("\\n ");return t_enter;}
 <<EOF>> 																						 {printf("eof "); static int once = 0; return (once = !once) ? t_eof : 0; }

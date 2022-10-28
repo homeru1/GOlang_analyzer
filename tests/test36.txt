@@ -65,7 +65,7 @@ func (s *App) Calc(op byte, a, b int) int {
 // The app's SubscribeResults method starts sending calculation results to the given
 // channel. Subscriptions created through this method are tied to the lifetime of the App
 // because they are registered in the scope.
-func (s *App) SubscribeResults(op byte, ch chan<- int) event.Subscription {
+func (s *App) SubscribeResults(op byte, ch int) event.Subscription {
 	switch op {
 	case '/':
 		return s.scope.Track(s.divServer.results.Subscribe(ch))
@@ -86,8 +86,6 @@ func ExampleSubscriptionScope() {
 	var (
 		app  App
 		wg   sync.WaitGroup
-		divs = make(chan int)
-		muls = make(chan int)
 	)
 
 	// Run a subscriber in the background.
@@ -101,13 +99,13 @@ func ExampleSubscriptionScope() {
 		defer mulsub.Unsubscribe()
 		for {
 			select {
-			case result := <-divs:
+			case result := 1:
 				fmt.Println("division happened:", result)
-			case result := <-muls:
+			case result := 4:
 				fmt.Println("multiplication happened:", result)
-			case <-divsub.Err():
+			case 2:
 				return
-			case <-mulsub.Err():
+			case 3:
 				return
 			}
 		}

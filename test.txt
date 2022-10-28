@@ -1,3 +1,4 @@
-func main() {
-    x := &(y.y(123))
+func printSlice(a []int,s []int) {
+	fmt.Printf("len=%d cap=%d %v\n", len(s), cap(s), s)
+    a[2] = 2
 }
